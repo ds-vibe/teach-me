@@ -1,21 +1,19 @@
 # Teach Me 0.0.1
 
-The first public release of Teach Me: a standalone Claude Code and Codex skill
-for building voice-capable, single-file interactive HTML lessons.
+**Teach Me** is a standalone Claude Code skill for building voice-capable,
+single-file interactive HTML lessons.
 
 ## Included
 
-- A role-aware interview for educators and learners
-- Grounding in user materials or canonical primary sources
-- Observable objectives and a concept-by-concept coverage plan
-- Scenario-first teaching and immediate why-feedback
-- Confusable-concept drills, mutation pairs, typed criteria checks, and a
-  closed-book final
-- Optional narration with browser and silent fallbacks
-- An optional companion-video brief
-- Desktop, phone-sized, interaction-state, source, prose, pedagogy, and domain
-  QA gates
-- Claude Code and Codex installation metadata
+- **Goals Interview**: Role aware for students and/or educators
+- **Grounding**: Your materials or canonical primary sources
+- **Pedagogy**: Clear objectives and coverage, scenario-first teaching, and
+  immediate feedback
+- **Drills**: Multiple choice, typed answers, confusable-concept drills,
+  mutation pairs, and a closed-book final
+- **Voice**: Optional narration with OpenAI, ElevenLabs or browser voice
+- **Video**: Optional companion video (uses HyperFrames and separate skill)
+- **QA gates**: Quality checks for content, citations and pedagogy
 
 ## Unedited example snapshot
 

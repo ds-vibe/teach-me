@@ -1,7 +1,7 @@
 # Teach Me
 
-Teach Me is a Claude Code and Codex skill that turns a topic and its source
-material into a voice-capable, single-file interactive HTML lesson.
+**Teach Me** is a standalone Claude Code skill for building voice-capable,
+single-file interactive HTML lessons.
 
 It is built for learning rather than presentation: observable objectives,
 scenario-first teaching, practice with why-feedback, discrimination between
@@ -27,18 +27,17 @@ The published snapshot contains:
 Each lesson is one self-contained HTML file. Fonts, narration, interactions,
 feedback, and the final live inside the file.
 
-## What the skill does
+## Included
 
-1. Interviews the educator or learner about grounding material, audience,
-   scope, prior capability, teaching shape, voice, and optional AI chat.
-2. Designs the pedagogy before the page: objectives, misconceptions, concept
-   atoms, confusables, practice coverage, and transfer.
-3. Presents real visual frames and teaching-mechanics choices before building.
-4. Produces the interactive lesson, optional narration, and an optional brief
-   for a companion video.
-5. Exercises correct and incorrect paths, checks desktop and mobile renders,
-   verifies source quotations, and runs a fresh-context domain and pedagogy
-   review.
+- **Goals Interview**: Role aware for students and/or educators
+- **Grounding**: Your materials or canonical primary sources
+- **Pedagogy**: Clear objectives and coverage, scenario-first teaching, and
+  immediate feedback
+- **Drills**: Multiple choice, typed answers, confusable-concept drills,
+  mutation pairs, and a closed-book final
+- **Voice**: Optional narration with OpenAI, ElevenLabs or browser voice
+- **Video**: Optional companion video (uses HyperFrames and separate skill)
+- **QA gates**: Quality checks for content, citations and pedagogy
 
 ## Install
 
@@ -60,24 +59,19 @@ Or invoke the skill directly:
 /teach-me the hearsay rule
 ```
 
-### Codex
+## Codex status
 
-```bash
-git clone https://github.com/ds-vibe/teach-me-this.git \
-  "${CODEX_HOME:-$HOME/.codex}/skills/teach-me"
-```
-
-Then ask:
-
-```text
-Use $teach-me to teach me the hearsay rule.
-```
+`v0.0.1` is not a validated Codex release. The repository contains preliminary
+Codex interface metadata, and much of the core instruction format is portable,
+but the workflow has not yet been optimized for Codex or forward-tested on
+Codex-generated lessons. A proper Codex port is planned. Until that work ships,
+use this release in Claude Code.
 
 ## Requirements
 
 - Node.js and Playwright Chromium for the render-and-inspect loop
 - Playwright WebKit for the phone-sized QA pass
-- Optional produced narration: `OPENAI_API_KEY` and `ffmpeg`
+- Optional produced narration: OpenAI or ElevenLabs credentials and `ffmpeg`
 
 No voice key is required. The lesson falls back to browser speech synthesis,
 then to a fully silent experience. The silent version must still teach and
