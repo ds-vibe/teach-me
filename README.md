@@ -3,10 +3,9 @@
 **Teach Me** is a standalone Claude Code skill for building voice-capable,
 single-file interactive HTML lessons.
 
-It is built for learning rather than presentation: observable objectives,
-scenario-first teaching, practice with why-feedback, discrimination between
-confusable concepts, typed self-assessment against concrete criteria, and a
-closed-book final.
+It is built for learning and teaching. Clear educational goals, scenario-first teaching, 
+and drills with immediate feedback. 
+
 
 **[See the unedited v0.0.1 outputs](https://ds-vibe.github.io/teach-me-this/)**
 
@@ -82,10 +81,7 @@ production skill. The HTML lesson remains the practice and assessment layer.
 
 ## Lineage and credit
 
-Teach Me began with the design system, single-file build approach, and
-render-inspect-revise quality loop from Derek Schwede's original
-[html-explainer](https://github.com/ds-vibe/html-explainer) skill. Those pieces
-are now included here, so Teach Me installs as a standalone skill.
+Teach Me began with my original [html-explainer](https://github.com/ds-vibe/html-explainer) skill. 
 
 Its evidence-graded pedagogy spine adapts and extends Rebecca Fordon's
 [teaching-explainer](https://github.com/rlfordon/teaching-explainer), which
@@ -95,9 +91,8 @@ copyright notices are retained in
 [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md).
 
 There is no direct outcome research on interactive single-page HTML lessons.
-The skill draws carefully from better-studied approaches—including retrieval
-practice, worked examples, active learning, and multimedia coherence—without
-claiming that the artifact format itself has proven learning gains.
+The skill draws from better-studied approaches -- including retrieval
+practice, worked examples, active learning, and multimedia coherence. 
 
 ## Safety and limitations
 
