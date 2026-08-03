@@ -57,7 +57,7 @@ Rich AI images means photography-quality. Even without these, you'll still get v
 ## Known limitations
 
 - A lesson takes about an hour of model time to build; drills are cheaper per question.
-- Fable 5 in Claude Code produces the best results, but uses a LOT of tokens.
+- Fable 5 in Claude Code produces the best results, but uses a LOT of tokens. Opus 5 and 5.6 Sol work too. Sonnet produces iffy results.
 - Lessons are frozen files — later skill fixes don't reach lessons already built.
 - Generated content can be wrong and must be reviewed before use in high-stakes settings. Study material, not professional advice.
 - Quiz results live in one browser; move between machines with the downloaded results file.
@@ -86,7 +86,7 @@ This skill can use **your own accounts with third-party services**, with your pe
 
 **You are responsible for your own compliance with third-party terms** — for how you use these tools, for their output, and for the lessons you produce with them. That includes provider terms of service, license conditions on any content the lesson embeds, and any rules that apply where you share the result.
 
-This skill is intended for making lessons for your own learning. It is not built or licensed for commercial use, and generated content in particular carries provider-specific restrictions you would need to check before using it that way.
+This skill is intended for making lessons for your own learning. It is not built or intended for commercial use, and generated content in particular carries provider-specific restrictions you would need to check before using it that way.
 
 Lessons are study material. Nothing a lesson says is legal, medical, financial, or other professional advice.
 
