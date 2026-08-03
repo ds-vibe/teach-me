@@ -1,6 +1,7 @@
-node_modules/
+node_modules
 .env
 .DS_Store
-audio/
 *.log
-product/
+lessons/
+build-log*.json
+trainer/dist/

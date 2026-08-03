@@ -1,0 +1,15 @@
+{
+  "name": "teach-me-simplified",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Claude Code / Codex skill (simplified variant) that builds voice-narrated, single-file interactive HTML lessons.",
+  "license": "MIT",
+  "scripts": {
+    "postinstall": "playwright install chromium webkit",
+    "check": "node scripts/doctor.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.49.0"
+  }
+}

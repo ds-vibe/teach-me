@@ -1,0 +1,19 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "teach-me",
+  "description": "Teach Me \u2014 a lesson-building skill for Claude and Codex.",
+  "owner": {
+    "name": "Derek"
+  },
+  "plugins": [
+    {
+      "name": "teach-me",
+      "displayName": "Teach Me",
+      "source": "./",
+      "description": "Builds a polished, interactive HTML lesson on a topic you choose \u2014 clear teaching, drills with feedback, optional voice and images, and a closed-book final. Drill mode generates question batteries that read your last session's results.",
+      "author": {
+        "name": "Derek"
+      }
+    }
+  ]
+}

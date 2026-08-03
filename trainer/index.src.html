@@ -1,0 +1,918 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Interval Trainer</title>
+<style>
+:root{
+  --bg:#f4efe6; --ink:#171512; --rust:#b3372b; --green:#1e5c3a; --gold:#e8b73a;
+  --muted:#6f6a60; --line:#d8d2c4; --white:#fdfcf9; --key-line:#2a2722;
+  --sans:-apple-system,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-text-size-adjust:100%}
+body{font-size:17px;line-height:1.45}
+button{font:inherit;cursor:pointer}
+
+/* ---------- shared ---------- */
+.wrap{max-width:980px;margin:0 auto;padding:0 20px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--rust)}
+h1{font-size:clamp(44px,8vw,84px);font-weight:900;letter-spacing:-.02em;line-height:.95;text-transform:uppercase;margin:.1em 0 .25em}
+h2{font-size:clamp(24px,4vw,34px);font-weight:900;letter-spacing:-.01em;text-transform:uppercase;margin:0 0 8px}
+h3{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;margin:26px 0 10px}
+.sub{color:var(--muted);max-width:56ch}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:var(--bg);border:2px solid var(--ink);
+  padding:12px 22px;font-weight:700;border-radius:3px;min-height:48px}
+.btn:hover{background:var(--rust);border-color:var(--rust)}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.ghost:hover{background:var(--ink);color:var(--bg)}
+.btn.play{background:var(--green);border-color:var(--green);color:#fff}
+.btn.play:hover{background:#16482d}
+.btn.sm{padding:7px 12px;min-height:38px;font-size:14px}
+.btn[disabled]{opacity:.4;cursor:default;pointer-events:none}
+.screen{display:none;min-height:100vh;padding:34px 0 60px}
+.screen.on{display:block}
+.small{font-size:13px;color:var(--muted)}
+.gatebox{border:2px solid var(--ink);background:var(--gold);border-radius:4px;padding:12px 16px;font-weight:700;display:inline-block}
+
+/* ---------- map ---------- */
+#map .levels{display:flex;flex-direction:column;gap:10px;margin:34px 0 26px}
+.lvl{display:flex;align-items:center;gap:16px;border:2px solid var(--ink);background:var(--white);
+  padding:16px 20px;border-radius:4px;text-align:left;width:100%}
+.lvl:hover{background:var(--gold)}
+.lvl .num{font-size:26px;font-weight:900;min-width:44px}
+.lvl .name{font-weight:900;text-transform:uppercase;letter-spacing:.02em}
+.lvl .what{color:var(--muted);font-size:14.5px}
+.lvl .state{margin-left:auto;font-weight:700;font-size:13px;white-space:nowrap}
+.lvl.done .state{color:var(--green)}
+.lvl.locked{opacity:.45;pointer-events:none;background:transparent}
+.lvl.v2{opacity:.35;pointer-events:none;background:transparent;border-style:dashed}
+.credits{color:var(--muted);font-size:13px;margin-top:36px;line-height:1.6}
+.credits a{color:inherit}
+
+/* ---------- learn screen ---------- */
+#learn .stage{border:2px solid var(--ink);background:var(--white);border-radius:4px;padding:26px 22px;margin:22px 0}
+.anch{border:2px solid var(--ink);background:var(--white);border-radius:4px;padding:16px 18px;margin:0 0 14px}
+.anch .t{font-weight:900;text-transform:uppercase}
+.anch .barebtn{margin:10px 0 4px}
+.cand{display:flex;align-items:center;gap:12px;border-top:1.5px solid var(--line);padding:10px 2px;cursor:pointer}
+.cand:hover{background:#faf6ec}
+.cand .lyric{color:var(--muted);font-size:14.5px}
+.cand .pick{margin-left:auto;font-size:12.5px;font-weight:700;color:var(--muted);white-space:nowrap;
+  border:2px solid var(--line);border-radius:20px;padding:4px 12px}
+.cand.sel .pick{border-color:var(--green);color:var(--green)}
+.cand.sel .pick::before{content:"✓ "}
+#learnfoot{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:22px}
+
+/* ---------- drill ---------- */
+#drillbar{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:2px solid var(--ink);flex-wrap:wrap}
+#drillbar .lvlname{font-weight:900;text-transform:uppercase}
+#phasetag{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  border:2px solid var(--ink);border-radius:20px;padding:4px 12px}
+#phasetag.warm{background:var(--white)}
+#phasetag.scored{background:var(--gold)}
+#gatewrap{display:flex;align-items:center;gap:8px;margin-left:auto}
+#gatelbl{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+#dots{display:flex;gap:5px}
+.dot{width:13px;height:13px;border:2px solid var(--ink);border-radius:50%;background:transparent}
+.dot.hit{background:var(--green);border-color:var(--green)}
+.dot.miss{background:var(--rust);border-color:var(--rust)}
+#streak{font-weight:700;font-size:14px}
+#prompt{margin:26px 0 4px;min-height:80px}
+#prompt .q{font-size:clamp(20px,3.4vw,28px);font-weight:900;text-transform:uppercase;letter-spacing:.01em}
+#prompt .hint{color:var(--muted);font-size:14.5px;margin-top:4px}
+#modetag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  background:var(--ink);color:var(--bg);border-radius:3px;padding:4px 10px;margin-bottom:8px}
+#verdict{min-height:40px;margin:8px 0 2px;font-size:17px}
+#verdict .v{font-weight:900}
+#verdict .v.ok{color:var(--green)} #verdict .v.no{color:var(--rust)}
+#verdict .anchor{color:var(--muted)}
+#answers{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
+#answers .opt{border:2px solid var(--ink);background:var(--white);padding:10px 16px;border-radius:3px;font-weight:700;min-height:48px}
+#answers .opt small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+#answers .opt:hover{background:var(--gold)}
+#answers .opt.right{background:var(--green);border-color:var(--green);color:#fff}
+#answers .opt.right small{color:#e8f2ea}
+#answers .opt.wrong{background:var(--rust);border-color:var(--rust);color:#fff}
+#answers .opt.wrong small{color:#f6e0dc}
+#nextrow{display:flex;gap:12px;align-items:center;margin-top:8px;min-height:52px}
+
+/* keyboard modes: display (name questions) vs input (key questions) */
+#kbwrap{margin-top:8px;overflow-x:auto;padding:6px;border:2px solid transparent;border-radius:4px}
+#kbwrap.input{border-color:var(--ink);background:var(--white)}
+#kbwrap.display #kb{opacity:.5}
+#kbwrap.display #kb .wk,#kbwrap.display #kb .bk{cursor:default}
+#kb{display:block;min-width:700px;width:100%;height:auto;touch-action:manipulation}
+#kb .wk{fill:var(--white);stroke:var(--key-line);stroke-width:1.4;cursor:pointer}
+#kb .bk{fill:var(--ink);stroke:var(--key-line);stroke-width:1.4;cursor:pointer}
+#kb .wk:hover{fill:#efe9da} #kb .bk:hover{fill:#3a352e}
+#kb .wk.root,#kb .bk.root{fill:var(--gold)}
+#kb .wk.good,#kb .bk.good{fill:var(--green)}
+#kb .wk.bad,#kb .bk.bad{fill:var(--rust)}
+#kb .wk.lit,#kb .bk.lit{fill:var(--gold)}
+#kb text{font-family:var(--sans);font-size:11px;fill:var(--muted);pointer-events:none}
+#kb .bracket{fill:none;stroke:var(--rust);stroke-width:2.5}
+#kb .bracklbl{font-size:13px;font-weight:700;fill:var(--rust)}
+.kbnote{color:var(--muted);font-size:13px;margin-top:4px}
+
+/* pass overlay */
+#pass{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(23,21,18,.55);z-index:50}
+#pass.on{display:flex}
+#pass .card{background:var(--bg);border:3px solid var(--ink);border-radius:6px;padding:34px 30px;max-width:440px;margin:16px;text-align:center}
+#pass h2{margin-bottom:6px}
+#pass .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+
+/* ---------- stats ---------- */
+#stats .box{border:2px solid var(--ink);background:var(--white);border-radius:4px;padding:20px;margin:20px 0}
+.baru{display:flex;align-items:center;gap:10px;margin:7px 0}
+.baru .lbl{min-width:110px;font-size:14px;font-weight:700}
+.baru .track{flex:1;height:16px;border:1.5px solid var(--ink);border-radius:2px;background:var(--bg)}
+.baru .fill{height:100%;background:var(--green)}
+.baru .pct{min-width:86px;font-size:13px;color:var(--muted);text-align:right}
+#confu{border-collapse:collapse;font-size:12px;margin-top:8px}
+#confu td,#confu th{border:1px solid var(--line);padding:5px 8px;text-align:center}
+#confu td.hot{background:var(--rust);color:#fff;font-weight:700}
+#confu td.warm{background:#e5b5ad}
+
+@media (max-width:640px){
+  .lvl{gap:10px;padding:13px 14px}
+  #drillbar{gap:8px}
+  #gatewrap{margin-left:0}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= MAP ================= -->
+<section class="screen on" id="map">
+  <div class="wrap">
+    <p class="eyebrow">Ear training · by distance, not notation</p>
+    <h1>Interval<br>Trainer</h1>
+    <p class="sub">Hear the distance between two notes and call it by name — then play it yourself. Each level teaches its new intervals first, warms you up unscored, then runs a scored drill. Progress stays in this browser.</p>
+    <div class="levels" id="levels"></div>
+    <button class="btn ghost" id="statsbtn">Your stats</button>
+    <p class="credits">Piano: <a href="https://archive.org/details/SalamanderGrandPianoV3" target="_blank" rel="noopener">Salamander Grand Piano</a> by Alexander Holm, CC BY 3.0 · Synth fallback if audio can't load · No account, no server — everything runs and stays in this page.</p>
+  </div>
+</section>
+
+<!-- ================= LEARN ================= -->
+<section class="screen" id="learn">
+  <div class="wrap">
+    <button class="btn ghost sm" id="learnexit">← Map</button>
+    <p class="eyebrow" id="learneyebrow" style="margin-top:18px"></p>
+    <h2 id="learntitle"></h2>
+    <p class="sub" id="learnsub"></p>
+    <div id="morphstage" class="stage" style="display:none">
+      <svg id="morph" viewBox="0 0 760 190" aria-label="A row of 25 evenly spaced steps that becomes two octaves of piano keys"></svg>
+      <div style="margin-top:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <button class="btn" id="morphbtn">Draw them as piano keys</button>
+        <span class="small" id="morphnote">25 steps, low on the left, high on the right.</span>
+      </div>
+    </div>
+    <h3 id="newlbl"></h3>
+    <div id="anchors"></div>
+    <p class="small">Each interval lists a song or two that starts with it. Play them; the one you pick is the label you'll see in drills. Change it any time you're back here.</p>
+    <div id="learnfoot">
+      <span class="gatebox" id="gatenote"></span>
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:16px">
+      <button class="btn" id="towarm">Warm up — not scored →</button>
+      <button class="btn ghost" id="todrill">Skip to the scored drill</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DRILL ================= -->
+<section class="screen" id="drill">
+  <div class="wrap">
+    <div id="drillbar">
+      <button class="btn ghost sm" id="exit">← Map</button>
+      <span class="lvlname" id="lvlname"></span>
+      <span id="phasetag"></span>
+      <button class="btn ghost sm" id="soundtog">Sound: piano</button>
+      <span id="streak"></span>
+      <div id="gatewrap"><span id="gatelbl"></span><div id="dots"></div></div>
+    </div>
+    <div id="prompt">
+      <span id="modetag"></span>
+      <div class="q" id="qtext"></div><div class="hint" id="qhint"></div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <button class="btn play" id="replay">▶ Play it again</button>
+      <span class="small" id="attempt"></span>
+    </div>
+    <div id="answers"></div>
+    <div id="kbwrap"><svg id="kb" aria-label="Two-octave piano keyboard, C3 to C5"></svg></div>
+    <p class="kbnote" id="kbnote"></p>
+    <div id="verdict"></div>
+    <div id="nextrow">
+      <button class="btn" id="next" style="display:none">Next →</button>
+      <button class="btn" id="warmdone" style="display:none">Start the scored drill →</button>
+      <span class="small" id="mastery"></span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PASS OVERLAY ================= -->
+<div id="pass">
+  <div class="card">
+    <p class="eyebrow">Gate cleared</p>
+    <h2 id="passtitle"></h2>
+    <p class="sub" id="passsub" style="margin:0 auto"></p>
+    <div class="row">
+      <button class="btn" id="passnext"></button>
+      <button class="btn ghost" id="passstay">Keep drilling</button>
+      <button class="btn ghost" id="passmap">Map</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= STATS ================= -->
+<section class="screen" id="stats">
+  <div class="wrap">
+    <button class="btn ghost sm" id="statsback" style="margin-top:6px">← Map</button>
+    <h2 style="margin-top:20px">Your stats</h2>
+    <div class="box">
+      <div id="statbars"></div>
+      <p class="small" id="stattotals"></p>
+    </div>
+    <div class="box">
+      <p style="font-weight:900;text-transform:uppercase;margin:0 0 6px">What you mix up</p>
+      <p class="small">Rows: what played. Columns: what you answered.</p>
+      <div style="overflow-x:auto"><table id="confu"></table></div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn ghost" id="statdl">Download your stats</button>
+      <button class="btn ghost" id="statreset">Reset all progress</button>
+    </div>
+  </div>
+</section>
+
+<script>
+"use strict";
+/* ============================================================
+   Interval Trainer v1.1 — single file, no requests.
+   Level flow: learn (anchors, pick your song) -> warmup
+   (new intervals only, not scored) -> scored drill (gate).
+   Piano: Salamander Grand (Alexander Holm, CC BY 3.0).
+   ============================================================ */
+
+var SAMPLES = /*__SAMPLES__*/{};
+
+/* ---------- intervals + anchor songs ---------- */
+var IV = {
+  1:{n:"Minor 2nd"}, 2:{n:"Major 2nd"}, 3:{n:"Minor 3rd"}, 4:{n:"Major 3rd"},
+  5:{n:"Perfect 4th"}, 6:{n:"Tritone"}, 7:{n:"Perfect 5th"}, 8:{n:"Minor 6th"},
+  9:{n:"Major 6th"}, 10:{n:"Minor 7th"}, 11:{n:"Major 7th"}, 12:{n:"Octave"}
+};
+/* Each candidate: song, lyric cue, snippet as [semitone, seconds] from the root. */
+var ANCHORS = {
+  12:[{s:"Somewhere Over the Rainbow", l:"“Some-where …” — the first leap", snip:[[0,.5],[12,.9]]},
+      {s:"When You Wish Upon a Star",  l:"“When you …” — the first leap",   snip:[[0,.4],[12,.5],[11,.7]]}],
+  7: [{s:"Twinkle, Twinkle",           l:"first “twin-kle” up to the second", snip:[[0,.32],[0,.32],[7,.32],[7,.6]]},
+      {s:"Star Wars (main theme)",     l:"the opening two notes",             snip:[[0,.35],[7,.8]]}],
+  4: [{s:"Oh, When the Saints",        l:"“Oh” up to “when”",                 snip:[[0,.4],[4,.4],[5,.4],[7,.8]]},
+      {s:"Kumbaya",                    l:"“Kum” up to “ba”",                  snip:[[0,.45],[4,.35],[7,.7]]}],
+  5: [{s:"Here Comes the Bride",       l:"“Here” up to “comes”",              snip:[[0,.4],[5,.5],[5,.3],[5,.5]]},
+      {s:"Amazing Grace",              l:"“A” up to “ma-zing”",               snip:[[0,.4],[5,.5],[9,.3],[5,.6]]}],
+  3: [{s:"Greensleeves",               l:"“A” up to “las” — the first two notes", snip:[[0,.35],[3,.5],[5,.35],[7,.6]]},
+      {s:"Smoke on the Water",         l:"the riff's first two notes",        snip:[[0,.4],[3,.4],[5,.7]]}],
+  8: [{s:"The Entertainer",            l:"the big upward leap in the main tune", snip:[[0,.45],[8,.8]]},
+      {s:"Because (The Beatles)",      l:"the opening vocal leap",            snip:[[0,.45],[8,.8]]}],
+  9: [{s:"My Bonnie",                  l:"“My” up to “Bon-nie”",              snip:[[0,.4],[9,.5],[7,.35],[5,.6]]},
+      {s:"NBC chimes",                 l:"the first two of the three notes",  snip:[[0,.45],[9,.5],[5,.8]]}],
+  2: [{s:"Happy Birthday",             l:"“hap-py” up to “birth”",            snip:[[0,.25],[0,.25],[2,.4],[0,.4],[5,.4],[4,.7]]},
+      {s:"Frère Jacques",              l:"the first two notes",               snip:[[0,.35],[2,.35],[4,.35],[0,.6]]}],
+  1: [{s:"Jaws",                       l:"the two alternating notes",         snip:[[0,.35],[1,.35],[0,.3],[1,.5]]},
+      {s:"Pink Panther",               l:"the sneaking two-note figure",      snip:[[0,.3],[1,.7]]}],
+  6: [{s:"The Simpsons",               l:"“The Simp-” — the first leap",      snip:[[0,.45],[6,.7]]},
+      {s:"Maria (West Side Story)",    l:"“Ma-ri” — the first leap",          snip:[[0,.4],[6,.5],[7,.8]]}],
+  10:[{s:"Somewhere (West Side Story)",l:"“There's a …” — the first leap",    snip:[[0,.5],[10,.5],[9,.8]]},
+      {s:"Star Trek (original theme)", l:"the first two notes",               snip:[[0,.4],[10,.8]]}],
+  11:[{s:"Take On Me",                 l:"the chorus's highest leap",         snip:[[0,.45],[11,.8]]},
+      {s:"One step short of the octave", l:"not a song — hear the octave, then a half-step down", snip:[[0,.4],[12,.5],[11,.8]]}]
+};
+function anchorFor(iv){
+  var list=ANCHORS[iv]||[], i=(S.anchor[iv]!=null?S.anchor[iv]:0);
+  return list[i]?list[i].s:"";
+}
+var NAMES=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+function noteName(m){return NAMES[m%12]+(Math.floor(m/12)-1);}
+
+/* ---------- levels ---------- */
+var LOW=48, HIGH=72; // C3..C5
+var LEVELS=[
+  {id:0, name:"Start here",          what:"Major 3rd · perfect 5th · octave, from C", nu:[4,7,12],  roots:"c",     types:[1],     need:6, win:8,  warm:0},
+  {id:1, name:"Fourths and fifths",  what:"Adds the perfect 4th — telling it from the 5th", nu:[5], roots:"c",     types:[1,2],   need:8, win:10, warm:5},
+  {id:2, name:"Thirds and sixths",   what:"Adds the minor 3rd and both 6ths",         nu:[3,8,9],   roots:"white", types:[1,2,3], need:8, win:10, warm:7},
+  {id:3, name:"Seconds and tritone", what:"Adds both 2nds and the tritone",           nu:[1,2,6],   roots:"white", types:[1,2,3], need:8, win:10, warm:7},
+  {id:4, name:"Sevenths — all twelve",what:"Adds both 7ths; the drill mixes everything", nu:[10,11], roots:"any",   types:[1,2,3], need:8, win:10, warm:6},
+  {id:5, name:"Descending",          what:"All twelve, downward",                      nu:[],      roots:"any",   types:[1,2,3], need:8, win:10, warm:6, dirn:-1},
+  {id:6, name:"Harmonic",            what:"Both notes at once — name it, or click the upper note", nu:[], roots:"any", types:[1,2], need:8, win:10, warm:6, harm:true},
+  {id:7, name:"Mixed review",        what:"Any root, either direction, sometimes together, piano or synth", nu:[], roots:"any", types:[1,2,3], need:8, win:10, warm:5, mixed:true}
+];
+var ALLIV=[1,2,3,4,5,6,7,8,9,10,11,12];
+function art(n){return (/^[AEIOUaeiou]/.test(n)?"an ":"a ")+n;}
+function ivPool(L){ // new + everything before
+  var pool=[], seen={};
+  for(var i=0;i<=L.id&&i<LEVELS.length;i++){
+    (LEVELS[i].nu||[]).forEach(function(iv){if(!seen[iv]){seen[iv]=1;pool.push(iv);}});
+  }
+  return pool;
+}
+
+/* ---------- state ---------- */
+var DEFAULTS={unlocked:1, done:{}, seen:{}, right:{}, confu:{}, anchor:{}, best:0, total:0, sound:"piano"};
+var S=load();
+function load(){
+  try{var s=JSON.parse(localStorage.getItem("ivtrainer.v1"));
+    if(s&&typeof s==="object"){
+      for(var k in DEFAULTS)if(!(k in s))s[k]=DEFAULTS[k];
+      // Unlocks derive from passes, so levels added after a pass open up retroactively.
+      for(var id in s.done)if(s.done[id])s.unlocked=Math.max(s.unlocked,parseInt(id,10)+2);
+      return s;
+    }
+  }catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULTS));
+}
+function save(){try{localStorage.setItem("ivtrainer.v1",JSON.stringify(S));}catch(e){}}
+
+/* ---------- audio ---------- */
+var AC=null, BUF={}, pianoReady=false, decoding=false;
+function ctx(){
+  if(!AC){var C=window.AudioContext||window.webkitAudioContext; if(C)AC=new C();}
+  if(AC&&AC.state==="suspended")AC.resume();
+  return AC;
+}
+function b64buf(uri){
+  var b=atob(uri.split(",")[1]), a=new Uint8Array(b.length);
+  for(var i=0;i<b.length;i++)a[i]=b.charCodeAt(i);
+  return a.buffer;
+}
+var SAMPLE_MIDI={"C3":48,"Ds3":51,"Fs3":54,"A3":57,"C4":60,"Ds4":63,"Fs4":66,"A4":69,"C5":72};
+function decodeAll(){
+  var c=ctx(); if(!c||decoding||pianoReady)return; decoding=true;
+  var keys=Object.keys(SAMPLES), left=keys.length;
+  if(!left){decoding=false;return;}
+  keys.forEach(function(k){
+    c.decodeAudioData(b64buf(SAMPLES[k]).slice(0), function(buf){
+      BUF[k]=buf; if(--left===0){pianoReady=true;decoding=false;}
+    }, function(){ if(--left===0){decoding=false;} });
+  });
+}
+function nearestSample(midi){
+  var best=null,d=99;
+  for(var k in SAMPLE_MIDI){var dd=Math.abs(SAMPLE_MIDI[k]-midi);
+    if(BUF[k]&&dd<d){d=dd;best=k;}}
+  return best;
+}
+function playNote(midi, when, dur, tim){
+  var c=ctx(); if(!c)return;
+  var t=c.currentTime+(when||0); dur=dur||0.9;
+  var want=tim||S.sound;
+  if(want==="piano"&&pianoReady){
+    var k=nearestSample(midi); if(k){
+      var src=c.createBufferSource(), g=c.createGain();
+      src.buffer=BUF[k]; src.playbackRate.value=Math.pow(2,(midi-SAMPLE_MIDI[k])/12);
+      g.gain.setValueAtTime(1,t); g.gain.setTargetAtTime(0,t+dur,0.08);
+      src.connect(g); g.connect(c.destination);
+      src.start(t); src.stop(t+dur+0.5);
+      return;
+    }
+  }
+  var o=c.createOscillator(), g2=c.createGain();
+  o.type="triangle"; o.frequency.value=440*Math.pow(2,(midi-69)/12);
+  g2.gain.setValueAtTime(0.0001,t);
+  g2.gain.exponentialRampToValueAtTime(0.5,t+0.015);
+  g2.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  o.connect(g2); g2.connect(c.destination);
+  o.start(t); o.stop(t+dur+0.05);
+}
+function playPair(root, semis, litToo){
+  playNote(root,0,0.8); playNote(root+semis,0.55,0.9);
+  if(litToo){flashKey(root,0,650); flashKey(root+semis,550,900);}
+}
+/* Play two absolute notes in the current question's mode (direction is implied
+   by the notes themselves; harm plays them together). */
+function playAB(a,b,litToo){
+  if(cur.harm){
+    playNote(a,0,1.4,cur.timbre); playNote(b,0.02,1.4,cur.timbre);
+    if(litToo){flashKey(a,0,1000); flashKey(b,0,1000);}
+  }else{
+    playNote(a,0,0.8,cur.timbre); playNote(b,0.55,0.9,cur.timbre);
+    if(litToo){flashKey(a,0,650); flashKey(b,550,900);}
+  }
+}
+function target(){return cur.root+cur.dir*cur.iv;}
+function playQ(litToo){playAB(cur.root,target(),litToo);}
+function playSnippet(root, steps){
+  var t=0;
+  steps.forEach(function(s){ playNote(root+s[0],t,s[1]+0.25); t+=s[1]; });
+}
+
+/* ---------- keyboard ---------- */
+var KB={x:{}};
+var WW=48, WH=150, BW=29, BH=94, PAD=8, HEAD=64;
+function buildKB(){
+  var svg=document.getElementById("kb");
+  var whites=[],wi=0;
+  for(var m=LOW;m<=HIGH;m++){
+    var pc=m%12, isB=(pc===1||pc===3||pc===6||pc===8||pc===10);
+    if(!isB){whites.push({m:m,i:wi});wi++;}
+  }
+  var W=wi*WW+PAD*2;
+  svg.setAttribute("viewBox","0 0 "+W+" "+(WH+HEAD+PAD+22));
+  var el='';
+  var wIndex={};
+  whites.forEach(function(w){
+    var x=PAD+w.i*WW; wIndex[w.m]=w.i;
+    KB.x[w.m]=x+WW/2;
+    el+='<rect class="wk" data-m="'+w.m+'" x="'+x+'" y="'+HEAD+'" width="'+WW+'" height="'+WH+'" rx="3"></rect>';
+    if(w.m%12===0)el+='<text x="'+(x+WW/2)+'" y="'+(HEAD+WH+16)+'" text-anchor="middle">'+noteName(w.m)+'</text>';
+  });
+  for(var m2=LOW;m2<=HIGH;m2++){
+    var pc2=m2%12;
+    if(pc2===1||pc2===3||pc2===6||pc2===8||pc2===10){
+      var x2=PAD+(wIndex[m2-1]+1)*WW-BW/2;
+      x2+={1:-4,3:4,6:-5,8:0,10:5}[pc2];
+      KB.x[m2]=x2+BW/2;
+      el+='<rect class="bk" data-m="'+m2+'" x="'+x2+'" y="'+HEAD+'" width="'+BW+'" height="'+BH+'" rx="2.5"></rect>';
+    }
+  }
+  el+='<path id="brack" class="bracket" d="" style="display:none"></path>'+
+      '<text id="bracklbl" class="bracklbl" text-anchor="middle" style="display:none"></text>';
+  svg.innerHTML=el;
+  svg.addEventListener("click",function(ev){
+    var r=ev.target.closest("[data-m]"); if(!r)return;
+    keyClicked(parseInt(r.getAttribute("data-m"),10));
+  });
+}
+function keyEl(m){return document.querySelector('#kb [data-m="'+m+'"]');}
+function clearKeys(){
+  document.querySelectorAll("#kb .wk,#kb .bk").forEach(function(k){k.classList.remove("root","good","bad","lit");});
+  bracket(null);
+}
+function flashKey(m,delay,dur){
+  setTimeout(function(){var k=keyEl(m); if(!k)return; k.classList.add("lit");
+    setTimeout(function(){k.classList.remove("lit");},dur||500);},delay||0);
+}
+function markKey(m,cls){var k=keyEl(m); if(k){k.classList.remove("lit");k.classList.add(cls);}}
+function bracket(root,target,label){
+  var p=document.getElementById("brack"), t=document.getElementById("bracklbl");
+  if(root==null){p.style.display="none";t.style.display="none";return;}
+  var x1=KB.x[root], x2=KB.x[target], mid=(x1+x2)/2;
+  var y=HEAD-8, lift=Math.min(36,12+Math.abs(x2-x1)/26);
+  p.setAttribute("d","M"+x1+" "+y+" Q"+mid+" "+(y-lift*2)+" "+x2+" "+y);
+  p.style.display="block";
+  // label sits clear above the curve's apex (apex = y - lift)
+  t.setAttribute("x",mid); t.setAttribute("y",Math.max(12,y-lift-8));
+  t.textContent=label; t.style.display="block";
+}
+
+/* ---------- adaptive pick ---------- */
+function acc(iv){var s=S.seen[iv]||0, r=S.right[iv]||0; return (r+1)/(s+2);}
+function weightedPick(list){
+  var ws=list.map(function(iv){return 1.15-acc(iv);}), tot=0;
+  ws.forEach(function(w){tot+=w;});
+  var r=Math.random()*tot;
+  for(var i=0;i<list.length;i++){r-=ws[i]; if(r<=0)return list[i];}
+  return list[list.length-1];
+}
+function pickIv(L,phase){
+  if(phase==="warm"){var wp=L.nu.length?L.nu:ivPool(L);return wp[Math.floor(Math.random()*wp.length)];}
+  var pool=ivPool(L);
+  if(L.nu.length&&Math.random()<0.55)return weightedPick(L.nu); // new gets the majority
+  if(Math.random()<0.3)return pool[Math.floor(Math.random()*pool.length)];
+  return weightedPick(pool);
+}
+function pickRoot(mode,iv,dir){
+  if(mode==="c")return 60;
+  var lo=(dir<0)?LOW+iv:LOW, hi=(dir<0)?HIGH:HIGH-iv, cands=[];
+  for(var m=lo;m<=hi;m++){
+    var pc=m%12, isB=(pc===1||pc===3||pc===6||pc===8||pc===10);
+    if(mode==="white"&&isB)continue;
+    cands.push(m);
+  }
+  return cands[Math.floor(Math.random()*cands.length)];
+}
+
+/* ---------- screens ---------- */
+function show(id){
+  document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("on");});
+  document.getElementById(id).classList.add("on");
+  window.scrollTo(0,0);
+}
+
+/* ---------- learn ---------- */
+var learnLvl=null;
+function openLearn(L){
+  learnLvl=L;
+  document.getElementById("learneyebrow").textContent="Level "+L.id+" · learn first, then drill";
+  document.getElementById("learntitle").textContent=L.name;
+  var sub;
+  if(L.id===0)sub="Neighboring keys are one half-step apart. An interval is how many half-steps apart two notes are.";
+  else if(L.dirn===-1)sub="No new intervals — everything you know, played downward. The distances are identical; the direction is new.";
+  else if(L.harm)sub="No new intervals — both notes sound at once, and you pull the interval out of the blend.";
+  else if(L.mixed)sub="Everything you've passed: any root, either direction, sometimes together, and the instrument changes between questions.";
+  else sub="New in this level: "+L.nu.map(function(iv){return IV[iv].n;}).join(" · ")+". Everything from earlier levels stays in the drill.";
+  document.getElementById("learnsub").textContent=sub;
+  document.getElementById("morphstage").style.display=L.id===0?"block":"none";
+  document.getElementById("newlbl").textContent=
+    L.id===0?"Three intervals you already know":
+    (L.dirn===-1?"Hear each one downward":(L.harm?"Hear each one as a chord":(L.mixed?"":"New in this level")));
+  document.getElementById("gatenote").textContent="Pass gate: "+L.need+" right out of your last "+L.win+" scored answers.";
+  document.getElementById("towarm").style.display=L.warm?"":"none";
+  buildAnchorCards(L);
+  show("learn"); decodeAll();
+}
+function buildAnchorCards(L){
+  var host=document.getElementById("anchors"); host.innerHTML="";
+  if(L.mixed){
+    host.innerHTML='<p class="small">Nothing new to learn — this level shuffles everything you\'ve already passed.</p>';
+    return;
+  }
+  if(L.dirn===-1||L.harm){
+    ALLIV.forEach(function(iv){
+      var d=document.createElement("div"); d.className="anch";
+      d.innerHTML='<div class="t">'+IV[iv].n+' — '+stepsWord(iv)+
+        (anchorFor(iv)?' <span style="font-weight:400;color:var(--muted);text-transform:none">· “'+anchorFor(iv)+'”</span>':'')+'</div>'+
+        '<div class="barebtn"><button class="btn play sm">▶ '+(L.harm?"Together":"Downward")+'</button></div>';
+      d.querySelector("button").addEventListener("click",function(){
+        decodeAll();
+        if(L.harm){playNote(60,0,1.4);playNote(60+iv,0.02,1.4);}
+        else{playNote(60+iv,0,0.8);playNote(60,0.55,0.9);}
+      });
+      host.appendChild(d);
+    });
+    return;
+  }
+  L.nu.forEach(function(iv){
+    if(S.anchor[iv]==null){S.anchor[iv]=0;}
+    var d=document.createElement("div"); d.className="anch";
+    d.innerHTML='<div class="t">'+IV[iv].n+' — '+stepsWord(iv)+'</div>'+
+      '<div class="barebtn"><button class="btn play sm">▶ The interval, bare</button></div>';
+    d.querySelector(".barebtn button").addEventListener("click",function(){decodeAll();playPair(60,iv);});
+    (ANCHORS[iv]||[]).forEach(function(c,i){
+      var row=document.createElement("div");
+      row.className="cand"+(S.anchor[iv]===i?" sel":"");
+      row.innerHTML='<button class="btn play sm">▶</button><span><b>'+c.s+'</b><br><span class="lyric">'+c.l+'</span></span>'+
+        '<span class="pick">'+(S.anchor[iv]===i?"your label":"use this")+'</span>';
+      row.querySelector("button").addEventListener("click",function(ev){
+        ev.stopPropagation(); decodeAll(); playSnippet(60,c.snip);
+      });
+      row.addEventListener("click",function(){
+        S.anchor[iv]=i; save();
+        d.querySelectorAll(".cand").forEach(function(x,xi){
+          x.classList.toggle("sel",xi===i);
+          x.querySelector(".pick").textContent=xi===i?"your label":"use this";
+        });
+      });
+      d.appendChild(row);
+    });
+    host.appendChild(d);
+  });
+  save();
+}
+
+/* ---------- morph (level 0) ---------- */
+function buildMorph(){
+  var svg=document.getElementById("morph");
+  var n=25, W=760, rw=14, gap=(W-40)/n;
+  var el="";
+  for(var i=0;i<n;i++){
+    var m=LOW+i, pc=m%12, isB=(pc===1||pc===3||pc===6||pc===8||pc===10);
+    var x=20+i*gap+(gap-rw)/2;
+    el+='<rect class="mstep" data-i="'+i+'" data-b="'+(isB?1:0)+'" x="'+x+'" y="60" width="'+rw+'" height="70" rx="3" '+
+        'style="fill:'+(isB?"#171512":"#fdfcf9")+';stroke:#2a2722;stroke-width:1.3;transition:all .9s ease"></rect>';
+  }
+  svg.innerHTML=el;
+}
+function morph(){
+  var W=760, whites=0;
+  for(var i=0;i<25;i++){var pc=(LOW+i)%12; if(!(pc===1||pc===3||pc===6||pc===8||pc===10))whites++;}
+  var ww=(W-40)/whites, wi=0, wIndex={};
+  for(var m=LOW;m<=HIGH;m++){var pc2=m%12;
+    if(!(pc2===1||pc2===3||pc2===6||pc2===8||pc2===10)){wIndex[m]=wi;wi++;}}
+  document.querySelectorAll("#morph .mstep").forEach(function(r){
+    var i=parseInt(r.getAttribute("data-i"),10), m=LOW+i, isB=r.getAttribute("data-b")==="1";
+    if(!isB){
+      r.style.width=ww+"px"; r.setAttribute("x",20+wIndex[m]*ww); r.setAttribute("y",30); r.style.height="150px";
+    }else{
+      r.style.width=(ww*0.6)+"px"; r.setAttribute("x",20+(wIndex[m-1]+1)*ww-ww*0.3); r.setAttribute("y",30); r.style.height="92px";
+    }
+  });
+  document.getElementById("morphnote").textContent="The same 25 steps, drawn as keys — each key is one half-step from the next.";
+  document.getElementById("morphbtn").disabled=true;
+}
+
+/* ---------- drill ---------- */
+var cur={lvl:null,phase:"drill",iv:0,root:0,type:1,answered:false,window:[],warmLeft:0,passShown:false};
+function startPhase(L,phase){
+  cur.lvl=L; cur.phase=phase; cur.window=[]; cur.passShown=!!S.done[L.id];
+  cur.warmLeft=phase==="warm"?L.warm:0;
+  document.getElementById("lvlname").textContent="Level "+L.id+" · "+L.name;
+  var tag=document.getElementById("phasetag");
+  tag.textContent=phase==="warm"?"Warmup · not scored":"Scored";
+  tag.className=phase==="warm"?"warm":"scored";
+  show("drill"); decodeAll();
+  nextQ();
+}
+function gateUI(){
+  var L=cur.lvl, lbl=document.getElementById("gatelbl"), d=document.getElementById("dots");
+  if(cur.phase==="warm"){
+    lbl.textContent=cur.warmLeft+" warmup left";
+    d.innerHTML="";
+    document.getElementById("mastery").textContent="Warmup — new intervals only, nothing recorded.";
+    return;
+  }
+  lbl.textContent="gate "+L.need+"/"+L.win;
+  d.innerHTML="";
+  for(var i=0;i<L.win;i++){
+    var v=cur.window[cur.window.length-L.win+i];
+    d.innerHTML+='<span class="dot'+(v===true?" hit":(v===false?" miss":""))+'"></span>';
+  }
+  var got=cur.window.slice(-L.win).filter(function(x){return x;}).length;
+  document.getElementById("mastery").textContent=
+    S.done[L.id] ? "Level passed — keep drilling or head back to the map." :
+    got+" of last "+L.win+" right · "+L.need+" passes the level";
+}
+function nextQ(){
+  var L=cur.lvl;
+  cur.dir=L.dirn||1; if(L.mixed)cur.dir=Math.random()<0.5?1:-1;
+  cur.harm=!!L.harm; if(L.mixed)cur.harm=Math.random()<0.25;
+  cur.timbre=L.mixed?(Math.random()<0.5?"piano":"synth"):null;
+  cur.iv=pickIv(L,cur.phase);
+  cur.root=pickRoot(cur.phase==="warm"?(L.roots==="c"?"c":"white"):L.roots,cur.iv,cur.dir);
+  var types=cur.phase==="warm"?[1,2].filter(function(t){return L.types.indexOf(t)>=0;}):L.types;
+  cur.type=types[Math.floor(Math.random()*types.length)];
+  if(cur.type===3&&Math.random()<0.4)cur.type=Math.random()<0.5?1:2;
+  if(cur.harm&&cur.type===3)cur.type=Math.random()<0.5?1:2;
+  cur.answered=false;
+  clearKeys();
+  var q=document.getElementById("qtext"), h=document.getElementById("qhint"),
+      kw=document.getElementById("kbwrap"), note=document.getElementById("kbnote"),
+      ans=document.getElementById("answers"), mode=document.getElementById("modetag");
+  document.getElementById("verdict").innerHTML="";
+  document.getElementById("next").style.display="none";
+  var wd=document.getElementById("warmdone");
+  if(cur.phase==="warm"&&cur.warmLeft>0){wd.style.display="";wd.className="btn ghost";wd.textContent="Skip ahead — scored drill →";}
+  else if(cur.phase!=="warm")wd.style.display="none";
+  document.getElementById("attempt").textContent="";
+  ans.innerHTML="";
+  gateUI();
+  var timbreNote=cur.timbre?(" · "+cur.timbre):"";
+  if(cur.type===1){
+    mode.textContent="Answer with the buttons";
+    q.textContent="What's the interval?";
+    h.textContent=(cur.harm?"Two notes at once — one blend.":(cur.dir<0?"Two notes, high then low.":"Two notes, low then high."))+" The keyboard lights up after you answer."+timbreNote;
+    kw.className="display";
+    note.textContent="";
+    var pool=cur.phase==="warm"&&L.nu.length?L.nu:ivPool(L);
+    pool.forEach(function(iv){
+      var b=document.createElement("button");
+      b.className="opt"; b.setAttribute("data-iv",iv);
+      b.innerHTML=IV[iv].n+"<small>"+(anchorFor(iv)||stepsWord(iv))+"</small>";
+      b.addEventListener("click",function(){answerName(iv);});
+      ans.appendChild(b);
+    });
+    document.getElementById("replay").style.display="";
+    playQ();
+  }else if(cur.type===2){
+    mode.textContent="Answer on the keys";
+    q.textContent=cur.harm?"Click the upper note":"Where does it land?";
+    h.textContent=(cur.harm
+      ? "Both notes sound together. The gold key is the lower one — click the upper note you hear."
+      : (cur.dir<0
+        ? "The first note is the gold key. The second lands below it — click that key. Your first click is your answer."
+        : (L.mixed
+          ? "The first note is the gold key. Listen for which way it goes, then click where the second note lands. First click counts."
+          : "The first note is the gold key. Click the key the second note lands on — your first click is your answer.")))+timbreNote;
+    kw.className="input";
+    markKey(cur.root,"root");
+    note.textContent="Root: "+noteName(cur.root);
+    document.getElementById("replay").style.display="";
+    playQ();
+  }else{
+    mode.textContent="Answer on the keys";
+    q.textContent="Build "+art(IV[cur.iv].n.toLowerCase())+(cur.dir<0?" down from ":" up from ")+noteName(cur.root);
+    h.textContent="Nothing plays first — you produce both notes. Find and play "+noteName(cur.root)+", then click the key the interval lands on"+(cur.dir<0?", below it":"")+". That second click is your answer.";
+    kw.className="input";
+    cur.rooted=false;
+    note.textContent="Start on "+noteName(cur.root)+".";
+    document.getElementById("replay").style.display="none";
+  }
+}
+function record(ok,answeredIv){
+  if(cur.phase==="warm")return;
+  S.total++; S.seen[cur.iv]=(S.seen[cur.iv]||0)+1;
+  if(ok){S.right[cur.iv]=(S.right[cur.iv]||0)+1;}
+  else if(answeredIv>=1&&answeredIv<=12){var k=cur.iv+">"+answeredIv; S.confu[k]=(S.confu[k]||0)+1;}
+  cur.window.push(ok);
+  var run=0; for(var i=cur.window.length-1;i>=0&&cur.window[i];i--)run++;
+  if(run>S.best)S.best=run;
+  document.getElementById("streak").textContent=run>1?("streak "+run):"";
+  var L=cur.lvl, got=cur.window.slice(-L.win).filter(function(x){return x;}).length;
+  if(!S.done[L.id]&&cur.window.length>=L.win&&got>=L.need){
+    S.done[L.id]=true;
+    if(L.id+1<LEVELS.length&&!LEVELS[L.id+1].v2)S.unlocked=Math.max(S.unlocked,L.id+2);
+    save(); showPass(L);
+  }
+  save();
+}
+function showPass(L){
+  if(cur.passShown)return; cur.passShown=true;
+  document.getElementById("passtitle").textContent="Level "+L.id+" passed";
+  var nxt=LEVELS[L.id+1], has=nxt&&!nxt.v2;
+  document.getElementById("passsub").textContent=has?("Next: Level "+nxt.id+" · "+nxt.name+" — "+nxt.what):"That's everything built so far.";
+  document.getElementById("passnext").style.display=has?"":"none";
+  if(has)document.getElementById("passnext").textContent="Level "+nxt.id+" →";
+  document.getElementById("pass").classList.add("on");
+}
+function stepsWord(n){return n+(n===1?" half-step":" half-steps");}
+function verdictHTML(ok,text,anchor){
+  return '<span class="v '+(ok?"ok":"no")+'">'+(ok?"✓":"✗")+"</span> "+text+
+    (anchor?' <span class="anchor">· “'+anchor+'”</span>':"");
+}
+function answerName(iv){
+  if(cur.answered)return; cur.answered=true;
+  var ok=iv===cur.iv;
+  record(ok,iv);
+  document.querySelectorAll("#answers .opt").forEach(function(b){
+    var v=parseInt(b.getAttribute("data-iv"),10);
+    if(v===cur.iv)b.classList.add("right");
+    else if(v===iv)b.classList.add("wrong");
+  });
+  document.getElementById("kbwrap").className="";
+  markKey(cur.root,"root"); markKey(target(),"good");
+  bracket(cur.root,target(),stepsWord(cur.iv));
+  var vd=document.getElementById("verdict");
+  if(ok){vd.innerHTML=verdictHTML(true,IV[cur.iv].n+" — "+stepsWord(cur.iv)+".",anchorFor(cur.iv));}
+  else{
+    vd.innerHTML=verdictHTML(false,"That was the "+IV[cur.iv].n.toLowerCase()+" — "+stepsWord(cur.iv)+". You'll hear your pick, then it.",anchorFor(cur.iv));
+    playAB(cur.root,cur.root+cur.dir*iv); setTimeout(function(){playQ(true);},1600);
+  }
+  after();
+}
+function keyClicked(m){
+  if(cur.type===1&&!cur.answered)return;
+  if(cur.answered){playNote(m,0,0.8);flashKey(m,0,400);return;}
+  // Build questions: the first job is playing the named root yourself.
+  if(cur.type===3&&!cur.rooted){
+    playNote(m,0,0.8);
+    if(m===cur.root){
+      cur.rooted=true; markKey(m,"root");
+      document.getElementById("kbnote").textContent="Now the landing key — that click is your answer.";
+    }else{
+      flashKey(m,0,400);
+      document.getElementById("kbnote").textContent="That's "+noteName(m)+" — start on "+noteName(cur.root)+".";
+    }
+    return;
+  }
+  if(m===cur.root){playNote(m,0,0.8,cur.timbre);flashKey(m,0,400);return;}
+  playNote(m,0,0.9,cur.timbre);
+  cur.answered=true;
+  var t2=target(), ok=m===t2;
+  var gotAbs=Math.abs(m-cur.root), gotDir=(m>cur.root?1:-1);
+  record(ok,gotAbs);
+  markKey(cur.root,"root");
+  var vd=document.getElementById("verdict");
+  if(ok){
+    markKey(m,"good");
+    bracket(cur.root,m,stepsWord(cur.iv));
+    vd.innerHTML=verdictHTML(true,IV[cur.iv].n+" — "+stepsWord(cur.iv)+".",anchorFor(cur.iv));
+    // one clean rendition after the click has rung out
+    if(cur.type===3)setTimeout(function(){playQ();},900);
+  }else{
+    markKey(m,"bad"); markKey(t2,"good");
+    bracket(cur.root,t2,stepsWord(cur.iv));
+    var msg;
+    if(gotDir!==cur.dir){
+      msg="Wrong direction — it goes "+(cur.dir<0?"down":"up")+" from "+noteName(cur.root)+".";
+    }else{
+      var gotName=(gotAbs>=1&&gotAbs<=12)?art(IV[gotAbs].n.toLowerCase()):stepsWord(gotAbs);
+      var diff=cur.iv-gotAbs, dirw=diff>0?"short":"past";
+      msg="You played "+gotName+" — "+stepsWord(Math.abs(diff))+" "+dirw+".";
+    }
+    vd.innerHTML=verdictHTML(false,msg+" Yours, then "+art(IV[cur.iv].n.toLowerCase())+".",anchorFor(cur.iv));
+    // replays start after the clicked note rings out — never on top of it
+    setTimeout(function(){playAB(cur.root,m);},1000);
+    setTimeout(function(){playQ(true);},2600);
+  }
+  after();
+}
+function after(){
+  if(cur.phase==="warm"){
+    cur.warmLeft--;
+    var wd=document.getElementById("warmdone");
+    wd.style.display="";
+    if(cur.warmLeft<=0){
+      wd.className="btn"; wd.textContent="Start the scored drill →";
+      document.getElementById("attempt").textContent="Warmup done.";
+    }else{
+      document.getElementById("next").style.display="";
+      document.getElementById("attempt").textContent="Keys stay live — try things, then move on.";
+    }
+  }else{
+    document.getElementById("next").style.display="";
+    document.getElementById("attempt").textContent="Keys stay live — try things, then move on.";
+  }
+  gateUI();
+  document.getElementById("kbwrap").className="";
+}
+
+/* ---------- map + stats ---------- */
+function buildMap(){
+  var host=document.getElementById("levels"); host.innerHTML="";
+  LEVELS.forEach(function(L){
+    var b=document.createElement("button");
+    var locked=!L.v2&&L.id>=S.unlocked&&L.id!==0;
+    b.className="lvl"+(L.v2?" v2":"")+(locked?" locked":"")+(S.done[L.id]?" done":"");
+    b.innerHTML='<span class="num">'+L.id+'</span><span><span class="name">'+L.name+'</span><br><span class="what">'+L.what+'</span></span>'+
+      '<span class="state">'+(L.v2?"v2":(S.done[L.id]?"✓ passed":(locked?"locked":"")))+'</span>';
+    if(!L.v2&&!locked)b.addEventListener("click",function(){ctx();decodeAll();openLearn(L);});
+    host.appendChild(b);
+  });
+}
+function buildStats(){
+  var bars=document.getElementById("statbars"); bars.innerHTML="";
+  var any=false;
+  for(var iv=1;iv<=12;iv++){
+    var s=S.seen[iv]||0; if(!s)continue; any=true;
+    var r=S.right[iv]||0, pct=Math.round(100*r/s);
+    bars.innerHTML+='<div class="baru"><span class="lbl">'+IV[iv].n+'</span>'+
+      '<span class="track"><span class="fill" style="width:'+pct+'%"></span></span>'+
+      '<span class="pct">'+pct+"% of "+s+"</span></div>";
+  }
+  if(!any)bars.innerHTML='<p class="small">Nothing yet — drill a level first.</p>';
+  document.getElementById("stattotals").textContent=S.total+" scored answers · best streak "+S.best;
+  var ivs=[]; for(var i2=1;i2<=12;i2++)if(S.seen[i2])ivs.push(i2);
+  var t=document.getElementById("confu"), html="";
+  if(ivs.length){
+    html="<tr><th></th>"+ivs.map(function(iv){return "<th>"+iv+"</th>";}).join("")+"</tr>";
+    ivs.forEach(function(row){
+      html+="<tr><th>"+IV[row].n+"</th>"+ivs.map(function(col){
+        if(row===col)return "<td>·</td>";
+        var c=S.confu[row+">"+col]||0;
+        return "<td"+(c>2?' class="hot"':(c>0?' class="warm"':""))+">"+(c||"")+"</td>";
+      }).join("")+"</tr>";
+    });
+  }
+  t.innerHTML=html;
+}
+
+/* ---------- wiring ---------- */
+document.getElementById("statsbtn").addEventListener("click",function(){buildStats();show("stats");});
+document.getElementById("statsback").addEventListener("click",function(){buildMap();show("map");});
+document.getElementById("statdl").addEventListener("click",function(){
+  var per=[];
+  for(var iv=1;iv<=12;iv++){var s=S.seen[iv]||0;if(!s)continue;
+    per.push({interval:IV[iv].n,halfSteps:iv,seen:s,right:S.right[iv]||0,
+      pct:Math.round(100*(S.right[iv]||0)/s)});}
+  var payload={app:"Interval Trainer",exported:new Date().toISOString(),
+    totalAnswered:S.total,bestStreak:S.best,levelsPassed:Object.keys(S.done).filter(function(k){return S.done[k];}),
+    perInterval:per,confusions:S.confu,anchorPicks:S.anchor};
+  var blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+  var a=document.createElement("a");
+  a.href=URL.createObjectURL(blob); a.download="interval-trainer-stats.json";
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},500);
+});
+document.getElementById("statreset").addEventListener("click",function(){
+  S=JSON.parse(JSON.stringify(DEFAULTS)); save(); buildStats(); buildMap();
+});
+document.getElementById("exit").addEventListener("click",function(){buildMap();show("map");});
+document.getElementById("learnexit").addEventListener("click",function(){buildMap();show("map");});
+document.getElementById("replay").addEventListener("click",function(){
+  if(cur.type!==3)playQ(cur.answered);
+});
+document.getElementById("next").addEventListener("click",nextQ);
+document.getElementById("warmdone").addEventListener("click",function(){startPhase(cur.lvl,"drill");});
+document.addEventListener("keydown",function(e){
+  if(e.key==="Enter"&&document.getElementById("drill").classList.contains("on")&&cur.answered){
+    if(cur.phase==="warm"&&cur.warmLeft<=0)startPhase(cur.lvl,"drill"); else nextQ();
+  }
+});
+document.getElementById("soundtog").addEventListener("click",function(){
+  S.sound=S.sound==="piano"?"synth":"piano"; save();
+  this.textContent="Sound: "+S.sound;
+});
+document.getElementById("morphbtn").addEventListener("click",morph);
+document.getElementById("towarm").addEventListener("click",function(){startPhase(learnLvl,"warm");});
+document.getElementById("todrill").addEventListener("click",function(){startPhase(learnLvl,"drill");});
+document.getElementById("passnext").addEventListener("click",function(){
+  document.getElementById("pass").classList.remove("on");
+  var nxt=LEVELS[cur.lvl.id+1]; if(nxt&&!nxt.v2)openLearn(nxt);
+});
+document.getElementById("passstay").addEventListener("click",function(){
+  document.getElementById("pass").classList.remove("on");
+});
+document.getElementById("passmap").addEventListener("click",function(){
+  document.getElementById("pass").classList.remove("on"); buildMap(); show("map");
+});
+
+buildKB(); buildMorph(); buildMap();
+document.getElementById("soundtog").textContent="Sound: "+S.sound;
+</script>
+</body>
+</html>

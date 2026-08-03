@@ -1,4 +1,0 @@
-interface:
-  display_name: "Teach Me"
-  short_description: "Build mastery-focused interactive lessons"
-  default_prompt: "Use $teach-me to build an interactive lesson that teaches me a topic through explanation, practice, feedback, and a closed-book final."

@@ -1,0 +1,148 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LESSON TITLE</title>
+<!-- fonts inlined here by fonts.mjs at build -->
+<link rel="stylesheet" href="lesson-shell.css"> <!-- structural CSS — copy whole; assemble.mjs inlines it -->
+<style>
+/* YOUR :root TOKENS GO HERE — the structural CSS reads every value from them.
+   Required (full contract in SKILL.md § Page layout):
+     surfaces  --bg --surface --surface2 --surface3 --line --line2 --hover --veil
+     text      --fg --fg2 --muted
+     semantic  --accent --danger --good --gold --good-soft --danger-soft
+     top bar   --band --band-fg --band-line --bar-h
+     type      --serif --sans --mono
+     spacing   --s1…--s9   (4 8 12 16 24 32 48 64 96)
+   Bespoke-device CSS goes below the token block. */
+</style>
+</head><body data-review-toggle>
+
+<!-- ============ CHROME: copy verbatim. Only fill the marked content slots. ============ -->
+<div id="chromewrap">
+<header id="topbar">
+  <a class="chip" href="#hero" id="chipIntro">Intro</a>
+  <details id="lessonmenu">
+    <summary><span id="lessonchiptxt">Lesson 1/3</span><span class="caret">▼</span></summary>
+    <div class="menu">
+      <a href="#s1">§1 · Why the law lets this happen<small>The owner&rsquo;s own lawsuit, and the five conditions</small></a>
+      <a href="#s2">§2 · What &ldquo;hostile&rdquo; actually requires<small>Permission, and why a mistake does not matter</small></a>
+      <a href="#s3">§3 · Keeping the clock running<small>Owner-like use, breaks, and tacking</small></a>
+      <a href="#mastery">Mastery checklist<small>What you can do now</small></a>
+    </div>
+  </details>
+  <a class="chip" href="#final" id="chipFinal">Final</a>
+  <div class="barright">
+    <button class="iconbtn" id="qrbtn" aria-label="Quick Reference">
+      <svg viewBox="0 0 24 24"><path d="M4 4h11a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3V4z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 8h7M8 12h7M8 16h4" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+      <span class="long">Quick Reference</span><span class="short">Reference</span>
+    </button>
+    <button class="iconbtn" id="pausebtn" aria-label="Pause narration" disabled>
+      <svg viewBox="0 0 24 24" id="pauseicon"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+      <span class="wl">Pause</span>
+    </button>
+    <button class="iconbtn" id="voicebtn" aria-pressed="true" aria-label="Toggle narration">
+      <svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span class="wl" id="voicelabel">Voice: on</span><span id="voicelabelshort" hidden></span>
+    </button>
+  </div>
+</header>
+<div id="pausebar">
+  <span id="pausemsg">Final in progress — closed book.</span>
+  <button id="pbResume">Resume final</button>
+  <button class="ghost" id="pbOpen">Pause final — open reference</button>
+</div>
+</div>
+
+<div class="frame">
+<nav id="rail" aria-label="Sections">
+  <p class="railtitle">This lesson</p>
+  <ol>
+    <li><a href="#hero" data-sec="hero">Start here</a></li>
+    <li><a href="#orient" data-sec="orient">What you&rsquo;re getting</a></li>
+    <li><a href="#s1" data-sec="s1">§1 Why the law lets this happen</a></li>
+    <li><a href="#s2" data-sec="s2">§2 What &ldquo;hostile&rdquo; requires</a></li>
+    <li><a href="#s3" data-sec="s3">§3 Keeping the clock running</a></li>
+    <li><a href="#final" data-sec="final">The final</a></li>
+    <li><a href="#mastery" data-sec="mastery">What you can do now</a></li>
+  </ol>
+</nav>
+
+
+<main>
+
+  <!-- ====================== YOUR CONTENT ======================
+       Fill the slots below. Keep the surrounding tags: <main> and
+       <section id="final"> are structural — the closed-book dim exempts
+       whichever <section> contains #finalstage, so the final must stay
+       inside one. Add as many lesson sections as the lesson needs.
+
+         <section id="hero"> … </section>   hero, .herogrid
+         <section id="s1">   … </section>   teaching prose, concept cards (.card),
+                                            widget hosts (<div id="host-r1">…) that
+                                            init() mounts, bespoke devices (.device)
+  -->
+  <section id="hero"><!-- hero --></section>
+  <section id="s1"><!-- §1 --></section>
+
+  <!-- ============================= FINAL =============================
+       copy verbatim, including the wrapping <section id="final"> and the
+       #startFinal button — wireChrome() binds it unconditionally, so a page
+       without it throws on load and no widget after that point mounts. -->
+  <section id="final">
+  <p class="eyebrow">Closed book</p>
+  <h2>The final</h2>
+  <p class="prose">Reference locks while this is open. Answer everything, then submit — nothing is scored until you do.</p>
+  <button class="btn" id="startFinal">Start the final</button>
+  <div id="finalstage" hidden>
+    <div class="stephead"><span id="fprog">Question 1 of 5</span><span id="fpaused">Paused</span></div>
+    <div id="fitems"></div>
+    <div class="stepnav">
+      <button class="btn ghost" id="fback">← Back</button>
+      <button class="btn ghost" id="fnext">Next →</button>
+    </div>
+    <div id="fsubmitrow">
+      <button class="btn" id="fsubmit" disabled>Submit and see the readout</button>
+      <p id="fsubmitnote"></p>
+    </div>
+  </div>
+  <div id="readout"></div>
+  <a class="next" href="#mastery">Next · What you can do now ↓</a>
+</section>
+
+<!-- ============================ MASTERY ============================ -->
+<section id="mastery">
+  <p class="eyebrow">Where you stand</p>
+  <h2>What you can do now</h2>
+  <p class="prose">These fill in as you get things right, in this browser session only. Nothing is stored.</p>
+  <div id="ledger"></div>
+  <div class="objchips">
+    <div class="objchip" id="obj1chip">Run the five conditions on a fact pattern and name the one that fails</div>
+    <div class="objchip" id="obj2chip">Apply the rules that stop and restart the clock — permission, breaks, tacking</div>
+  </div>
+</section>
+
+</main>
+</div><!-- /.frame -->
+
+<!-- Quick Reference drawer — copy verbatim; fill .drbody with per-rule capsules -->
+<aside id="drawer" aria-label="Quick Reference">
+  <div class="drhead"><h3>Quick Reference</h3><button class="btn ghost" id="drclose" style="min-height:36px;padding:6px 12px">Close</button></div>
+  <div class="drbody">
+    <div class="qref"><b>Actual</b><span>Using the land in the way an owner of that kind of land would use it — building, farming, fencing, living.</span><i>Not &ldquo;present every day&rdquo; — that is continuity, and it uses the same owner-like measure.</i></div>
+    <div class="qref"><b>Open and notorious</b><span>Visible enough that an owner who checked on the land would notice it. The owner does not have to actually see it.</span><i>Underground and hidden uses fail here even when everything else is met.</i></div>
+    <div class="qref"><b>Exclusive</b><span>Not shared with the true owner or with the general public.</span><i>Family and guests are fine; the true owner using it alongside you is fatal.</i></div>
+    <div class="qref"><b>Hostile (adverse)</b><span>Without the owner&rsquo;s permission. In most states, what the possessor believed is irrelevant.</span><i>Permission means the clock never started. An honest mistake is still hostile.</i></div>
+    <div class="qref"><b>Continuous</b><span>Unbroken for the statutory period, measured by the pattern of use an owner of that land would keep up.</span><i>Seasonal use of seasonal land counts; a real gap in use does not.</i></div>
+    <div class="qref"><b>Tacking</b><span>Successive possessors add their periods together when possession passes between them — deed, will, inheritance.</span><i>Needs privity. A stranger who ousts the first possessor starts over.</i></div>
+    <div class="qref"><b>The period</b><span>Set by each state&rsquo;s limitations statute and counted from the day the owner&rsquo;s right to sue accrued.</span><i>Runs against a buyer of the record title too — a sale by the owner does not reset it.</i></div>
+    <div class="qref"><b>Repudiation</b><span>What a permissive user must do to start the clock: make it plain to the owner that the land is now claimed as the user&rsquo;s own.</span><i>Until then, permissive years are worth nothing.</i></div>
+    <p class="srcs"><b>Sources</b><br>
+      <a href="https://law.lis.virginia.gov/vacode/title8.01/chapter4/section8.01-236/" target="_blank" rel="noopener">Va. Code &sect; 8.01-236 — limitation of entry on or action for land ↗</a><br>
+      <a href="https://caselaw.findlaw.com/court/me-supreme-judicial-court/1288227.html" target="_blank" rel="noopener">Dombkowski v. Ferland, 2006 ME 24, 893 A.2d 599 ↗</a><br>
+      <a href="https://www.courtlistener.com/opinion/1174526/howard-v-kunto/" target="_blank" rel="noopener">Howard v. Kunto, 3 Wn. App. 393, 477 P.2d 210 (1970) ↗</a>
+    </p>
+  </div>
+</aside>
+
+<script src="lesson-runtime.js"></script> <!-- engine; assemble.mjs inlines it -->
+<script>/* lesson data (LINES, OBJS, RULINGS, FINALS…) + bespoke devices + init(). Contract: js-patterns.md */</script>
+</body></html>

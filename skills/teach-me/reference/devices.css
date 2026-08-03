@@ -1,0 +1,289 @@
+/* =====================================================================
+   devices.css — optional building blocks for lesson visuals.
+
+   NOT REQUIRED. Build a bespoke device whenever the topic deserves one.
+   Use these when they fit, so the recurring shapes stop being reinvented
+   (and stop being reinvented with the same bugs).
+
+   Everything reads :root tokens — no colours are hardcoded, so a device
+   picks up whatever skin the lesson defines.
+
+   Contents
+     .cmp      aligned side-by-side comparison  (semantic rows line up)
+     .defs     side-by-side definitions
+     .zones    a value scrubber with labelled zones + live readout
+     .steps    stepwise reveal for synced narration (dim -> lit)
+     .tree     decision tree that reflows instead of clipping
+   ===================================================================== */
+
+/* ---------------------------------------------------------------- .cmp
+   Aligned comparison. The failure this fixes: two columns of prose whose
+   conclusions land at different heights because one side is wordier, so
+   the eye cannot compare like with like.
+
+   Each column declares the SAME semantic rows in the SAME order, and the
+   grid aligns them across columns regardless of how long the text runs:
+
+     <div class="cmp cols-2">
+       <div class="cmpcol">
+         <p class="cmp-label">State court · Pennsylvania law</p>
+         <p class="cmp-body">Harry Tompkins walked a footpath…</p>
+         <p class="cmp-body">Pennsylvania treated him as a trespasser…</p>
+         <p class="cmp-out">→ Tompkins loses.</p>
+       </div>
+       <div class="cmpcol"> … same four slots … </div>
+     </div>
+
+   Row alignment uses subgrid where available; the fallback pins the
+   outcome to the bottom of the column, which is the row that matters
+   most. Give a column .accent or .danger to tint its rule. */
+.cmp{display:grid;gap:var(--s4);margin:var(--s5) 0}
+.cmp.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cmp.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:720px){.cmp.cols-2,.cmp.cols-3{grid-template-columns:minmax(0,1fr)}}
+
+.cmpcol{display:grid;grid-template-rows:auto 1fr auto;gap:var(--s3);
+  border:1px solid var(--line);background:var(--surface);padding:var(--s4);min-width:0}
+@supports (grid-template-rows:subgrid){
+  .cmp{grid-auto-rows:auto}
+  .cmp.aligned{grid-template-rows:auto 1fr auto}
+  .cmp.aligned>.cmpcol{grid-row:span 3;grid-template-rows:subgrid}
+}
+.cmpcol.accent{border-top:3px solid var(--accent)}
+.cmpcol.danger{border-top:3px solid var(--danger)}
+.cmpcol.good{border-top:3px solid var(--good)}
+
+.cmp-label{font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--muted);margin:0}
+.cmpcol.accent .cmp-label{color:var(--accent)}
+.cmpcol.danger .cmp-label{color:var(--danger)}
+.cmp-body{margin:0 0 var(--s3);font-size:16px;line-height:1.5}
+.cmp-body:last-of-type{margin-bottom:0}
+/* the outcome row: same baseline in every column, always last */
+.cmp-out{font-family:var(--sans);font-size:15px;font-weight:700;margin:0;
+  padding-top:var(--s3);border-top:1px solid var(--line2);align-self:end}
+.cmpcol.danger .cmp-out{color:var(--danger)}
+.cmpcol.accent .cmp-out{color:var(--accent)}
+.cmpcol.good .cmp-out{color:var(--good)}
+/* optional caption under the whole comparison */
+.cmp-note{font-family:var(--serif);font-style:italic;color:var(--fg2);
+  text-align:center;margin:var(--s3) 0 0;font-size:15.5px}
+
+/* --------------------------------------------------------------- .defs
+   Side-by-side definitions — term, gloss, and the trap that gets it
+   confused with its neighbour. Same alignment guarantee as .cmp. */
+.defs{display:grid;gap:var(--s4);margin:var(--s5) 0;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.defbox{display:grid;grid-template-rows:auto auto 1fr;gap:var(--s2);
+  border-left:3px solid var(--line2);padding-left:var(--s4);min-width:0}
+.defbox.on{border-left-color:var(--accent)}
+.defterm{font-family:var(--sans);font-weight:700;font-size:15.5px;margin:0}
+.defgloss{margin:0;font-size:16px;line-height:1.5}
+.deftrap{margin:0;font-family:var(--sans);font-size:13.5px;color:var(--muted);align-self:end}
+.deftrap b{color:var(--danger);font-weight:700}
+
+/* -------------------------------------------------------------- .zones
+   A scrubber whose output is split into named regions — the shape behind
+   "drag the sale price and watch which rule governs". Wire with
+   devices.js buildZones(). */
+.zonedev{border:1px solid var(--line);background:var(--surface);padding:var(--s5);margin:var(--s5) 0}
+.zonehead{display:flex;justify-content:space-between;align-items:center;gap:var(--s4);
+  flex-wrap:wrap;margin-bottom:var(--s4)}
+.zonetitle{font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--muted);margin:0}
+.zonedev input[type=range]{width:100%;margin:var(--s3) 0;accent-color:var(--accent)}
+.zoneval{font-family:var(--sans);font-size:16px;font-weight:700}
+.zonebar{display:flex;height:34px;border:1.5px solid var(--fg);overflow:hidden;margin:var(--s2) 0}
+.zoneseg{height:100%;transition:width .25s;min-width:0}
+@media (prefers-reduced-motion:reduce){.zoneseg{transition:none}}
+.zonekey{display:flex;gap:var(--s4);flex-wrap:wrap;font-family:var(--sans);
+  font-size:13px;font-weight:700;margin-bottom:var(--s3)}
+.zonekey i{display:inline-block;width:11px;height:11px;margin-right:6px;font-style:normal}
+.zonerow{display:flex;gap:var(--s2);flex-wrap:wrap}
+.zonechip{flex:1 1 160px;font-family:var(--sans);font-size:11.5px;font-weight:600;line-height:1.35;
+  padding:8px 10px;border:1.5px dashed var(--line2);color:var(--muted);border-radius:2px}
+.zonechip.on{border-style:solid;border-color:var(--accent);color:var(--fg);background:var(--surface2)}
+.zonenote{margin:var(--s4) 0 0;padding:var(--s4);background:var(--surface2);
+  border-left:4px solid var(--accent);font-size:16.5px;line-height:1.55}
+
+/* -------------------------------------------------------------- .steps
+   Stepwise reveal for narrated sequences: everything starts dim, the
+   active step lights. Pairs with the runtime's runSeq(). */
+.steps{display:grid;gap:var(--s3);margin:var(--s4) 0}
+.step{border:1.5px solid var(--line2);background:var(--surface);padding:var(--s3) var(--s4);
+  opacity:.35;transition:opacity .3s,border-color .3s}
+/* .lit is GLOBAL — lesson-shell.css gives it the gold ring the runtime's fwLit() uses to
+   mark "being narrated right now". Reuse that signal rather than inventing a second one;
+   setting a border-colour here only fought the ring. Opacity is ours to add. */
+.step.lit{opacity:1}
+.step.done{opacity:.7}
+.steplabel{font-family:var(--sans);font-size:10.5px;font-weight:700;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.step{transition:none}}
+
+/* --------------------------------------------------------------- .fork
+   Completes the shell's decision diagram. lesson-shell.css already ships
+   the STRAIGHT SPINE — .frow/.spinecell/.fnode/.fbar/.stemcell/.exitcell/
+   .leaf — and the runtime drives it with fx/fwDim/fwShow/fwLit for
+   voice-synced tracing. What it never shipped is the two-track FORK that
+   js-patterns.md documents as the proven shape, so every lesson that
+   needed a real split hand-rolled one from a prose description.
+
+   Use the shell's spine for a ladder (one exit per rung). Use this only
+   for a genuine fork, where the analysis splits into parallel tracks.
+
+     <div class="fsplit">
+       <div class="track t1"><p class="th">Track 1 · Rules Enabling Act</p>
+         <div class="fnode">…</div>
+         <div class="leafrow">
+           <div class="leafcell"><p class="el">YES</p><div class="leaf fd">APPLY THE DIRECTIVE</div></div>
+           <div class="leafcell"><p class="el">NO</p><div class="leaf st">STATE LAW</div></div>
+         </div>
+       </div>
+       <div class="track t2">…</div>
+     </div>
+
+   Outcome colour is semantic and consistent across the WHOLE diagram:
+   .fd and .st are the two endpoint families — never one colour for two
+   different endpoints. */
+.fedge{display:flex;justify-content:center;gap:var(--s6);padding:var(--s3) 0;
+  font-family:var(--sans);font-size:10.5px;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted)}
+.fedge .yes{color:var(--accent)}
+.fedge .no{color:var(--danger)}
+.fsplit{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4);margin-top:var(--s3)}
+.track{border:1px solid var(--line);background:var(--surface2);padding:var(--s4);min-width:0}
+.track.t1{border-top:3px solid var(--accent)}
+.track.t2{border-top:3px solid var(--danger)}
+.track .th{font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.11em;
+  text-transform:uppercase;margin:0 0 var(--s3)}
+.track.t1 .th{color:var(--accent)}
+.track.t2 .th{color:var(--danger)}
+.track .fnode{margin-bottom:var(--s3)}
+.leafrow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2)}
+.leafcell{min-width:0}
+.el{font-family:var(--sans);font-size:10px;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+/* the two endpoint families — one colour each, everywhere in the diagram */
+.leaf.fd{background:var(--accent);color:var(--bg)}
+.leaf.st{background:var(--danger);color:var(--bg)}
+@media (max-width:640px){
+  .fsplit{grid-template-columns:minmax(0,1fr)}
+  .leafrow{grid-template-columns:minmax(0,1fr)}
+  .fedge{gap:var(--s4);flex-wrap:wrap}
+}
+
+/* ----------------------------------------------------------- .timeline
+   A sequence in time: ordered events on a rail, each with a marker, a
+   stamp and a body. Reflows to a single column on a phone rather than
+   scrolling sideways. Add .now to the event the narration is on, or use
+   the runtime's .lit for the gold ring. */
+.timeline{position:relative;margin:var(--s5) 0;padding-left:var(--s6)}
+.timeline::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;
+  width:2px;background:var(--line2)}
+.tlitem{position:relative;padding:0 0 var(--s5) 0}
+.tlitem:last-child{padding-bottom:0}
+.tlitem::before{content:"";position:absolute;left:calc(-1 * var(--s6) + 4px);top:5px;
+  width:12px;height:12px;border-radius:50%;background:var(--surface);
+  border:2.5px solid var(--line2);transition:border-color .3s,background .3s}
+.tlitem.now::before{border-color:var(--accent);background:var(--accent)}
+.tlitem.done::before{border-color:var(--fg);background:var(--fg)}
+.tlstamp{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--muted);
+  margin:0 0 2px;letter-spacing:.02em}
+.tltitle{font-family:var(--sans);font-size:15px;font-weight:700;margin:0 0 4px;line-height:1.35}
+.tlbody{margin:0;font-size:16px;line-height:1.5;color:var(--fg2)}
+.tlitem.now .tltitle{color:var(--accent)}
+@media (prefers-reduced-motion:reduce){.tlitem::before{transition:none}}
+
+/* -------------------------------------------------------------- .dials
+   Several thresholds at once, plus a live verdict — "adjust the dials to
+   see when a business is caught". Each dial states the point at which it
+   trips, so the learner sees not just the answer but which input moved
+   it. The verdict panel evaluates a rule across every dial (any-one,
+   all, majority — whatever the topic's rule actually is). */
+.dialdev{border:1px solid var(--line);background:var(--surface);margin:var(--s5) 0}
+.dialhead{display:flex;justify-content:space-between;align-items:center;gap:var(--s4);
+  flex-wrap:wrap;padding:var(--s4) var(--s5);border-bottom:1px solid var(--line)}
+.dialtitle{font-family:var(--sans);font-size:15px;font-weight:700;margin:0}
+.dialrule{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+.dialgrid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:0}
+.dialcol{padding:var(--s5);min-width:0}
+.dialcol+.dialcol{border-left:1px solid var(--line);background:var(--surface2)}
+.dialgate{display:flex;gap:var(--s3);align-items:flex-start;padding:var(--s3) var(--s4);
+  background:var(--surface2);border:1px solid var(--line2);margin-bottom:var(--s3)}
+.dialgate.on{background:var(--good-soft);border-color:var(--good)}
+.dialgate input{margin:2px 0 0;accent-color:var(--good);width:17px;height:17px;flex:none}
+.dialgate label{font-family:var(--sans);font-size:14.5px;font-weight:700;line-height:1.35}
+.dialsub{font-family:var(--sans);font-size:13px;color:var(--muted);margin:0 0 var(--s4)}
+.dial{margin-bottom:var(--s5)}
+.dial:last-child{margin-bottom:0}
+.diallabel{font-family:var(--sans);font-size:14px;font-weight:700;margin:0}
+.dialnote{font-family:var(--sans);font-size:12.5px;color:var(--muted);margin:2px 0 var(--s2)}
+.dialval{font-family:var(--serif);font-size:27px;font-weight:700;line-height:1.1;
+  margin:0 0 var(--s2);color:var(--muted);transition:color .25s}
+.dial.trips .dialval{color:var(--danger)}
+.dialdev input[type=range]{width:100%;accent-color:var(--muted);margin:0}
+.dial.trips input[type=range]{accent-color:var(--danger)}
+.dialtrip{font-family:var(--mono);font-size:12px;color:var(--muted);margin:var(--s2) 0 0}
+.dialtrip b{color:var(--fg)}
+.dial.trips .dialtrip b{color:var(--danger)}
+.dialverdict{position:sticky;top:calc(var(--bar-h) + var(--s4))}
+.dialvlabel{font-family:var(--sans);font-size:10.5px;font-weight:700;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--muted);margin:0 0 var(--s2)}
+.dialvtitle{font-family:var(--serif);font-size:29px;line-height:1.15;margin:0 0 var(--s3)}
+.dialvtitle.in{color:var(--danger)}
+.dialvtitle.out{color:var(--good)}
+.dialvbody{margin:0;font-size:16px;line-height:1.55;color:var(--fg2)}
+@media (max-width:720px){
+  .dialgrid{grid-template-columns:minmax(0,1fr)}
+  .dialcol+.dialcol{border-left:0;border-top:1px solid var(--line)}
+  .dialverdict{position:static}
+}
+@media (prefers-reduced-motion:reduce){.dialval{transition:none}}
+
+/* -------------------------------------------------------------- .chart
+   A plotted curve with the annotations that make it teach: shaded zones,
+   a "where we are now" marker with per-series values, a crossover point,
+   and labels sitting on the curves instead of in a legend the eye has to
+   travel to.
+
+   The SVG is viewBox-scaled, so it never needs a min-width and never
+   becomes a sideways-scrolling strip on a phone.
+
+   Series paths carry data-fx="ser-<key>", so the runtime's fwDim /
+   fwShow / fwLit drive a narrated walkthrough with the same pause and
+   voice behaviour as every other device — no second animation system. */
+.chartdev{border:1px solid var(--line);background:var(--surface);margin:var(--s5) 0}
+.charthead{display:flex;justify-content:space-between;align-items:center;gap:var(--s4);
+  flex-wrap:wrap;padding:var(--s4) var(--s5);border-bottom:1px solid var(--line)}
+.charttitle{font-family:var(--sans);font-size:15px;font-weight:700;margin:0}
+.chartbody{padding:var(--s5)}
+.chartsvg{display:block;width:100%;height:auto;overflow:visible}
+.chartsvg .grid{stroke:var(--line);stroke-width:1}
+.chartsvg .axis{stroke:var(--fg2);stroke-width:1.5}
+.chartsvg .tick{font-family:var(--sans);font-size:12px;fill:var(--muted)}
+.chartsvg .axlabel{font-family:var(--serif);font-size:13px;fill:var(--muted)}
+.chartsvg .zoneband{opacity:.5}
+.chartsvg .zonecap{font-family:var(--sans);font-size:12.5px;font-weight:600}
+.chartsvg .serline{fill:none;stroke-width:3;stroke-linejoin:round;stroke-linecap:round;
+  transition:opacity .35s}
+.chartsvg .serfill{opacity:.09;transition:opacity .35s}
+/* Halo: an on-curve label will sooner or later cross its own steep line. Painting the
+   stroke first punches the label out of whatever is behind it, so this stays legible for
+   any data rather than only for the numbers the author happened to test with. */
+.chartsvg .serlabel,.chartsvg .dotlabel,.chartsvg .crosslabel,.chartsvg .markercap{
+  paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
+.chartsvg .serlabel{font-family:var(--sans);font-size:13.5px;font-weight:700;
+  transition:opacity .35s}
+.chartsvg .marker{stroke:var(--fg2);stroke-width:1.5;stroke-dasharray:5 4}
+.chartsvg .markercap{font-family:var(--sans);font-size:12.5px;font-weight:600;fill:var(--fg2)}
+.chartsvg .dot{stroke:var(--surface);stroke-width:2}
+.chartsvg .dotlabel{font-family:var(--mono);font-size:13px;font-weight:700}
+.chartsvg .cross{fill:var(--surface);stroke:var(--fg);stroke-width:2.5}
+.chartsvg .crosslabel{font-family:var(--serif);font-size:13.5px;fill:var(--fg)}
+/* narration states — .pend/.lit are the shell's, reused deliberately */
+.chartsvg [data-fx].pend{opacity:.12}
+.chartsvg [data-fx].lit{opacity:1}
+@media (prefers-reduced-motion:reduce){
+  .chartsvg .serline,.chartsvg .serfill,.chartsvg .serlabel{transition:none}
+}

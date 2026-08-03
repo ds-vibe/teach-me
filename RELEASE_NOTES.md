@@ -1,51 +1,38 @@
-# Teach Me 0.0.1
+# Teach Me 0.0.2
 
-**Teach Me** is a standalone Claude Code skill for building voice-capable,
-single-file interactive HTML lessons.
+**Teach Me** is a tool for Claude and Codex that builds interactive, single-file HTML lessons: clear teaching, drills with feedback, optional voice and images, and a closed-book final. You answer a short interview, pick a teaching approach and a look, and get one file that runs in your browser.
 
 ## Included
 
-- **Goals Interview**: Role aware for students and/or educators
-- **Grounding**: Your materials or canonical primary sources
-- **Pedagogy**: Clear objectives and coverage, scenario-first teaching, and
-  immediate feedback
-- **Drills**: Multiple choice, typed answers, confusable-concept drills,
-  mutation pairs, and a closed-book final
-- **Voice**: Optional narration with OpenAI, ElevenLabs or browser voice
-- **Video**: Optional companion video (uses HyperFrames and separate skill)
-- **QA gates**: Quality checks for content, citations and pedagogy
+- **Interview**: role-aware for students and educators — the educator route builds from your own syllabus and materials
+- **Pedagogy**: lessons organize around what the learner is trying to *do* (run an algorithm, compute the payout, analyze the exam question), with clear objectives, worked examples, and immediate feedback
+- **Drills**: multiple choice, typed answers, confusable-concept drills, interactive devices, and a closed-book final
+- **Drill mode**: ask for drills (or pass `--drills`) and get 20–60 questions as rule cards and batteries instead of a full lesson
+- **Results you keep**: each lesson keeps your attempt history in your browser, shows your strongest and weakest areas, and offers a downloadable results file — feed it to your next drills request and it targets your weak spots
+- **Voice and chat**: optional narration at build time, plus a dock in the finished page where a reader adds their own key (OpenAI, Anthropic, or ElevenLabs) for narration and an in-page tutor 
+- **Runs in**: Claude, Claude Code, Claude Cowork and Codex. Works best in Claude Code.
+- **Installable as a plugin**: `/plugin marketplace add ds-vibe/teach-me-this`, then `/plugin install teach-me@teach-me`
+- **QA gates**: quality checks for content, citations, layout, and pedagogy
 
-## Unedited example snapshot
+## Example snapshot
 
-The GitHub Pages site publishes three HTML lessons and one Erie Doctrine
-companion video exactly as they were produced by following the `v0.0.1` skill
-in Claude Code.
-
-They received no hand-editing, post-generation cleanup, or showcase pass.
-Imperfections remain on purpose. These are evidence of the release's actual
-out-of-the-box quality, not a promise that every output is flawless.
-
-View them at
+The GitHub Pages site publishes six lessons and the trainer at
 [ds-vibe.github.io/teach-me-this](https://ds-vibe.github.io/teach-me-this/).
+
+The six lessons are as the skill produced them to show real lesson quality. The only exceptions were minor visual fixes.
+
+The Interval Trainer is different: a custom build with a few revisions.
+
 
 ## Lineage and credit
 
-Teach Me builds on Derek Schwede's original
-[html-explainer](https://github.com/ds-vibe/html-explainer) skill. Its
-evidence-graded pedagogy spine adapts and extends Rebecca Fordon's
-[teaching-explainer](https://github.com/rlfordon/teaching-explainer), which
-itself builds on and credits `html-explainer`.
-
-Rebecca Fordon's copyright and MIT notice are retained in
-`THIRD-PARTY-NOTICES.md`, and adapted pedagogy rules are marked in
-`reference/pedagogy.md`.
+Teach Me builds on Derek Schwede's original [html-explainer](https://github.com/ds-vibe/html-explainer) skill. Its pedagogy spine adapts and extends Rebecca Fordon's [teaching-explainer](https://github.com/rlfordon/teaching-explainer), which itself builds on and credits `html-explainer`. Rebecca Fordon's copyright and MIT notice are retained in `THIRD-PARTY-NOTICES.md`.
 
 ## Known limitations
 
-- This is an initial release; the published artifacts retain visible rough
-  edges.
-- Generated educational content can be wrong and must be reviewed before use
-  in high-stakes settings.
-- Produced narration requires an API key and `ffmpeg`; otherwise the lesson
-  uses browser speech or remains silent.
-- Companion-video production requires a separate video production skill.
+- A lesson takes about an hour of model time to build; drills are cheaper per question.
+- Fable 5 in Claude Code produces the best results, but uses a LOT of tokens.
+- Lessons are frozen files — later skill fixes don't reach lessons already built.
+- Generated educational content can be wrong and must be reviewed before use in high-stakes settings. Lessons are study material, not professional advice.
+- Real narration needs an OpenAI or ElevenLabs key (at build time or in the page's dock) plus `ffmpeg` for build-time audio; otherwise the lesson falls back to browser speech.
+- Quiz results live in one browser; move between machines with the downloaded results file.
