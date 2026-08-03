@@ -162,6 +162,7 @@ Contrast is linted: body and verdict text must clear 4.5:1 against every surface
 - *Verb inflation* — "Interrogate the ownership structure." → **"Compare who owns what before and after the financing."**
 - *Oblique abstraction* — "Stakeholders have competing priorities." → **"Employees want upside. Investors want to limit dilution."**
 - *False compression* — "Price the grant." → **"Estimate what the grant could be worth if the company sells."**
+- *Unscoped permission* — "Reverse engineering is legal." → **"Reverse engineering isn't a wrongful taking of a trade secret — other rules can still forbid it."** A source that allows an act under one rule says nothing about the others, but plain English has no way to carry that limit, so the paraphrase comes out bigger than the source. Name the question the answer answers. This is the one slop class that can hurt a reader, and it reads as clean writing — prior tests found it survived a citation check that confirmed the underlying claim exactly.
 - *False sophistication* — "Navigate the landscape of equity compensation." → **"Learn how RSUs and stock options work."**
 - *Fake insight*, the worst of them, because it is satisfying to read and adds nothing — "Equity is ultimately about aligning incentives." → **"Startups often pay partly in equity because they can't match big-company salaries."** A tautology dressed as an observation is fake insight even when it is true.
 - *Load-bearing aphorism* — "That is the whole rule." "The gap between them is the whole of the doctrine." Delete the sentence; the paragraph already made the point.
@@ -228,7 +229,7 @@ The reviewer's job is not "is this nice." It must:
 1. meet all elements of the plan and "Your requirements" above, qualitative and quantitative.
 2. ensure every objective is taught, practiced, and checked, and every interaction is real (not a disguised reading task);
 3. voice, animations and accessibility work
-4. re-derive every number and check every factual claim against the source;
+4. re-derive every number and check every factual claim against the source. Then run the second pass that the first one cannot do: for every claim that permits or forbids something, ask what a reader who acted on it would risk, and what other rules bear on the same act. A claim can match its cited source exactly and still be too broad to act on — checking a claim against its authority never asks that question, so ask it separately or it goes unasked;
 5. read each screenshot for layout defects — overlaps, empty gaps, cropped visuals, mobile overflow — an agent reading only the HTML will call a broken layout fine;
 6. name slop by its class or shape from § Writing and show the plain rewrite, in page copy AND voice clips/scripts — the shapes need a human read, since they carry none of the banned words. Separately, list every term used without a gloss, and say whether the opening would land on someone who knows nothing about the topic;
 7. check every generated image against its caption — a plausible picture is not a correct one.
