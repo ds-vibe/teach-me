@@ -20,8 +20,8 @@ One per-surface difference worth knowing: **generated images need an API key at 
 Three ways in:
 
 - **Claude Code** — `/plugin marketplace add ds-vibe/teach-me-this` then `/plugin install teach-me@teach-me`.
-- **claude.ai / Claude apps** — upload the `skills/teach-me` folder as a skill.
-- **Manual** — clone the repo and copy (or symlink) `skills/teach-me` into your skills folder.
+- **claude.ai / Claude apps** — download `teach-me-skill.zip` from the [latest release](https://github.com/ds-vibe/teach-me-this/releases) and upload it as a skill in Settings → Capabilities → Skills.
+- **Manual (Codex or any skills folder)** — download the zip (or clone the repo) and put the `teach-me` folder in your skills directory, e.g. `~/.claude/skills/teach-me`.
 
 Then ask for a lesson: "teach me hearsay," "make a lesson on liquidation preferences for a first-time founder." Answer the interview, pick a teaching approach and a look at the checkpoint, then wait for the file.
 
