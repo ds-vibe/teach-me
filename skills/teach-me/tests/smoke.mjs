@@ -25,15 +25,19 @@ await R('ruling wrong answer → .why.bad + retry shows', async()=>{
 /* The teaching lives in the revealed .why, so a screen reader has to be told it
    arrived, and the answered options have to stay in the tab order — a disabled
    button drops out of it and throws keyboard focus back to <body>. */
+/* Scope every selector to the OUTER ruling's own children. A correct first answer
+   reveals the mutation twin, which is a second .ruling nested inside this one with
+   fresh unanswered options — and whether that happens depends on the shuffle, so a
+   descendant selector here passes or fails at random. */
 await R('a11y: revealed .why announces (role=status + aria-live=polite)', async()=>{
-  return (await p.$eval('#host-r1 .why',w=>w.getAttribute('role')==='status'&&w.getAttribute('aria-live')==='polite'));});
+  return (await p.$eval('#host-r1 > .ruling > .why',w=>w.getAttribute('role')==='status'&&w.getAttribute('aria-live')==='polite'));});
 await R('a11y: answered options lock via aria-disabled, not disabled', async()=>{
-  return (await p.$$eval('#host-r1 .ruling .opt',els=>
-    els.every(e=>e.getAttribute('aria-disabled')==='true') && els.every(e=>e.disabled===false)));});
+  return (await p.$$eval('#host-r1 > .ruling > .opts > .opt',els=>
+    els.length>0 && els.every(e=>e.getAttribute('aria-disabled')==='true') && els.every(e=>e.disabled===false)));});
 await R('a11y: a locked option ignores a second click', async()=>{
-  const before=await p.$eval('#host-r1 .why',w=>w.innerHTML);
-  await p.click('#host-r1 .ruling .opt:nth-child(1)',{force:true});
-  return (await p.$eval('#host-r1 .why',w=>w.innerHTML))===before;});
+  const before=await p.$eval('#host-r1 > .ruling > .why',w=>w.innerHTML);
+  await p.click('#host-r1 > .ruling > .opts > .opt:nth-child(1)',{force:true});
+  return (await p.$eval('#host-r1 > .ruling > .why',w=>w.innerHTML))===before;});
 await R('a11y: commit .why announces too', async()=>{
   return (await p.$eval('#commit-c1 .why',w=>w.getAttribute('aria-live')==='polite'));});
 await R('final start → bespoke device locks (LOCK_IDS, bogus id ignored)', async()=>{
