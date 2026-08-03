@@ -8,7 +8,7 @@
   "scripts": {
     "postinstall": "playwright install chromium webkit",
     "check": "node skills/teach-me/scripts/doctor.mjs",
-    "test": "cd skills/teach-me && node tests/smoke.mjs && node tests/pausecheck.mjs"
+    "test": "cd skills/teach-me && node tests/build-flags.mjs && node tests/smoke.mjs && node tests/pausecheck.mjs"
   },
   "dependencies": {
     "playwright": "^1.49.0"
