@@ -435,8 +435,13 @@ var TYPED_GATE=80;                                             // same real-atte
 /* Mastery is per objective, not overall: a 75% total can hide an objective the
    learner went 0-for-2 on, which is the one thing the readout most needs to say.
    Practice items register here only when the lesson tags them with an obj, so a
-   lesson built before that tag existed still works — it just retries finals only. */
-var CRITERION=0.8;
+   lesson built before that tag existed still works — it just retries finals only.
+   One miss is forgiven from three items up. A straight 80% on the small denominators
+   a short lesson can afford means no miss at all — you need five items before one
+   slip survives the percentage — so it would fail a learner for a single fumble and
+   read as broken. Below three, there is no room to tell a slip from a gap, so the
+   percentage stands alone. */
+var CRITERION=0.8,SLIP_FROM=3;
 var PRACTICE=[];
 /* A final item is either MCQ (f.opts) or written (f.typed:true + f.model + f.criteria).
    A written item shows NO model answer during the exam — that would hand over the
@@ -640,7 +645,8 @@ function renderReadout(results,second,written,prev,attempt){
   var objCells=OBJS.map(function(o){                           // was hardcoded o1/o2
     var got=results.filter(function(r){return r.f.obj===o.tag&&r.ok;}).length;
     var tot=results.filter(function(r){return r.f.obj===o.tag;}).length;
-    return {label:o.label,tag:o.tag,got:got,tot:tot,pass:!tot||got/tot>=CRITERION};
+    return {label:o.label,tag:o.tag,got:got,tot:tot,
+            pass:!tot||got/tot>=CRITERION||(tot>=SLIP_FROM&&tot-got<=1)};
   });
   /* The gate. An objective under criterion is the headline, not a pill the learner
      has to decode — "not yet" and the names, before the number. Nothing can force a

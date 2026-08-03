@@ -37,7 +37,8 @@ const CFG = {
   minTyped:     { short: 2,        full: 2 },   // one in practice, one in the final
   minVisuals:   { short: 1,        full: 3 },   // drawn visuals that teach
   minLive:      { short: 1,        full: 2 },   // of those, ones taking learner input
-  finalPerObj:  2,     // closed-book items per stated objective
+  finalPerObj:  3,     // closed-book items per stated objective — three is where the
+                       // readout can tell a slip from a gap; at two, one miss is 50%
   minFinalOpts: 4,     // 3 options is a 33% guess floor on a graded exam
   voiceClips:   [20, 40],
   heroWords:    260,
