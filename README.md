@@ -74,7 +74,7 @@ Lessons keep your quiz results in your browser only (localStorage on your machin
 | `skills/teach-me/reference/` | the lesson runtime, page shell, devices, and screenshots of the quality bar |
 | `skills/teach-me/scripts/` | build and QA tooling — assembly, fonts, TTS, images, lint, screenshots, the build clock |
 | `.claude-plugin/` | plugin packaging, so Claude Code can install this with one command |
-| `trainer/` | a standalone ear-training app built alongside the skill (see `EAR-TRAINER-SPEC.md`) |
+| `trainer/` | a standalone ear-training app built alongside the skill |
 
 ## Third-party tools and content
 
