@@ -16,8 +16,8 @@ jobs:
           node-version: '20'
       - name: Install dependencies
         run: npm install --ignore-scripts
-      - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium webkit
       - name: Doctor
         run: npm run check
       - name: Runtime tests
