@@ -15,20 +15,20 @@
 
 ## Installation
 
-Pick the one that matches where you use Claude:
+Pick one:
 
-- **Claude Code (plugin)**: `/plugin marketplace add ds-vibe/teach-me`, then `/plugin install teach-me@teach-me`
 - **claude.ai and the Claude apps (skill upload)**: download `teach-me-skill.zip` from the [release assets](https://github.com/ds-vibe/teach-me/releases), then upload it as a skill in **Settings → Capabilities → Skills**
+- **Claude Code (plugin)**: `/plugin marketplace add ds-vibe/teach-me`, then `/plugin install teach-me@teach-me`
 - **Codex or manual (skill folder)**: download `teach-me-skill.zip` (or clone the repo) and put the `teach-me` folder in your skills directory — for example `~/.claude/skills/teach-me`
 
 The plugin and the zip contain the same skill; you only need one.
 
 ## Example snapshot
 
-The GitHub Pages site publishes six lessons and the trainer at
+The GitHub Pages site publishes five lessons and the trainer at
 [ds-vibe.github.io/teach-me](https://ds-vibe.github.io/teach-me/).
 
-The six lessons are as the skill produced them to show real lesson quality. The only exceptions were minor visual fixes.
+The five lessons are as the skill produced them to show real lesson quality. The only exceptions were minor visual fixes.
 
 The Interval Trainer is different: a custom build with a few revisions.
 
