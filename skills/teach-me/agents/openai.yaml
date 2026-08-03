@@ -1,7 +1,7 @@
 interface:
   display_name: "Teach Me — Simplified"
   short_description: "Build polished interactive HTML lessons"
-  default_prompt: "Use $teach-me-simplified to teach me a topic through explanation, practice, feedback, and a closed-book final."
+  default_prompt: "Use $teach-me to teach me a topic through explanation, practice, feedback, and a closed-book final."
 
 policy:
   allow_implicit_invocation: true

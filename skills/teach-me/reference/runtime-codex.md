@@ -1,6 +1,6 @@
 # Codex runtime
 
-Apply this file only when running `teach-me-simplified` in Codex. `SKILL.md`
+Apply this file only when running `teach-me` in Codex. `SKILL.md`
 remains the source of truth for pedagogy, scope, and delivery requirements.
 
 ## Interview and checkpoint
