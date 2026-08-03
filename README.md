@@ -61,6 +61,7 @@ Rich AI images means photography-quality. Even without these, you'll still get v
 - Lessons are frozen files — later skill fixes don't reach lessons already built.
 - Generated content can be wrong and must be reviewed before use in high-stakes settings. Study material, not professional advice.
 - Quiz results live in one browser; move between machines with the downloaded results file.
+- **A lesson is one sitting.** Learning that lasts needs the same material pulled back up days later, and nothing here schedules that. Downloading your results and feeding them into a later drills request is a partial answer — the new set targets what you missed and chains onto the same history — but you have to remember to do it. Nothing reminds you, and nothing decays.
 
 ## Results and privacy
 
