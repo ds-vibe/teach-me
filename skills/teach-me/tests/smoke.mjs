@@ -150,5 +150,49 @@ await R('readout prints the correct answer on every missed item', async()=>{
   if(res.shown<res.missed)errs.push(`  ${res.missed} missed item(s) but only ${res.shown} showed the correct answer`);
   return res.missed===res.n&&res.shown>=res.missed;});
 
+/* All-wrong must read as "not yet" and put the retry first; all-right must not.
+   The gate is per objective, so an all-wrong run has to fail every one of them. */
+await R('mastery gate: all wrong → not-yet verdict, retry promoted', async()=>{
+  const q=await fresh();
+  const res=await q.evaluate(async()=>{
+    document.getElementById('startFinal').click();
+    await new Promise(r=>setTimeout(r,120));
+    for(let i=0;i<window.FINALS.length;i++){
+      const f=window.FINALS[i], wrong=f.opts.find(o=>!o.ok).t;
+      const item=document.getElementById('fitem-'+f.id);
+      [...item.querySelectorAll('.opt')].find(o=>o.textContent===wrong).click();
+      const nx=document.getElementById('fnext'); if(!nx.disabled)nx.click();
+    }
+    document.getElementById('fsubmit').click();
+    await new Promise(r=>setTimeout(r,150));
+    const ro=document.getElementById('readout');
+    return {notyet:!!ro.querySelector('.verdict.notyet'),
+            met:!!ro.querySelector('.verdict.met'),
+            under:ro.querySelectorAll('.objpill.under').length,
+            lead:!!ro.querySelector('.retryrow.lead'),
+            ghost:!!ro.querySelector('#retryMissed.ghost')};});
+  await q.close();
+  return res.notyet&&!res.met&&res.under>0&&res.lead&&!res.ghost;});
+await R('mastery gate: all right → met verdict, no retry row', async()=>{
+  const q=await fresh();
+  const res=await q.evaluate(async()=>{
+    document.getElementById('startFinal').click();
+    await new Promise(r=>setTimeout(r,120));
+    for(let i=0;i<window.FINALS.length;i++){
+      const f=window.FINALS[i], right=f.opts.find(o=>o.ok).t;
+      const item=document.getElementById('fitem-'+f.id);
+      [...item.querySelectorAll('.opt')].find(o=>o.textContent===right).click();
+      const nx=document.getElementById('fnext'); if(!nx.disabled)nx.click();
+    }
+    document.getElementById('fsubmit').click();
+    await new Promise(r=>setTimeout(r,150));
+    const ro=document.getElementById('readout');
+    return {met:!!ro.querySelector('.verdict.met'),
+            notyet:!!ro.querySelector('.verdict.notyet'),
+            under:ro.querySelectorAll('.objpill.under').length,
+            retry:!!ro.querySelector('#retryMissed')};});
+  await q.close();
+  return res.met&&!res.notyet&&res.under===0&&!res.retry;});
+
 console.log('\n'+(errs.length?('❌ '+errs.length+' problem(s):\n'+errs.join('\n')):'✅ zero console/page errors, all checks passed'));
 await b.close();process.exit(errs.length?1:0);

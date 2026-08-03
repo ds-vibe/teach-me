@@ -277,6 +277,10 @@ function seedFeedbackLines(r){
 }
 function buildRuling(r,host){
   seedFeedbackLines(r);
+  /* Second-pass re-serves carry the same obj as the item they came from; registering
+     them would feed the retry back into itself. */
+  var rec=(r.obj&&r.id.slice(-3)!=="_p2")?{obj:r.obj,f:r,ok:null}:null;
+  if(rec)PRACTICE.push(rec);
   var d=document.createElement("div");d.className="ruling";
   d.innerHTML='<span class="tag">'+(r.kind||"Your call")+'</span><h4>'+r.title+"</h4>"
     +(r.tx?txHTML(r.tx):"")+(r.scen?'<p class="ff">'+r.scen+"</p>":"")
@@ -302,7 +306,7 @@ function buildRuling(r,host){
         /* A wrong answer reveals the correct option immediately, so every retry is a
            retry with the answer showing. Only a first-attempt hit earns the ledger. */
         var wasFirst=!firstDone;
-        if(!firstDone){firstDone=true;if(r.onFirst)r.onFirst(!!o.ok);}
+        if(!firstDone){firstDone=true;if(rec)rec.ok=!!o.ok;if(r.onFirst)r.onFirst(!!o.ok);}
         if(o.ok){
           b.classList.add("right");
           why.className="why show good";
@@ -428,6 +432,12 @@ function fwReset(){fwAll().forEach(function(e){e.classList.remove("pend","lit","
 var finalActive=false,finalPaused=false,finalSubmitted=false,fCur=0;
 var fOrder=[],fAns=[],fText=[];
 var TYPED_GATE=80;                                             // same real-attempt gate as practice
+/* Mastery is per objective, not overall: a 75% total can hide an objective the
+   learner went 0-for-2 on, which is the one thing the readout most needs to say.
+   Practice items register here only when the lesson tags them with an obj, so a
+   lesson built before that tag existed still works — it just retries finals only. */
+var CRITERION=0.8;
+var PRACTICE=[];
 /* A final item is either MCQ (f.opts) or written (f.typed:true + f.model + f.criteria).
    A written item shows NO model answer during the exam — that would hand over the
    answer mid-final. It banks the text; the model and the self-score criteria arrive
@@ -630,11 +640,20 @@ function renderReadout(results,second,written,prev,attempt){
   var objCells=OBJS.map(function(o){                           // was hardcoded o1/o2
     var got=results.filter(function(r){return r.f.obj===o.tag&&r.ok;}).length;
     var tot=results.filter(function(r){return r.f.obj===o.tag;}).length;
-    return {label:o.label,got:got,tot:tot};
+    return {label:o.label,tag:o.tag,got:got,tot:tot,pass:!tot||got/tot>=CRITERION};
   });
+  /* The gate. An objective under criterion is the headline, not a pill the learner
+     has to decode — "not yet" and the names, before the number. Nothing can force a
+     retake in a static file, so this changes what finished looks like, not what is
+     possible: the score still stands and the page stays readable either way. */
+  var shortfall=objCells.filter(function(c){return c.tot&&!c.pass;});
   var h='<div class="scorehead"><p class="eyebrow">Your readout</p>'
+    +'<p class="verdict '+(shortfall.length?"notyet":"met")+'">'
+      +(shortfall.length
+        ?"Not yet — "+shortfall.map(function(c){return c.label;}).join(" and ")+" "+(shortfall.length>1?"need":"needs")+" another pass"
+        :"You hit the mark on every objective")+"</p>"
     +'<p class="scorebig">'+score+"/"+results.length+"</p>"
-    +'<div class="objrow">'+objCells.map(function(c){return '<span class="objpill">'+c.label+" · "+c.got+"/"+c.tot+"</span>";}).join("")+"</div>"
+    +'<div class="objrow">'+objCells.map(function(c){return '<span class="objpill'+(c.tot&&!c.pass?" under":"")+'">'+c.label+" · "+c.got+"/"+c.tot+"</span>";}).join("")+"</div>"
     +(second?'<p class="secondline">Second pass over missed items: '+second.score+"/"+second.total+" (scored separately — your first score stands)</p>":"")
     +"</div>";
   /* Running tally across attempts: strongest and weakest objectives by cumulative
@@ -682,7 +701,18 @@ function renderReadout(results,second,written,prev,attempt){
       +"</div>";
   });
   if(missed.length&&!second){
-    h+='<div class="retryrow"><button class="btn" id="retryMissed">Retry the '+missed.length+" missed item"+(missed.length>1?"s":"")+" (scored separately)</button></div>";
+    /* Below criterion the retry is the thing to do next, so it reads as an instruction
+       and carries the reteach in front of it; at or above, it stays an offer. */
+    var extra=retryExtras(objCells);
+    var n=missed.length+extra.length;
+    h+='<div class="retryrow'+(shortfall.length?" lead":"")+'">'
+      +(shortfall.length?'<p class="retrylead">Reread '+shortfall.map(function(c){
+          var m=results.filter(function(r){return r.f.obj===c.tag&&!r.ok;})[0];
+          return m?'<a class="reteach" href="'+m.f.back.split("|")[0]+'">'+m.f.back.split("|")[1]+"</a>":c.label;
+        }).join(", ")+", then take these again.</p>":"")
+      +'<button class="btn'+(shortfall.length?"":" ghost")+'" id="retryMissed">'
+      +(shortfall.length?"Work the "+n+" item"+(n>1?"s":"")+" you missed":"Retry the "+n+" missed item"+(n>1?"s":""))
+      +" (scored separately)</button></div>";
   }
   var objSummary=objCells.map(function(c){return c.label+" "+c.got+"/"+c.tot;}).join(" · ");
   var brief=BRIEF_TITLE+"\n"
@@ -742,13 +772,22 @@ function renderReadout(results,second,written,prev,attempt){
     setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},500);
   });
   var rm=document.getElementById("retryMissed");
-  if(rm)rm.addEventListener("click",function(){runSecondPass(results);});
+  if(rm)rm.addEventListener("click",function(){runSecondPass(results,objCells);});
 }
-function runSecondPass(results){
-  var missed=results.filter(function(r){return !r.ok;});
+/* Practice items on an objective that fell short, missed on the first attempt.
+   Empty for any lesson whose practice items carry no obj tag — finals only, which
+   is exactly what the retry did before. */
+function retryExtras(objCells){
+  var under={};
+  objCells.forEach(function(c){if(c.tot&&!c.pass)under[c.tag]=true;});
+  return PRACTICE.filter(function(p){return under[p.obj]&&p.ok===false;});
+}
+function runSecondPass(results,objCells){
+  var missed=results.filter(function(r){return !r.ok;})
+    .concat(objCells?retryExtras(objCells):[]);
   var host=document.getElementById("readout");
   var wrap=document.createElement("div");
-  wrap.innerHTML='<h3 class="p2head">Second pass — missed items only</h3><p id="p2score" class="p2score">Scored separately — your first score stands. First answer on each item counts.</p>';
+  wrap.innerHTML='<h3 class="p2head">Second pass — what you missed</h3><p id="p2score" class="p2score">Scored separately — your first score stands. First answer on each item counts.</p>';
   host.appendChild(wrap);
   var got=0,doneN=0,total=missed.length;
   function tally(ok){
@@ -758,8 +797,10 @@ function runSecondPass(results){
   }
   missed.forEach(function(r){
     var f=r.f;
+    /* A final item carries one back: for the whole item; a practice item carries one
+       per wrong option. Take whichever this item has. */
     buildRuling({id:f.id+"_p2",mark:f.id,kind:"Second pass",title:f.title,tx:f.tx,q:f.q,onFirst:tally,
-      opts:f.opts.map(function(o){return {ok:o.ok,t:o.t,why:o.why,back:o.ok?undefined:f.back};})},wrap);
+      opts:f.opts.map(function(o){return {ok:o.ok,t:o.t,why:o.why,back:o.ok?undefined:(f.back||o.back)};})},wrap);
   });
   var rm=document.getElementById("retryMissed");
   if(rm)rm.disabled=true;

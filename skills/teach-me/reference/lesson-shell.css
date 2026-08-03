@@ -320,9 +320,15 @@ body.finalon section.finalhost{opacity:1;pointer-events:auto}
 #readout{display:none;margin-top:var(--s6)}
 #readout.show{display:block}
 .scorehead{border-bottom:1px solid var(--line);padding-bottom:var(--s5);margin-bottom:var(--s5)}
+.verdict{font-family:var(--sans);font-size:19px;font-weight:700;line-height:1.35;margin:0 0 var(--s3)}
+.verdict.notyet{color:var(--danger)}
+.verdict.met{color:var(--good)}
 .scorebig{font-size:46px;font-weight:700;line-height:1;margin:0 0 var(--s4)}
 .objrow{display:flex;gap:var(--s2);flex-wrap:wrap}
 .objpill{font-family:var(--sans);font-size:13px;font-weight:600;padding:8px 12px;border:1.5px solid var(--line2);border-radius:2px}
+/* Under criterion: the border carries it, never colour alone — a pill that reads as
+   "short" only by being red says nothing to a colourblind reader. */
+.objpill.under{border-color:var(--danger);border-width:2px;background:var(--danger-soft)}
 .secondline{font-family:var(--sans);font-size:13.5px;color:var(--muted);margin:var(--s4) 0 0}
 .ritem{border-top:1px solid var(--line);padding:var(--s4) 0}
 .ritem .rv{font-family:var(--sans);font-size:12.5px;font-weight:700;margin:0 0 var(--s2)}
@@ -334,6 +340,8 @@ body.finalon section.finalhost{opacity:1;pointer-events:auto}
 .rright{font-family:var(--sans);font-size:14.5px;margin:var(--s3) 0 var(--s2);
   padding-left:var(--s3);border-left:3px solid var(--good);color:var(--fg)}
 .retryrow{margin:var(--s5) 0}
+.retryrow.lead{border-left:4px solid var(--danger);padding:var(--s4);background:var(--surface)}
+.retrylead{font-size:16.5px;line-height:1.55;margin:0 0 var(--s3)}
 .briefbox{background:var(--surface);border:1px solid var(--line);padding:var(--s5);margin-top:var(--s5)}
 .brieftitle{font-family:var(--sans);font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 var(--s3)}
 #briefpre{font-family:var(--mono);font-size:13px;line-height:1.65;white-space:pre-wrap;background:var(--surface2);
