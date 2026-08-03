@@ -30,9 +30,9 @@ In Claude Code or Codex, the QA tooling needs Node plus Playwright's Chromium an
 
 ## Examples
 
-The GitHub Pages site publishes five lessons and the Interval Trainer at [ds-vibe.github.io/teach-me](https://ds-vibe.github.io/teach-me/) — hearsay drills, the Erie doctrine, FTC influencer disclosures, liquidation preferences, and perioperative cardiac risk. Open one in your browser and take it.
+The GitHub Pages site publishes four lessons and the Interval Trainer at [ds-vibe.github.io/teach-me](https://ds-vibe.github.io/teach-me/) — FTC influencer disclosures, the Erie doctrine, hearsay drills, and liquidation preferences. Open one in your browser and take it.
 
-The five lessons are as the skill produced them to show real lesson quality - warts and all. The only exceptions were minor visual fixes. The Interval Trainer is different: a custom ear-training app with a few revisions.
+The four lessons are as the skill produced them to show real lesson quality - warts and all. The only exceptions were minor visual fixes. The Interval Trainer is different: a custom ear-training app with a few revisions.
 
 ## Voice, rich images, and AI chat
 

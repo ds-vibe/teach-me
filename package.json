@@ -1,13 +1,14 @@
 {
-  "name": "teach-me-simplified",
-  "version": "1.0.0",
+  "name": "teach-me",
+  "version": "0.0.2",
   "private": true,
   "type": "module",
-  "description": "Claude Code / Codex skill (simplified variant) that builds voice-narrated, single-file interactive HTML lessons.",
+  "description": "Claude Code / Codex skill that builds voice-narrated, single-file interactive HTML lessons.",
   "license": "MIT",
   "scripts": {
     "postinstall": "playwright install chromium webkit",
-    "check": "node scripts/doctor.mjs"
+    "check": "node skills/teach-me/scripts/doctor.mjs",
+    "test": "cd skills/teach-me && node tests/smoke.mjs && node tests/pausecheck.mjs"
   },
   "dependencies": {
     "playwright": "^1.49.0"

@@ -1,4 +1,4 @@
-import { chromium } from '/Users/derek/teach-me/node_modules/playwright/index.mjs';
+import { chromium } from 'playwright';
 const { MUTE_ARGS, muteSpeech } = await import('../scripts/mute.mjs');
 const b=await chromium.launch({args:MUTE_ARGS});const p=await b.newPage();await muteSpeech(p);
 const errs=[];p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error')errs.push(m.text());});

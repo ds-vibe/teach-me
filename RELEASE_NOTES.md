@@ -25,10 +25,10 @@ The plugin and the zip contain the same skill; you only need one.
 
 ## Example snapshot
 
-The GitHub Pages site publishes five lessons and the trainer at
+The GitHub Pages site publishes four lessons and the trainer at
 [ds-vibe.github.io/teach-me](https://ds-vibe.github.io/teach-me/).
 
-The five lessons are as the skill produced them to show real lesson quality. The only exceptions were minor visual fixes.
+The four lessons are as the skill produced them to show real lesson quality. The only exceptions were minor visual fixes.
 
 The Interval Trainer is different: a custom build with a few revisions.
 
