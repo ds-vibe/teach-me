@@ -36,7 +36,8 @@ em.key{font-style:normal;font-weight:700;box-shadow:inset 0 -.42em 0 var(--gold)
   border:1px solid var(--line2);border-radius:2px;min-width:280px;padding:var(--s2);z-index:70;
   box-shadow:0 10px 30px rgba(0,0,0,.2)}
 #lessonmenu .menu a{display:block;padding:9px 10px;color:var(--fg);text-decoration:none;font-size:13.5px;border-radius:2px}
-#lessonmenu .menu a:hover,#lessonmenu .menu a:focus{background:var(--surface3);outline:none}
+#lessonmenu .menu a:hover,#lessonmenu .menu a:focus{background:var(--surface3)}
+#lessonmenu .menu a:focus:not(:focus-visible){outline:none}
 #lessonmenu .menu a small{display:block;color:var(--muted);font-size:11.5px;font-weight:500}
 .barright{margin-left:auto;display:flex;align-items:center;gap:var(--s2)}
 .iconbtn{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 10px;background:transparent;
@@ -114,11 +115,18 @@ section.tone{background:var(--surface2);margin:0 calc(-50vw + 50%);padding-left:
 /* :not(.sel) is load-bearing — :hover outranks .opt.sel on specificity, so without it a
    selected final answer keeps the hover background while taking .sel's text colour and
    the label renders invisible for as long as the pointer stays on the button. */
-.opt:hover:not([disabled]):not(.sel){background:var(--hover)}
-.opt[disabled]{cursor:default;opacity:.6}
+/* An answered option locks with aria-disabled, not the disabled property, so it keeps
+   its place in the tab order — match both here or a locked option keeps its hover. */
+.opt:hover:not([disabled]):not([aria-disabled="true"]):not(.sel){background:var(--hover)}
+.opt[disabled],.opt[aria-disabled="true"]{cursor:default;opacity:.6}
 .opt.right{border-color:var(--good);background:var(--good-soft);opacity:1}
 .opt.wrong{border-color:var(--danger);background:var(--danger-soft);opacity:1}
 .opt.sel{border-color:var(--fg);background:var(--fg);color:var(--bg)}
+/* Keyboard users need to see where they are. :focus-visible only paints for keyboard
+   and assistive navigation, so a mouse click does not leave a ring behind. The readout
+   takes focus programmatically and is not an interactive control, so it is exempt. */
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+#readout:focus,#readout:focus-visible{outline:none}
 .why{display:none;font-size:17px;line-height:1.55;margin:var(--s4) 0 0;padding:var(--s4);background:var(--surface);border-left:4px solid var(--muted)}
 .why.show{display:block}
 .why.good{border-left-color:var(--good)}

@@ -385,6 +385,29 @@ if (RENDER) {
   else OK('contrast', 'body and verdict text clear 4.5:1');
   if (contrast.soft.length) WARN('contrast', `secondary text under 4.5:1 — ` + contrast.soft.join(' · '));
 
+  /* --- a11y: the runtime half of this (announced feedback, options that keep the
+     tab order) is guaranteed by runtime-verbatim. What that cannot see is what the
+     lesson itself authors: a teaching diagram with no accessible name is a blank to
+     anyone not looking at it, and a control whose only label is an icon is unusable.
+     Decorative art is exempt — it just has to say so with aria-hidden. */
+  const a11y = await page.evaluate(() => {
+    const bad = { svg: 0, btn: [] };
+    document.querySelectorAll('svg').forEach(s => {
+      if (s.closest('[aria-hidden="true"]') || s.getAttribute('aria-hidden') === 'true') return;
+      const named = s.querySelector('title') || s.getAttribute('aria-label') || s.getAttribute('role') === 'presentation';
+      if (!named) bad.svg++;
+    });
+    document.querySelectorAll('button, a[href]').forEach(b => {
+      const t = (b.textContent || '').trim();
+      if (t || b.getAttribute('aria-label') || b.getAttribute('title')) return;
+      bad.btn.push(b.id || b.className || b.tagName.toLowerCase());
+    });
+    return bad;
+  });
+  if (a11y.svg) WARN('a11y-names', `${a11y.svg} svg element(s) with no <title>, aria-label, or aria-hidden — a teaching diagram needs a name, decorative art needs aria-hidden="true"`);
+  else OK('a11y-names', 'every svg is named or explicitly decorative');
+  if (a11y.btn.length) FAIL('a11y-names', `control(s) with no accessible name: ${a11y.btn.slice(0, 5).join(' · ')}`);
+
   await browser.close();
 }
 

@@ -208,6 +208,25 @@ function orderOpts(opts){
 }
 function plain(t){return t.replace(/<[^>]+>/g,"");}
 
+/* ===================== screen reader and keyboard ===================== */
+/* The revealed feedback node is where the teaching lives, so it has to announce
+   itself — a silent reveal hands a screen reader nothing at the one moment that
+   matters. role=status + aria-live=polite waits for a pause instead of cutting in.
+   Options lock with aria-disabled, never the disabled property: a disabled button
+   leaves the tab order, so keyboard focus fell back to <body> after every answer
+   and the reader had to tab from the top of the page again. */
+function liveify(el){
+  if(el&&!el.getAttribute("aria-live")){el.setAttribute("role","status");el.setAttribute("aria-live","polite");}
+  return el;
+}
+function lockOpts(box){
+  Array.prototype.forEach.call(box.children,function(x){x.setAttribute("aria-disabled","true");});
+}
+function unlockOpts(box){
+  Array.prototype.forEach.call(box.children,function(x){x.removeAttribute("aria-disabled");});
+}
+function locked(b){return b.getAttribute("aria-disabled")==="true";}
+
 /* ===================== commit cards (ungraded) ===================== */
 function buildCommit(c){
   var host=document.getElementById(c.host);
@@ -217,7 +236,7 @@ function buildCommit(c){
     +'<p class="stem" id="'+stemId+'"></p><div class="opts"></div><p class="why"></p>';
   document.getElementById(stemId).textContent=c.stem;
   LINES["stem_"+c.id]=c.stem;
-  var opts=host.querySelector(".opts"),why=host.querySelector(".why");
+  var opts=host.querySelector(".opts"),why=liveify(host.querySelector(".why"));
   var order=orderOpts(c.opts);
   order.map(function(i){return c.opts[i];}).forEach(function(o,idx){
     var vid="fb_"+c.id+"_"+order[idx];
@@ -225,7 +244,8 @@ function buildCommit(c){
     LINES[vid]=pre+plain(o.resp);
     var b=document.createElement("button");b.className="opt";b.textContent=o.t;
     b.addEventListener("click",function(){
-      Array.prototype.forEach.call(opts.children,function(x){x.disabled=true;});
+      if(locked(b))return;
+      lockOpts(opts);
       b.classList.add(o.v==="ok"?"right":(o.v==="no"?"wrong":"sel"));
       // Same closure as rulings and the final: a miss lights the designed answer too.
       if(o.v!=="ok")Array.prototype.forEach.call(opts.children,function(x,i2){
@@ -262,7 +282,7 @@ function buildRuling(r,host){
     +(r.tx?txHTML(r.tx):"")+(r.scen?'<p class="ff">'+r.scen+"</p>":"")
     +'<p class="q">'+r.q+"</p>";
   var opts=document.createElement("div");opts.className="opts";d.appendChild(opts);
-  var why=document.createElement("p");why.className="why";d.appendChild(why);
+  var why=liveify(document.createElement("p"));why.className="why";d.appendChild(why);
   var retry=document.createElement("button");retry.className="btn ghost retry";retry.textContent="Try again";d.appendChild(retry);
   var mut=document.createElement("div");d.appendChild(mut);
   var order=orderOpts(r.opts);
@@ -277,7 +297,8 @@ function buildRuling(r,host){
       if(!o.ok&&r.id.slice(-3)!=="_p2")LINES[vid]="Not quite. "+plain(o.why);
       var b=document.createElement("button");b.className="opt";b.textContent=o.t;
       b.addEventListener("click",function(){
-        Array.prototype.forEach.call(opts.children,function(x){x.disabled=true;});
+        if(locked(b))return;
+        lockOpts(opts);
         /* A wrong answer reveals the correct option immediately, so every retry is a
            retry with the answer showing. Only a first-attempt hit earns the ledger. */
         var wasFirst=!firstDone;
@@ -335,7 +356,7 @@ function buildTyped(t,host){
     });
   });
   btn.addEventListener("click",function(){
-    ta.readOnly=true;model.classList.add("show");crits.classList.add("show");btn.disabled=true;
+    ta.readOnly=true;liveify(model);model.classList.add("show");crits.classList.add("show");btn.disabled=true;
   });
   host.appendChild(d);
 }
@@ -358,7 +379,7 @@ function buildSorter(s){
     var row=document.createElement("div");row.className="sortrow";
     row.innerHTML='<p class="offer"><b>Offered</b> — '+rw.p+"</p>";
     var btns=document.createElement("div");btns.className="sortbtns";
-    var note=document.createElement("p");note.className="sortnote";
+    var note=liveify(document.createElement("p"));note.className="sortnote";
     var choices=[{t:s.labels[0],truth:true},{t:s.labels[1],truth:false}];
     var retry=document.createElement("button");retry.className="btn ghost retry";retry.textContent="Try again";
     var scored=false;
@@ -368,7 +389,8 @@ function buildSorter(s){
         var c=choices[ci];
         var b=document.createElement("button");b.className="opt";b.textContent=c.t;
         b.addEventListener("click",function(){
-          Array.prototype.forEach.call(btns.children,function(x){x.disabled=true;});
+          if(locked(b))return;
+          lockOpts(btns);
           var right=(c.truth===rw.truth);
           b.classList.add(right?"right":"wrong");
           if(!right)Array.prototype.forEach.call(btns.children,function(x){if(x!==b)x.classList.add("right");});
@@ -592,8 +614,13 @@ function submitFinal(){
   tmSaveAttempt(attempt);
   renderReadout(results,null,written,prev,attempt);
   document.getElementById("finalstage").hidden=true;
-  document.getElementById("readout").classList.add("show");
-  document.getElementById("readout").scrollIntoView({behavior:"smooth",block:"start"});
+  var ro=document.getElementById("readout");
+  ro.classList.add("show");
+  ro.scrollIntoView({behavior:"smooth",block:"start"});
+  /* The score replaces the whole final, so this one moves focus rather than
+     announcing politely — a reader arriving here should land on the result, not
+     hear it read behind wherever focus happened to be. */
+  ro.setAttribute("tabindex","-1");ro.focus({preventScroll:true});
 }
 function renderReadout(results,second,written,prev,attempt){
   written=written||[];prev=prev||[];

@@ -22,6 +22,20 @@ await R('typed gate: 80 chars enables', async()=>{
 await R('ruling wrong answer → .why.bad + retry shows', async()=>{
   await p.click('#host-r1 .ruling .opt:nth-child(2)'); // not guaranteed wrong (shuffled) — just assert a why shows
   return (await p.$eval('#host-r1 .why',w=>w.classList.contains('show')));});
+/* The teaching lives in the revealed .why, so a screen reader has to be told it
+   arrived, and the answered options have to stay in the tab order — a disabled
+   button drops out of it and throws keyboard focus back to <body>. */
+await R('a11y: revealed .why announces (role=status + aria-live=polite)', async()=>{
+  return (await p.$eval('#host-r1 .why',w=>w.getAttribute('role')==='status'&&w.getAttribute('aria-live')==='polite'));});
+await R('a11y: answered options lock via aria-disabled, not disabled', async()=>{
+  return (await p.$$eval('#host-r1 .ruling .opt',els=>
+    els.every(e=>e.getAttribute('aria-disabled')==='true') && els.every(e=>e.disabled===false)));});
+await R('a11y: a locked option ignores a second click', async()=>{
+  const before=await p.$eval('#host-r1 .why',w=>w.innerHTML);
+  await p.click('#host-r1 .ruling .opt:nth-child(1)',{force:true});
+  return (await p.$eval('#host-r1 .why',w=>w.innerHTML))===before;});
+await R('a11y: commit .why announces too', async()=>{
+  return (await p.$eval('#commit-c1 .why',w=>w.getAttribute('aria-live')==='polite'));});
 await R('final start → bespoke device locks (LOCK_IDS, bogus id ignored)', async()=>{
   await p.click('#startFinal');await p.waitForTimeout(100);
   return (await p.$eval('#dev-real',d=>d.classList.contains('locked')));});

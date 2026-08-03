@@ -48,10 +48,9 @@ remains the source of truth for pedagogy, scope, and delivery requirements.
 
 ## Independent review
 
-- For a short lesson, use one fresh-context reviewer with the combined canonical
-  learner-and-rules brief.
-- For a full lesson, use two independent fresh-context reviewers in parallel:
-  the canonical rules-and-accuracy reviewer and the cold learner reviewer.
+- Two independent fresh-context reviewers in parallel, whatever the length: the
+  canonical rules-and-accuracy reviewer and the cold learner reviewer. A short
+  lesson is a shorter lesson, not a cheaper build — see SKILL.md § Quality checks.
 - Give reviewers the artifact, sources, user choices, and applicable rules only.
   Do not provide the writer's rationale or expected findings.
 - Reviewers report evidence and do not edit. Merge findings, fix blockers once,
