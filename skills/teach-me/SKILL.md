@@ -258,4 +258,4 @@ Ship when both gates pass: `node scripts/lint.mjs <file> --len <length>` exits 0
 
 If you're behind, cut scope, not depth: drop an objective and its section whole, rather than thinning the final or dropping typed items.
 
-Deliver one HTML file, assembled without `--review`. Say what you left out.
+Deliver two files, and say which is which. **The lesson** — assembled without `--review`, and that is the only one a learner ever opens; the lint fails a learner build carrying the overlay, because an editable page lets a learner rewrite the questions and it keeps notes in storage the lesson otherwise never writes. **A review copy** beside it, `node scripts/assemble.mjs <lesson>.html --review -o <lesson>.review.html`, which adds a "Review & edit" button for fixing text in place and exporting the notes. Build the review copy every time rather than offering it — it takes a fraction of a second, adds no meaningful file size, and is the only way the user can mark up what you got wrong instead of describing it back to you. It matters most on the teacher path, where the lesson goes out to other people and the mistakes have to be caught first. Say what you left out.
