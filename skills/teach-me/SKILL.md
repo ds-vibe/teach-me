@@ -200,8 +200,7 @@ Voice, chat and images all run on the user's own key, and one OpenAI key covers 
 **Never ask for an API key in chat. If a user pastes one anyway, don't use it — tell them to rotate it.** A key belongs in the environment, in a `--key-file`, or in the page's own dock.
 
 What happens with no key differs by channel, and that difference decides what you build: **voice and chat** degrade at runtime — the reader adds their own key to the dock in the finished page (combine voice and chat into one dock when both are on). **Images** are generated at build time, so no key means no pictures at all: `images.mjs` leaves the stub alone and the CSS placeholder shows. Never design a visual lesson whose teaching depends on images you couldn't generate — build the SVG or CSS version instead.
-
-Mechanics: TTS invocation, caching, browser-TTS quirks and font inlining are in `reference/voice-pipeline.md`. Generation is `node scripts/tts.mjs` (audio) and `node scripts/images.mjs` (pictures).
+Mechanics: TTS invocation, caching, browser-TTS quirks, font inlining, and the reader-key dock — the `--voice-dock` and `--chat` flags that inject it, without which a user who asked for either gets a lesson quietly missing it — are in `reference/voice-pipeline.md`. Generation is `node scripts/tts.mjs` (audio) and `node scripts/images.mjs` (pictures).
 
 ---
 
