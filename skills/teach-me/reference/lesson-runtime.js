@@ -445,6 +445,8 @@ var CRITERION=0.8,SLIP_FROM=3;
 /* The two halves of the bar, named so they can be tested directly rather than
    through a rendered readout — the second exists because the first, on its own,
    passes a learner who missed one on every objective. */
+/* Set TM_DRILLS = true in a drills build; it only changes how the readout speaks. */
+var DRILLS=!!window.TM_DRILLS;
 function objPass(got,tot){return !tot||got/tot>=CRITERION||(tot>=SLIP_FROM&&tot-got<=1);}
 function overallPass(score,total){return !total||score/total>=CRITERION;}
 var PRACTICE=[];
@@ -672,11 +674,16 @@ function renderReadout(results,second,written,prev,attempt){
   var met=!shortfall.length&&overallOk;
   var h='<div class="scorehead"><p class="eyebrow">Your readout</p>'
     +'<p class="verdict '+(met?"met":"notyet")+'">'
+      /* Drill mode says the same thing without the verdict. Grinding a battery and
+         missing a lot on the first round is the expected state there, not a failure,
+         and "Not yet" reads as a scolding for doing exactly what drills are for. */
       +(shortfall.length
-        ?"Not yet — "+shortfall.map(function(c){return c.label;}).join(" and ")+" "+(shortfall.length>1?"need":"needs")+" another pass"
+        ?(DRILLS?"Still shaky on ":"Not yet — ")+shortfall.map(function(c){return c.label;}).join(" and ")
+          +(DRILLS?"":" "+(shortfall.length>1?"need":"needs")+" another pass")
         :(overallOk
-          ?"You hit the mark on every objective"
-          :"Not yet — you cleared each objective on its own, but missed too much across the lesson"))+"</p>"
+          ?(DRILLS?"Clean round — every objective is holding":"You hit the mark on every objective")
+          :(DRILLS?"Every objective is holding on its own; the set as a whole still needs another lap"
+                  :"Not yet — you cleared each objective on its own, but missed too much across the lesson")))+"</p>"
     +'<p class="scorebig">'+score+"/"+results.length+"</p>"
     +'<div class="objrow">'+objCells.map(function(c){return '<span class="objpill'+(c.tot&&!c.pass?" under":"")+'">'+c.label+" · "+c.got+"/"+c.tot+"</span>";}).join("")+"</div>"
     +(second?'<p class="secondline">Second pass over missed items: '+second.score+"/"+second.total+" (scored separately — your first score stands)</p>":"")

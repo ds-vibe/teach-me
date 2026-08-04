@@ -33,7 +33,12 @@ const REF = path.resolve(__dir, '../reference');
    Tune these. They are the whole point of the file — every number here is
    a floor that two real builds fell through. */
 const CFG = {
-  items:        { short: [6, 10],  full: [16, 25] },
+  /* Practice has its own band. One pooled budget meant a stricter final ate the
+     teaching half: at 4 closed-book items per objective, a two-objective short
+     lesson spent 8 of 10 on the exam and had no room left for a mutation twin.
+     The final's floor is final-coverage's job, so it is not counted here. */
+  practice:     { short: [4, 9],   full: [8, 15] },
+  items:        { short: [6, 10],  full: [16, 25] },   // total, reported not gated
   minTyped:     { short: 2,        full: 2 },   // one in practice, one in the final
   minVisuals:   { short: 1,        full: 3 },   // drawn visuals that teach
   minLive:      { short: 1,        full: 2 },   // of those, ones taking learner input
@@ -146,6 +151,17 @@ if (RENDER) {
       })),
       COMMITS: arr(g('COMMITS')).map(c => ({ id: c.id, wrong: opts(c).filter(o => o.v === 'no').length })),
       SORT: g('SORT') ? { rows: arr(g('SORT').rows).length } : null,
+      /* Bespoke devices are per-lesson markup with no shared shape, so a graded one
+         declares itself: data-item on the host. Illustrations stay unmarked. */
+      deviceItems: document.querySelectorAll('[data-item]').length,
+      /* An image that generated but is only named in prose — "[photo of a contract]"
+         in a message bubble while the picture sits in IMAGES unplaced. */
+      imgPlaced: (() => {
+        const src = new Set([...document.querySelectorAll('img')].map(i => (i.getAttribute('src') || '').slice(0, 64)));
+        const have = Object.entries(window.IMAGES || {}).map(([k, v]) => [k, String(v).slice(0, 64)]);
+        return { unplaced: have.filter(([, v]) => v.startsWith('data:') && !src.has(v)).map(([k]) => k) };
+      })(),
+      bracketed: (document.body.innerText.match(/\[(?:photo|image|picture|screenshot) [^\]]{0,40}\]/gi) || []).slice(0, 5),
       /* Doubled verdict: the widgets render "✓ Correct — " / "✗ Not quite — " in front
          of every response, and the audio gets the same prefix. A response that then
          opens by restating it reads "✓ Correct — Right, …". The prefix is added at
@@ -421,12 +437,39 @@ if (data) {
   const nRulings = d.RULINGS.length + d.RULINGS.filter(r => r.hasMut).length;
   /* Commits are ungraded and sit outside the budget (SKILL: § the opening commit) —
      counting them made a lesson with 9 graded items read as 11 and overshoot. */
-  const total = nRulings + d.typedCount + (d.SORT ? 1 : 0) + d.FINALS.length;
-  const [lo, hi] = CFG.items[LEN];
-  const breakdown = `${nRulings} ruling/mutation + ${d.typedCount} typed + ${d.SORT ? 1 : 0} sorter + ${d.FINALS.length} final; ${d.commitCount || 0} commit(s) uncounted`;
-  if (total < lo) FAIL('item-budget', `${total} items, ${LEN} needs ${lo}-${hi} (${breakdown})`);
-  else if (total > hi) WARN('item-budget', `${total} items, above the ${LEN} range ${lo}-${hi} (${breakdown})`);
-  else OK('item-budget', `${total} items in range ${lo}-${hi} (${breakdown})`);
+  /* A sorter is as many judgements as it has rows — counting it as one read a
+     five-row sorter as a single item and made rich lessons look thin. Devices say
+     so themselves with data-item on the host, because nothing in their markup
+     distinguishes a graded one from an illustration. */
+  const nSort = d.SORT ? d.SORT.rows : 0;
+  const practice = nRulings + d.typedCount + nSort + (d.deviceItems || 0);
+  const total = practice + d.FINALS.length;
+  const [plo, phi] = CFG.practice[LEN];
+  const breakdown = `${nRulings} ruling/mutation + ${d.typedCount} typed + ${nSort} sorter row(s) + ${d.deviceItems || 0} device; ${d.FINALS.length} final and ${d.commitCount || 0} commit(s) counted separately`;
+  if (practice < plo) FAIL('practice-budget', `${practice} practice items, ${LEN} needs ${plo}-${phi} (${breakdown})`);
+  else if (practice > phi) WARN('practice-budget', `${practice} practice items, above the ${LEN} range ${plo}-${phi} (${breakdown})`);
+  else OK('practice-budget', `${practice} practice items in range ${plo}-${phi} (${breakdown})`);
+  OK('item-budget', `${total} items total (${practice} practice + ${d.FINALS.length} final)`);
+
+  /* At least one contrastive pair. Same scenario, one fact changed, answer flips —
+     the strongest discrimination drill the format has, and previously specified in
+     one word inside a list of question types, which produced lessons with none. */
+  const nMut = d.RULINGS.filter(r => r.hasMut).length;
+  if (!nMut) FAIL('mutation-pair', 'no ruling carries a mutate twin — at least one item must re-run its own scenario with one fact changed');
+  else OK('mutation-pair', `${nMut} mutation pair(s)`);
+
+  /* A picture the build paid for, described in prose and then not shown. The prompt
+     was written, the image generated, and the text says "[photo of a contract]" where
+     the picture belongs — so the learner reads about the thing instead of seeing it. */
+  const unplaced = (d.imgPlaced && d.imgPlaced.unplaced) || [];
+  const brackets = d.bracketed || [];
+  if (brackets.length && unplaced.length)
+    FAIL('image-placed', `prose stands in for a picture that exists: ${brackets.join(', ')} — unplaced in IMAGES: ${unplaced.join(', ')}`);
+  else if (brackets.length)
+    WARN('image-placed', `bracketed stand-in(s) in the text: ${brackets.join(', ')} — write the thing or show it, don't describe a slot`);
+  else if (unplaced.length)
+    WARN('image-placed', `generated but never rendered: ${unplaced.join(', ')}`);
+  else OK('image-placed', 'no described-but-missing pictures');
 
   // --- free recall: the format that gets dropped first under time pressure
   /* Written responses are counted per ZONE. A lesson can clear a global minimum with
