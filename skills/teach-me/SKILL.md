@@ -57,7 +57,7 @@ The lesson must be excellent pedagogically, visually polished, and engaging. Use
 
 **Plan.** Use the best plan you identified and presented at the checkpoint. If the user didn't confirm it, go with the best one anyway.
 
-**Research.** Don't research if it's an established topic unlikely to have changed recently. If it's possibly dynamic, do 2–3 fetches*.  **Established is not the same as static:** when the lesson quotes a codified or versioned source — a statute, rule, standard, spec, or edition — verify the version in force and date-stamp it, however old the topic is. Settled topics can have updates too. *Additional research: If the topic is higher stakes (e.g., medicine, safety, law), then do more research fetches to verify every number and claim.
+**Research.** Don't research if it's an established topic unlikely to have changed recently. If it's possibly dynamic, do 2–3 fetches*.  **Established is not the same as static:** when the lesson quotes a codified or versioned source — a statute, rule, standard, spec, or edition — verify the version in force and date-stamp it, however old the topic is. Settled topics can have updates too. *Additional research: If the topic is higher stakes (e.g., medicine, safety, law), then do more research fetches to verify every number and claim. If you can't verify a claim, cut it — don't soften it.
 
 **One rule is rarely the whole answer.** When a source says something is allowed, required or banned, go looking for what else covers that same act — elsewhere in the same document, and in the other rules that apply to it — before you write the conclusion. This is especially important for law or other topics that have overlapping rules.
 
