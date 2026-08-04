@@ -140,11 +140,16 @@ if (RENDER) {
       shapes: ['FINALS', 'OBJS', 'RULINGS', 'COMMITS', 'SORT', 'LINES', 'VOICE']
         .map(k => k + ':' + (typeof window[k] === 'undefined' ? 'absent' : Array.isArray(window[k]) ? 'array' : typeof window[k])),
       LINES: g('LINES') || {},
+      visText: vis,
       VOICE: Object.keys(g('VOICE') || {}),
-      FINALS: arr(g('FINALS')).map(f => ({ id: f.id, obj: f.obj, nopts: opts(f).length, typed: !!f.typed })),
+      /* The scenario text, for the variety check. tx is a table of rows, so flatten it. */
+      FINALS: arr(g('FINALS')).map(f => ({ id: f.id, obj: f.obj, nopts: opts(f).length, typed: !!f.typed,
+        text: [f.title, f.scen, f.q, JSON.stringify(f.tx || '')].join(' ') })),
       OBJS: arr(g('OBJS')).map(o => ({ label: o.label, tag: o.tag, keys: arr(o.keys) })),
       RULINGS: arr(g('RULINGS')).map(r => ({
         id: r.id, hasMut: !!r.mutate,
+        text: [r.title, r.scen, r.q, JSON.stringify(r.tx || '')].join(' '),
+        mutText: r.mutate ? [r.mutate.title, r.mutate.scen, r.mutate.q].join(' ') : '',
         wrong: opts(r).filter(o => !o.ok).length,
         mutWrong: r.mutate ? opts(r.mutate).filter(o => !o.ok).length : 0,
         mutId: r.mutate ? r.mutate.id : null,
@@ -454,9 +459,21 @@ if (data) {
   /* At least one contrastive pair. Same scenario, one fact changed, answer flips —
      the strongest discrimination drill the format has, and previously specified in
      one word inside a list of question types, which produced lessons with none. */
+  /* One per objective, not one per lesson: a flat floor of 1 became a target, and a
+     four-ruling lesson shipped a single twin attached to the scenario the reader had
+     already met five times, so it landed as more of the same rather than as a new
+     discrimination. Each objective needs its own contrastive pair. */
   const nMut = d.RULINGS.filter(r => r.hasMut).length;
-  if (!nMut) FAIL('mutation-pair', 'no ruling carries a mutate twin — at least one item must re-run its own scenario with one fact changed');
-  else OK('mutation-pair', `${nMut} mutation pair(s)`);
+  const nObj = d.OBJS.length || 1;
+  if (nMut < nObj) FAIL('mutation-pair', `${nMut} mutation pair(s) for ${nObj} objective(s) — each objective needs one item that re-runs its own scenario with a single fact changed`);
+  else OK('mutation-pair', `${nMut} mutation pair(s) across ${nObj} objective(s)`);
+
+  /* No scenario-variety check here on purpose. One case carrying the hero, the
+     walkthrough, the diagram and half the items is a real defect — a lesson can be
+     correct and still read as repetitive — but it does not survive measurement. In a
+     build that felt exactly that way the most-repeated content word was 1.9% of the
+     text against 1.8% for "yes", so any threshold that caught it would fire on
+     everything. It belongs to the cold-learner reviewer, not to a counter. */
 
   /* A picture the build paid for, described in prose and then not shown. The prompt
      was written, the image generated, and the text says "[photo of a contract]" where

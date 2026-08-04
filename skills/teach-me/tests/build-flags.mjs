@@ -66,6 +66,30 @@ R('--review --chat → both present, review launcher moved off the dock', () => 
   return hasOverlay(h) && hasDock(h) && /#rv-launch\{[^}]*bottom:16px!important/.test(h);
 });
 
+/* The dock is injected into someone else's page and inherits its palette. Reading a
+   variable the shell never defines silently falls back to the dock's own light-theme
+   default — which on a dark lesson painted near-black text on a near-black field and
+   made the key input impossible to see. Every borrowed name must chain to one the
+   shell actually sets before reaching a hardcoded colour. */
+R('dock colours chain to variables the shell defines', () => {
+  const dock = readFileSync(new URL('../scripts/assistant-dock.js', import.meta.url), 'utf8');
+  const shell = readFileSync(new URL('../reference/lesson-shell.html', import.meta.url), 'utf8')
+    + readFileSync(new URL('../reference/lesson-shell.css', import.meta.url), 'utf8');
+  /* The palette is authored per lesson, not in the shell, so "defined" is the wrong
+     reference. The contract is what the shell itself consumes: any lesson that renders
+     has to supply those. A name only the dock uses is a name nobody sets. */
+  const defined = new Set([...shell.matchAll(/var\((--[a-z0-9-]+)/g)].map(m => m[1]));
+  const bad = [];
+  for (const m of dock.matchAll(/var\((--[a-z0-9-]+)\s*,\s*([^)]*)/g)) {
+    const [, name, fallback] = m;
+    if (defined.has(name)) continue;                    // shell sets it — fine
+    if (/var\(--[a-z0-9-]+/.test(fallback)) continue;   // chains onward — fine
+    bad.push(name);
+  }
+  if (bad.length) errs.push('  unchained: ' + [...new Set(bad)].join(', '));
+  return bad.length === 0;
+});
+
 rmSync(dir, { recursive: true, force: true });
 console.log('\n' + (errs.length ? ('❌ ' + errs.length + ' problem(s):\n' + errs.join('\n')) : '✅ all build-flag checks passed'));
 process.exit(errs.length ? 1 : 0);
