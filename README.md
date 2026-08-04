@@ -56,11 +56,10 @@ Rich AI images means photography-quality. Even without these, you'll still get v
 
 ## Known limitations
 
-- A lesson takes about an hour of model time to build; drills are cheaper per question.
-- Fable 5 in Claude Code produces the best results, but uses a LOT of tokens. Opus 5 and 5.6 Sol work too. Sonnet produces iffy results.
-- Lessons are frozen files — later skill fixes don't reach lessons already built.
-- Generated content can be wrong and must be reviewed before use in high-stakes settings. Study material, not professional advice.
-- Quiz results live in one browser; move between machines with the downloaded results file.
+- **Pedagogy**: Teach Me's method is informed by real evidence, but its results haven't been studied (it's brand new). 
+- **Time and Tokens**: A lesson takes 1+ hours to build. That also means a lot of tokens, especially if you use a powerful model.
+- **Models**: Fable 5 in Claude Code produces the best results. Opus 5 and 5.6 Sol work too. Sonnet produces iffy results.
+- **Mistakes**: Generated content can be wrong and must be reviewed before use in high-stakes settings. Study material, not professional advice.
 - **A lesson is one sitting.** Learning that lasts needs the same material pulled back up days later, and nothing here schedules that. Downloading your results and feeding them into a later drills request is a partial answer — the new set targets what you missed and chains onto the same history — but you have to remember to do it. Nothing reminds you, and nothing decays.
 
 ## Results and privacy
