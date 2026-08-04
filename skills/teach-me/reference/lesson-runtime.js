@@ -628,7 +628,14 @@ function submitFinal(){
         tot:results.filter(function(r){return r.f.obj===o.tag;}).length};
     }),
     missed:results.filter(function(r){return !r.ok;}).map(function(r){return r.f.title;}),
-    written:written.map(function(w){return w.f.title;})
+    written:written.map(function(w){return w.f.title;}),
+    /* First-attempt practice results, per objective. The final says whether they
+       know it now; this says where the trouble was on the way in, which is what a
+       later drills build wants when it decides what to serve. First attempt only —
+       practice reveals the answer on a miss, so a later retry proves nothing.
+       Untagged rulings never registered, so they are absent rather than wrong. */
+    practice:PRACTICE.filter(function(p){return p.ok!==null;})
+      .map(function(p){return {obj:p.obj,title:p.f.title,ok:p.ok};})
   };
   var prev=tmAttempts();
   tmSaveAttempt(attempt);
@@ -777,11 +784,23 @@ function renderReadout(results,second,written,prev,attempt){
     hist.forEach(function(a){(a.objs||[]).forEach(function(o){
       if(!agg[o.label])agg[o.label]={got:0,tot:0};
       agg[o.label].got+=o.got;agg[o.label].tot+=o.tot;});});
+    /* Practice rolled up the same way, but kept on its own line rather than folded
+       into the objective totals — practice is open-book with the answer one click
+       away, so averaging it into a closed-book score would flatter every objective. */
+    var pAgg={};
+    hist.forEach(function(a){(a.practice||[]).forEach(function(p){
+      var o=(OBJS.filter(function(x){return x.tag===p.obj;})[0]||{}).label||("objective "+p.obj);
+      if(!pAgg[o])pAgg[o]={got:0,tot:0,missed:[]};
+      pAgg[o].tot++;if(p.ok)pAgg[o].got++;else pAgg[o].missed.push(p.title);});});
     var payload={lesson:document.title,slug:tmSlug(),exported:new Date().toISOString(),
       attempts:hist,
       perObjective:Object.keys(agg).map(function(k){
         return {label:k,got:agg[k].got,tot:agg[k].tot,
-          pct:agg[k].tot?Math.round(100*agg[k].got/agg[k].tot):null};})};
+          pct:agg[k].tot?Math.round(100*agg[k].got/agg[k].tot):null};}),
+      practicePerObjective:Object.keys(pAgg).map(function(k){
+        return {label:k,got:pAgg[k].got,tot:pAgg[k].tot,
+          pct:pAgg[k].tot?Math.round(100*pAgg[k].got/pAgg[k].tot):null,
+          missed:pAgg[k].missed};})};
     var blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
     var a=document.createElement("a");
     a.href=URL.createObjectURL(blob);
