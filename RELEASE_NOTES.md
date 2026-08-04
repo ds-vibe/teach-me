@@ -40,6 +40,7 @@ Teach Me builds on Derek Schwede's original [html-explainer](https://github.com/
 ## Known limitations
 
 - A lesson takes about an hour of model time to build; drills are cheaper per question.
+- In Claude Code or Codex it runs real commands the whole way and will stop to ask permission for them. Approve up front or turn on auto-approve if you're leaving it alone, or check back now and then — otherwise you return to a build that stalled early and waited.
 - Fable 5 in Claude Code produces the best results, but uses a LOT of tokens.
 - Lessons are frozen files — later skill fixes don't reach lessons already built.
 - Generated educational content can be wrong and must be reviewed before use in high-stakes settings. Lessons are study material, not professional advice.

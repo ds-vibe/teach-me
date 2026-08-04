@@ -53,6 +53,7 @@ Rich AI images means photography-quality. Even without these, you'll still get v
 - **Use the checkpoint.** Before building, the skill shows 2–3 ways to organize the lesson and 2–3 looks. This is your main steering moment; redirect freely.
 - **Big topics become a series.** A lesson holds at most four objectives. When honest coverage needs more, the skill proposes a split — take it. One thin mega-lesson teaches worse than two real ones.
 - **Use the strongest model you have.** Lesson quality tracks the model, and the gap shows up in judgment work: prose, layout, how much a wrong-answer explanation actually teaches. Smaller models produce serviceable lessons, but expect flatter prose and the occasional miss the self-review doesn't catch.
+- **Don't wander off mid-build.** In Claude Code or Codex the skill runs real commands for the whole hour — Node scripts, a headless browser, file writes, sometimes a web lookup — and each one can stop and ask your permission. It will wait as long as it takes. If you plan to leave it alone, approve them up front or turn on an auto-approve mode; otherwise check back now and then, or you'll return to a build that stalled ten minutes in. (On claude.ai and the Claude apps nothing runs locally, so this doesn't come up.)
 
 ## Known limitations
 
