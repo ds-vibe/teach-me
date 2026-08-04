@@ -195,7 +195,7 @@ Lint with the flag: `node scripts/lint.mjs <file> --len <short|full> --drills`. 
 
 ## AI keys (BYOK)
 
-Voice, chat and images all run on the user's own key, and one OpenAI key covers all three (ElevenLabs is voice-only). If they asked for any of them, check the environment for a key (works in Claude Code or Codex; `node scripts/doctor.mjs` reports what it finds) and ask if they want to use it. There's no checkable environment in Claude Cowork, so don't bother checking there.
+Voice, chat and images all run on the user's own key, and one OpenAI key covers all three (ElevenLabs is voice-only). If they asked for any of them, check the environment for a key (works in Claude Code or Codex) and ask if they want to use it. Ask the doctor from the folder the lesson is being built in — `node <skill>/scripts/doctor.mjs --from <that folder>` — never by changing into the skill's own directory first. A `.env` lives with the user's project, and the skill may be installed under `~/.claude` where no key will ever sit; run it from the wrong place and it reports no key while `tts.mjs` and `images.mjs` go on to find one. **A "no key" report from the wrong folder is how a build ends up captioning empty image slots.** There's no checkable environment in Claude Cowork, so don't bother checking there.
 
 **Never ask for an API key in chat. If a user pastes one anyway, don't use it — tell them to rotate it.** A key belongs in the environment, in a `--key-file`, or in the page's own dock.
 

@@ -3,7 +3,7 @@
 // Every failure below has stopped a real first-time user.
 
 import { existsSync, readFileSync, writeFileSync, unlinkSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execSync } from "node:child_process";
 
@@ -54,8 +54,23 @@ for (const f of ["lesson-runtime.js", "lesson-shell.css", "lesson-shell.html", "
 // 5. Voice tier (optional — never blocks)
 // A key may live in the environment OR in a .env file, which is what tts.mjs reads.
 // Never report "no key" from the environment alone, and never print the value.
-const envFileKey = [process.cwd(), root]
-  .map((d) => join(d, ".env"))
+/* Walk up the way tts.mjs and images.mjs do, or this disagrees with the scripts it
+   is reporting on. Checking only cwd and the skill root means a build launched from
+   an installed plugin — where there is no .env and never will be — is told there is
+   no key while tts.mjs finds one six directories up. Prior tests lost the images in
+   three builds that way: the model believed the report and stopped writing prompts,
+   while voice worked anyway because tts.mjs searches for itself. */
+const envDirs = (start) => {
+  const list = []; let d = resolve(start);
+  for (let i = 0; i < 6; i++) { list.push(join(d, ".env")); const up = dirname(d); if (up === d) break; d = up; }
+  return list;
+};
+/* An explicit folder beats both, because the two defaults are often wrong: the skill
+   root is inside an installed plugin, and cwd is whatever the caller happened to be
+   in. Pass the folder the lesson will be built in — `node doctor.mjs --from <dir>`. */
+const fromIdx = process.argv.indexOf("--from");
+const FROM = fromIdx >= 0 ? process.argv[fromIdx + 1] : null;
+const envFileKey = [...(FROM ? envDirs(FROM) : []), ...envDirs(process.cwd()), ...envDirs(root)]
   .filter(existsSync)
   .some((p) => /^(OPENAI|ELEVENLABS)_API_KEY=\S/m.test(readFileSync(p, "utf8")));
 if (process.env.OPENAI_API_KEY || process.env.ELEVENLABS_API_KEY || envFileKey) {
