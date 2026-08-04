@@ -195,7 +195,10 @@
     } : {
       url: "https://api.openai.com/v1/chat/completions",
       headers: { "content-type": "application/json", authorization: "Bearer " + key },
-      body: { model: model, max_tokens: 700, messages: [{ role: "system", content: sys }].concat(history) },
+      /* Current OpenAI chat models reject max_tokens outright and want
+         max_completion_tokens. Anthropic above still takes max_tokens — the two
+         APIs disagree, so don't unify these. */
+      body: { model: model, max_completion_tokens: 700, messages: [{ role: "system", content: sys }].concat(history) },
       pick: function (d) { return d && d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.content; }
     };
     return fetch(req.url, { method: "POST", headers: req.headers, body: JSON.stringify(req.body) })

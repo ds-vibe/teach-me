@@ -202,11 +202,19 @@ await R('mastery gate: all right → met verdict, no retry row', async()=>{
    objective to stage a one-miss run by clicking. Three items and up, one miss passes
    and two fails; below three the percentage stands alone. */
 await R('mastery gate: one miss forgiven from three items, two never', async()=>{
-  const r=await p.evaluate(()=>{
-    const pass=(got,tot)=>!tot||got/tot>=window.CRITERION||(tot>=window.SLIP_FROM&&tot-got<=1);
-    return {oneOfThree:pass(2,3), twoOfThree:pass(1,3), threeOfFour:pass(3,4),
-            twoOfFour:pass(2,4), oneOfTwo:pass(1,2), fourOfFive:pass(4,5), allThree:pass(3,3)};});
+  const r=await p.evaluate(()=>({
+    oneOfThree:objPass(2,3), twoOfThree:objPass(1,3), threeOfFour:objPass(3,4),
+    twoOfFour:objPass(2,4), oneOfTwo:objPass(1,2), fourOfFive:objPass(4,5), allThree:objPass(3,3)}));
   return r.oneOfThree&&!r.twoOfThree&&r.threeOfFour&&!r.twoOfFour&&!r.oneOfTwo&&r.fourOfFive&&r.allThree;});
+/* The regression this exists for: two objectives at 2/3. Both clear the one-miss
+   tolerance, so the per-objective half says pass — but that is 4/6 overall, and
+   before the second bar the readout called it green. */
+await R('mastery gate: passing every objective does not carry a failing total', async()=>{
+  const r=await p.evaluate(()=>({
+    twoThirdsEach:objPass(2,3)&&!overallPass(4,6),
+    cleanRun:objPass(4,4)&&overallPass(8,8),
+    eightOfTen:overallPass(8,10), sevenOfTen:overallPass(7,10)}));
+  return r.twoThirdsEach&&r.cleanRun&&r.eightOfTen&&!r.sevenOfTen;});
 
 console.log('\n'+(errs.length?('❌ '+errs.length+' problem(s):\n'+errs.join('\n')):'✅ zero console/page errors, all checks passed'));
 await b.close();process.exit(errs.length?1:0);

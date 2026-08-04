@@ -442,6 +442,11 @@ var TYPED_GATE=80;                                             // same real-atte
    read as broken. Below three, there is no room to tell a slip from a gap, so the
    percentage stands alone. */
 var CRITERION=0.8,SLIP_FROM=3;
+/* The two halves of the bar, named so they can be tested directly rather than
+   through a rendered readout — the second exists because the first, on its own,
+   passes a learner who missed one on every objective. */
+function objPass(got,tot){return !tot||got/tot>=CRITERION||(tot>=SLIP_FROM&&tot-got<=1);}
+function overallPass(score,total){return !total||score/total>=CRITERION;}
 var PRACTICE=[];
 /* A final item is either MCQ (f.opts) or written (f.typed:true + f.model + f.criteria).
    A written item shows NO model answer during the exam — that would hand over the
@@ -645,19 +650,26 @@ function renderReadout(results,second,written,prev,attempt){
   var objCells=OBJS.map(function(o){                           // was hardcoded o1/o2
     var got=results.filter(function(r){return r.f.obj===o.tag&&r.ok;}).length;
     var tot=results.filter(function(r){return r.f.obj===o.tag;}).length;
-    return {label:o.label,tag:o.tag,got:got,tot:tot,
-            pass:!tot||got/tot>=CRITERION||(tot>=SLIP_FROM&&tot-got<=1)};
+    return {label:o.label,tag:o.tag,got:got,tot:tot,pass:objPass(got,tot)};
   });
   /* The gate. An objective under criterion is the headline, not a pill the learner
      has to decode — "not yet" and the names, before the number. Nothing can force a
      retake in a static file, so this changes what finished looks like, not what is
      possible: the score still stands and the page stays readable either way. */
   var shortfall=objCells.filter(function(c){return c.tot&&!c.pass;});
+  /* The whole paper has to clear the bar too. Forgiving one miss per objective is
+     right for a single slip and wrong when they are all slips: on three-item
+     objectives a learner can miss one everywhere, clear every objective, and still
+     have got two thirds of the lesson — which is not a pass by any reading. */
+  var overallOk=overallPass(score,results.length);
+  var met=!shortfall.length&&overallOk;
   var h='<div class="scorehead"><p class="eyebrow">Your readout</p>'
-    +'<p class="verdict '+(shortfall.length?"notyet":"met")+'">'
+    +'<p class="verdict '+(met?"met":"notyet")+'">'
       +(shortfall.length
         ?"Not yet — "+shortfall.map(function(c){return c.label;}).join(" and ")+" "+(shortfall.length>1?"need":"needs")+" another pass"
-        :"You hit the mark on every objective")+"</p>"
+        :(overallOk
+          ?"You hit the mark on every objective"
+          :"Not yet — you cleared each objective on its own, but missed too much across the lesson"))+"</p>"
     +'<p class="scorebig">'+score+"/"+results.length+"</p>"
     +'<div class="objrow">'+objCells.map(function(c){return '<span class="objpill'+(c.tot&&!c.pass?" under":"")+'">'+c.label+" · "+c.got+"/"+c.tot+"</span>";}).join("")+"</div>"
     +(second?'<p class="secondline">Second pass over missed items: '+second.score+"/"+second.total+" (scored separately — your first score stands)</p>":"")
@@ -711,13 +723,13 @@ function renderReadout(results,second,written,prev,attempt){
        and carries the reteach in front of it; at or above, it stays an offer. */
     var extra=retryExtras(objCells);
     var n=missed.length+extra.length;
-    h+='<div class="retryrow'+(shortfall.length?" lead":"")+'">'
+    h+='<div class="retryrow'+(met?"":" lead")+'">'
       +(shortfall.length?'<p class="retrylead">Reread '+shortfall.map(function(c){
           var m=results.filter(function(r){return r.f.obj===c.tag&&!r.ok;})[0];
           return m?'<a class="reteach" href="'+m.f.back.split("|")[0]+'">'+m.f.back.split("|")[1]+"</a>":c.label;
         }).join(", ")+", then take these again.</p>":"")
-      +'<button class="btn'+(shortfall.length?"":" ghost")+'" id="retryMissed">'
-      +(shortfall.length?"Work the "+n+" item"+(n>1?"s":"")+" you missed":"Retry the "+n+" missed item"+(n>1?"s":""))
+      +'<button class="btn'+(met?" ghost":"")+'" id="retryMissed">'
+      +(met?"Retry the "+n+" missed item"+(n>1?"s":""):"Work the "+n+" item"+(n>1?"s":"")+" you missed")
       +" (scored separately)</button></div>";
   }
   var objSummary=objCells.map(function(c){return c.label+" "+c.got+"/"+c.tot;}).join(" · ");
