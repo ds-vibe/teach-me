@@ -25,7 +25,7 @@ try {
   ({ chromium, webkit } = await import("playwright"));
   ok("playwright module resolves");
 } catch {
-  bad("playwright is not installed", `cd ${root} && npm install`);
+  bad("playwright is not installed", `cd ${root} && npm install   (installs Playwright and downloads its browsers, ~300MB, one time — ask before running)`);
 }
 
 // 3. Browser binaries — both. WebKit is a separate download and Phase 5 requires it.
@@ -36,7 +36,7 @@ for (const [name, type] of [["chromium", chromium], ["webkit", webkit]]) {
     await b.close();
     ok(`${name} binary launches`);
   } catch {
-    bad(`${name} binary missing`, `cd ${root} && npx playwright install chromium webkit`);
+    bad(`${name} binary missing`, `cd ${root} && npx playwright install chromium webkit   (~300MB download, one time — ask before running)`);
   }
 }
 
