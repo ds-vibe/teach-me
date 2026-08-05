@@ -35,7 +35,10 @@ remains the source of truth for pedagogy, scope, and delivery requirements.
 ## Build and browser work
 
 1. Keep a short plan through interview, checkpoint, build, and verification.
-2. Run `node scripts/doctor.mjs` from the skill root before building.
+2. From the lesson workspace, run
+   `node <skill-root>/scripts/doctor.mjs --from <lesson-workspace>` before
+   building. Do not change into the skill root first; capability and key
+   discovery must begin from the workspace where the lesson will be built.
 3. Create the lesson in its own suffixed directory and stamp the canonical
    build clock at each required milestone.
 4. Use the canonical shell, runtime, assembler, media scripts, lint, and adapted
