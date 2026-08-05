@@ -11,7 +11,7 @@
 - **Drill mode**: ask for drills (or add `--drills`) and get 20–60 questions as rule cards and batteries instead of a full lesson
 - **Results you keep**: each lesson keeps your attempt history in your browser, shows your strongest and weakest areas, and offers a downloadable results file — feed it to your next drills request and it targets your weak spots
 - **Voice and chat**: add voice narration at build time, or add your API key to a dock in the finished page (details below)
-- **Runs in**: Claude and Codex. Best in Claude Code.
+- **Runs in**: Claude and Codex. Best in Claude Code. QA will not fully work in claude.ai.
 - **QA gates**: quality checks for content, citations, layout, and pedagogy
 - **"Review & edit"**: Need changes? A review copy lets you edit the html directly.
 
@@ -19,7 +19,7 @@
 
 Pick one:
 
-- **claude.ai and the Claude apps (skill upload)**: download `teach-me-skill.zip` from the [latest release](https://github.com/ds-vibe/teach-me/releases/latest/download/teach-me-skill.zip), then upload it as a skill in **Settings → Capabilities → Skills**
+- **Claude apps (skill upload)**: download `teach-me-skill.zip` from the [latest release](https://github.com/ds-vibe/teach-me/releases/latest/download/teach-me-skill.zip), then upload it as a skill in **Settings → Capabilities → Skills**
 - **Claude Code (plugin)**: `/plugin marketplace add ds-vibe/teach-me`, then `/plugin install teach-me@teach-me`
 - **Codex or manual (skill folder)**: download `teach-me-skill.zip` (or clone the repo) and put the `teach-me` folder in your skills directory — for example `~/.claude/skills/teach-me`
 
