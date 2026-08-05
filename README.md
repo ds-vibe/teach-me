@@ -35,7 +35,9 @@ Each build creates a `lessons/<topic>` folder in whatever directory you launched
 
 Check out [ds-vibe.github.io/teach-me](https://ds-vibe.github.io/teach-me/) for real examples — FTC influencer disclosures, contract formation via the $82,000 thumbs-up case, Impressionism vs Expressionism, hearsay drills, and liquidation preferences. Open one in your browser and take it.
 
-The lessons are as the skill produced them, to show real lesson quality — warts and all. Exceptions: (1) minor visual fixes in the contracts lesson and (2) the Interval Trainer is a custom built app with a few revisions. 
+The lessons are as the skill produced them, to show real lesson quality — warts and all*. 
+
+*Exceptions: (1) minor visual fixes in the contracts lesson and (2) the Interval Trainer is a custom built app with a few revisions. 
 
 ## Voice, rich images, and AI chat
 
