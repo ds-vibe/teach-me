@@ -47,8 +47,7 @@ Rich AI images means photography-quality. Even without these, you'll still get v
 ## Using it well
 
 - **Start with a "short" lesson** and try it out!
-- **Say who it's for.** "I'm a 1L and exam is in three weeks" and "I'm teaching this to my class" produce very different lessons — the teacher route builds from your own syllabus and materials.
-- **Call audibles in your prompt.** "Go lighter on text," "focus on a decision diagram," "tons of drills" — the skill honors them.
+- **Customize and call audibles.** The more context you give, the better the results. Add your own materials. At the checkpoint, give clear direction like "go lighter on text," "focus on a decision diagram," "tons of drills" — the skill honors them.
 - **Use the checkpoint.** Before building, the skill shows 2–3 ways to organize the lesson and 2–3 looks. This is your main steering moment; redirect freely.
 - **Big topics become a series.** A lesson holds at most four objectives. When honest coverage needs more, the skill proposes a split — take it. One thin mega-lesson teaches worse than two real ones.
 - **Use the strongest model you have.** Except best quality with Fable 5 or 5.6 Sol - prose, layout, teaching. Other models produce serviceable lessons, but expect flatter prose and the occasional miss the self-review doesn't catch.
