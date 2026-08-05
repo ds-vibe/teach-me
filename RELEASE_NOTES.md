@@ -1,15 +1,5 @@
 # Teach Me 0.0.3
 
-## What's new in 0.0.3
-
-- **Honest mastery gates**: the closed-book floor rises to 3 items per objective, one miss is forgiven where an objective has 3+, and drills calibrate each objective against the 80% bar rather than against the others
-- **Better practice**: the practice and final budgets are split so the final can't starve the teaching half; every objective now requires a mutation pair (the same scenario with one fact changed, so the answer flips); practice results carry into the downloadable results file for your next drills round
-- **Checkpoint discipline**: style frames open before sketching, honest clock budgets per length, repetition sent to the cold reviewer
-- **Fixes**: the review copy ships correctly again, the chat dock's OpenAI call works, dock colours follow the lesson skin, `doctor.mjs` looks for your key where the build tools do, and the lint grew ~100 lines of new checks
-- **Example site refresh**: FTC disclosures, contract formation via the $82,000 thumbs-up case, and Impressionism vs Expressionism join hearsay drills and liquidation preferences
-
----
-
 
 **Teach Me** is a tool for Claude and Codex that builds interactive, single-file HTML lessons: clear teaching, drills with feedback, optional voice and images, and a closed-book final. You answer a short interview, pick a teaching approach and a look, and get one file that runs in your browser.
 
@@ -38,6 +28,8 @@ The plugin and the zip contain the same skill; you only need one.
 
 The GitHub Pages site publishes the example lessons and the trainer at
 [ds-vibe.github.io/teach-me](https://ds-vibe.github.io/teach-me/).
+
+Current examples: FTC disclosure rules for influencers, contract formation taught through the $82,000 thumbs-up case, Impressionism vs Expressionism, hearsay drills, and liquidation preferences.
 
 The lessons are as the skill produced them, to show real lesson quality.
 
