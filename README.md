@@ -27,6 +27,8 @@ Then ask for a lesson: "/teach-me hearsay," "make a lesson on liquidation prefer
 
 In Claude Code or Codex, the QA tooling needs Node plus Playwright's Chromium and WebKit (`npx playwright install chromium webkit`). Run `node scripts/doctor.mjs` to check your setup.
 
+Each build creates a `lessons/<topic>` folder in whatever directory you launched Claude Code or Codex from — the finished lesson plus its working files (audio cache, screenshots, build log). Start from a folder you want that in, and put your `.env` in that folder or any parent so voice and images can find your key.
+
 ## Examples
 
 Check out [ds-vibe.github.io/teach-me](https://ds-vibe.github.io/teach-me/) for real examples — FTC influencer disclosures, the Erie doctrine, hearsay drills, and liquidation preferences. Open one in your browser and take it.
