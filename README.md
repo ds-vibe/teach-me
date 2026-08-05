@@ -1,6 +1,8 @@
 # Teach Me
 
-**Teach Me** is a tool for Claude and Codex that builds interactive educational lessons. Clear teaching, drills with feedback, optional voice and images, and a closed-book final. You answer a short interview, pick a teaching approach and a look, and get an html lesson that runs in your browser.
+**Teach Me** is a tool that builds interactive educational lessons directly from Claude or Codex. Lessons have clear teaching, drills with feedback, optional voice and images, and a closed-book final. You answer a short interview, pick a teaching approach and a look, and get an html lesson that runs in your browser.
+
+Teach Me is also an experiment in using LLMs to orchestrate a high-quality, multi-stage production pipeline - without needing another app.
 
 ## Included
 
