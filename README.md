@@ -31,9 +31,9 @@ Each build creates a `lessons/<topic>` folder in whatever directory you launched
 
 ## Examples
 
-Check out [ds-vibe.github.io/teach-me](https://ds-vibe.github.io/teach-me/) for real examples — FTC influencer disclosures, the Erie doctrine, hearsay drills, and liquidation preferences. Open one in your browser and take it.
+Check out [ds-vibe.github.io/teach-me](https://ds-vibe.github.io/teach-me/) for real examples — FTC influencer disclosures, contract formation via the $82,000 thumbs-up case, Impressionism vs Expressionism, hearsay drills, and liquidation preferences. Open one in your browser and take it.
 
-The four lessons are as the skill produced them to show real lesson quality - warts and all. The only exceptions were minor visual fixes. The Interval Trainer is different: a custom ear-training app with a few revisions.
+The lessons are as the skill produced them, to show real lesson quality — warts and all. The Interval Trainer is different: a custom ear-training app with a few revisions.
 
 ## Voice, rich images, and AI chat
 
@@ -52,7 +52,7 @@ Rich AI images means photography-quality. Even without these, you'll still get v
 - **Customize and call audibles.** The more context you give, the better the results. Add your own materials. At the checkpoint, give clear direction like "go lighter on text," "focus on a decision diagram," "tons of drills" — the skill honors them.
 - **Use the checkpoint.** Before building, the skill shows 2–3 ways to organize the lesson and 2–3 looks. This is your main steering moment; redirect freely.
 - **Big topics become a series.** A lesson holds at most four objectives. When honest coverage needs more, the skill proposes a split — take it. One thin mega-lesson teaches worse than two real ones.
-- **Use the strongest model you have.** Except best quality with Fable 5 or 5.6 Sol - prose, layout, teaching. Other models produce serviceable lessons, but expect flatter prose and the occasional miss the self-review doesn't catch.
+- **Use the strongest model you have.** Expect best quality with Fable 5 or 5.6 Sol — prose, layout, teaching. Other models produce serviceable lessons, but expect flatter prose and the occasional miss the self-review doesn't catch.
 - **Don't wander off mid-build.** In Claude Code or Codex the skill runs real commands that may need your permission — Node scripts, a headless browser, file writes, sometimes a web lookup. Either keep tabs on the build or auto-approve, otherwise your build may stall.
 
 ## Known limitations
