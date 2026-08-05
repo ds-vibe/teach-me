@@ -1,4 +1,4 @@
-# Teach Me 0.0.3
+# Teach Me 0.0.4
 
 
 **Teach Me** is a tool for Claude and Codex that builds interactive, single-file HTML lessons: clear teaching, drills with feedback, optional voice and images, and a closed-book final. You answer a short interview, pick a teaching approach and a look, and get one file that runs in your browser.
