@@ -45,7 +45,7 @@ Then show the user two decisions, biggest first:
 
 **1. The organization.** Present the 2–3 structures as a clickable choice with your recommendation marked. Each option is two short lines a newcomer to the topic can tell apart: **what the lesson opens with, and what they'll be doing by the second section.** Describe the experience, never the method — no teaching vocabulary. *"Start from the test — run the two questions on a real case in the first five minutes; history appears only where it explains a step (recommended)"* vs. *"Start from the story — watch the old rule break, then learn the modern test it produced."* A user who can't tell the options apart got a bad menu, not a hard choice.
 
-**2. The look.** The screenshotted frames. Let them pick or redirect.
+**2. The look.** The screenshotted frames. Before sketching them, open the style anchors in `reference/screens/` (its README says which is which) and make at least one frame a register with that much identity, derived from the subject — never two near-identical light pages. Let them pick or redirect.
 
 Keep it brief — nobody can evaluate a wall of text. Record both picks; don't change the organization or the look afterward without asking. Once they've picked, start the build clock: `node scripts/mark.mjs "build start" --len <short|full>` (see § Deliver).
 
