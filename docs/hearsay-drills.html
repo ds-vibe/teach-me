@@ -1,6 +1,6 @@
 <!doctype html><html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Hearsay exceptions and exclusions — drills</title>
+<title>Hearsay drills: FRE 801 &amp; 802</title>
 <!-- fonts inlined here by fonts.mjs at build -->
 <!-- lesson shell (skin — flagship: own tokens + structural CSS) — inlined by assemble.mjs -->
 <style>
@@ -42,7 +42,8 @@ em.key{font-style:normal;font-weight:700;box-shadow:inset 0 -.42em 0 var(--gold)
   border:1px solid var(--line2);border-radius:2px;min-width:280px;padding:var(--s2);z-index:70;
   box-shadow:0 10px 30px rgba(0,0,0,.2)}
 #lessonmenu .menu a{display:block;padding:9px 10px;color:var(--fg);text-decoration:none;font-size:13.5px;border-radius:2px}
-#lessonmenu .menu a:hover,#lessonmenu .menu a:focus{background:var(--surface3);outline:none}
+#lessonmenu .menu a:hover,#lessonmenu .menu a:focus{background:var(--surface3)}
+#lessonmenu .menu a:focus:not(:focus-visible){outline:none}
 #lessonmenu .menu a small{display:block;color:var(--muted);font-size:11.5px;font-weight:500}
 .barright{margin-left:auto;display:flex;align-items:center;gap:var(--s2)}
 .iconbtn{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 10px;background:transparent;
@@ -86,11 +87,10 @@ section.tone{background:var(--surface2);margin:0 calc(-50vw + 50%);padding-left:
 
 /* ---------- hero ---------- */
 #hero{padding-top:var(--s7)}
-.herogrid{display:grid;grid-template-columns:1.04fr .96fr;gap:var(--s7);align-items:start}
-/* A side card shorter than the hero text leaves a dead band under it; centering splits
-   that space so it reads as composed. A taller card sets the row height itself, so for
-   the card-taller-than-text magazine layout this is a no-op. */
-.herogrid>:last-child{align-self:center}
+/* Centered, not top-aligned: whichever hero column is shorter floats beside the taller
+   one instead of leaving a dead band under itself. Works in both directions — short
+   side card (dead band under the card) and short text column (crater under the text). */
+.herogrid{display:grid;grid-template-columns:1.04fr .96fr;gap:var(--s7);align-items:center}
 @media (max-width:940px){.herogrid{grid-template-columns:1fr;gap:var(--s6)}}
 #hero h1{margin-bottom:var(--s5)}
 .lede{font-size:20.5px;color:var(--fg2);margin-bottom:var(--s5)}
@@ -121,11 +121,18 @@ section.tone{background:var(--surface2);margin:0 calc(-50vw + 50%);padding-left:
 /* :not(.sel) is load-bearing — :hover outranks .opt.sel on specificity, so without it a
    selected final answer keeps the hover background while taking .sel's text colour and
    the label renders invisible for as long as the pointer stays on the button. */
-.opt:hover:not([disabled]):not(.sel){background:var(--hover)}
-.opt[disabled]{cursor:default;opacity:.6}
+/* An answered option locks with aria-disabled, not the disabled property, so it keeps
+   its place in the tab order — match both here or a locked option keeps its hover. */
+.opt:hover:not([disabled]):not([aria-disabled="true"]):not(.sel){background:var(--hover)}
+.opt[disabled],.opt[aria-disabled="true"]{cursor:default;opacity:.6}
 .opt.right{border-color:var(--good);background:var(--good-soft);opacity:1}
 .opt.wrong{border-color:var(--danger);background:var(--danger-soft);opacity:1}
 .opt.sel{border-color:var(--fg);background:var(--fg);color:var(--bg)}
+/* Keyboard users need to see where they are. :focus-visible only paints for keyboard
+   and assistive navigation, so a mouse click does not leave a ring behind. The readout
+   takes focus programmatically and is not an interactive control, so it is exempt. */
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+#readout:focus,#readout:focus-visible{outline:none}
 .why{display:none;font-size:17px;line-height:1.55;margin:var(--s4) 0 0;padding:var(--s4);background:var(--surface);border-left:4px solid var(--muted)}
 .why.show{display:block}
 .why.good{border-left-color:var(--good)}
@@ -252,7 +259,7 @@ a.reteach,.reteach{font-family:var(--sans);font-size:13px;font-weight:600;displa
 .sorter .progress{font-family:var(--sans);font-size:13px;font-weight:600;color:var(--muted);margin:var(--s3) 0 0}
 
 /* ---------- typed ---------- */
-.typed textarea{width:100%;min-height:220px;font-family:var(--serif);font-size:17px;line-height:1.5;padding:var(--s3);
+.typed textarea,.fitem textarea{width:100%;min-height:220px;font-family:var(--serif);font-size:17px;line-height:1.5;padding:var(--s3);
   border:1px solid var(--line2);background:var(--bg);color:var(--fg);border-radius:2px}
 .model{display:none;margin-top:var(--s4);padding:var(--s4);background:var(--surface2);border-left:4px solid var(--accent);font-size:17px}
 .model.show{display:block}
@@ -319,9 +326,15 @@ body.finalon section.finalhost{opacity:1;pointer-events:auto}
 #readout{display:none;margin-top:var(--s6)}
 #readout.show{display:block}
 .scorehead{border-bottom:1px solid var(--line);padding-bottom:var(--s5);margin-bottom:var(--s5)}
+.verdict{font-family:var(--sans);font-size:19px;font-weight:700;line-height:1.35;margin:0 0 var(--s3)}
+.verdict.notyet{color:var(--danger)}
+.verdict.met{color:var(--good)}
 .scorebig{font-size:46px;font-weight:700;line-height:1;margin:0 0 var(--s4)}
 .objrow{display:flex;gap:var(--s2);flex-wrap:wrap}
 .objpill{font-family:var(--sans);font-size:13px;font-weight:600;padding:8px 12px;border:1.5px solid var(--line2);border-radius:2px}
+/* Under criterion: the border carries it, never colour alone — a pill that reads as
+   "short" only by being red says nothing to a colourblind reader. */
+.objpill.under{border-color:var(--danger);border-width:2px;background:var(--danger-soft)}
 .secondline{font-family:var(--sans);font-size:13.5px;color:var(--muted);margin:var(--s4) 0 0}
 .ritem{border-top:1px solid var(--line);padding:var(--s4) 0}
 .ritem .rv{font-family:var(--sans);font-size:12.5px;font-weight:700;margin:0 0 var(--s2)}
@@ -333,6 +346,8 @@ body.finalon section.finalhost{opacity:1;pointer-events:auto}
 .rright{font-family:var(--sans);font-size:14.5px;margin:var(--s3) 0 var(--s2);
   padding-left:var(--s3);border-left:3px solid var(--good);color:var(--fg)}
 .retryrow{margin:var(--s5) 0}
+.retryrow.lead{border-left:4px solid var(--danger);padding:var(--s4);background:var(--surface)}
+.retrylead{font-size:16.5px;line-height:1.55;margin:0 0 var(--s3)}
 .briefbox{background:var(--surface);border:1px solid var(--line);padding:var(--s5);margin-top:var(--s5)}
 .brieftitle{font-family:var(--sans);font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 var(--s3)}
 #briefpre{font-family:var(--mono);font-size:13px;line-height:1.65;white-space:pre-wrap;background:var(--surface2);
@@ -371,61 +386,63 @@ body.finalon section.finalhost{opacity:1;pointer-events:auto}
 </style>
 <style>
 :root{
-  --bg:#f7f5f0; --surface:#fffdf9; --surface2:#f0ede5; --surface3:#e8e4d9;
-  --line:#d8d3c4; --line2:#c4beac; --hover:#efece3; --veil:rgba(30,28,22,.55);
-  --fg:#22201a; --fg2:#4a463c; --muted:#6d6759;
-  --accent:#7a2e2e; --danger:#a13232; --good:#2e6b45; --gold:#9a7b2d;
-  --good-soft:#e4efe7; --danger-soft:#f6e4e2;
-  --band:#22201a; --band-fg:#f7f5f0; --band-line:#3a372e; --bar-h:52px;
-  --serif:Georgia,"Times New Roman",serif; --sans:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif; --mono:"SF Mono",Menlo,Consolas,monospace;
-  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:64px; --s9:96px;
+  --bg:#faf6ee; --surface:#fffdf8; --surface2:#f3ecdc; --surface3:#ece3cf;
+  --line:#d8d0be; --line2:#c0b599; --hover:#f1eadb; --veil:rgba(30,27,20,.55);
+  --fg:#1e1b14; --fg2:#4a443a; --muted:#67604f;
+  --accent:#8b1a1a; --danger:#8b1a1a; --good:#1d6b3f; --gold:#e8c86a;
+  --good-soft:rgba(29,107,63,.10); --danger-soft:rgba(139,26,26,.09);
+  --band:#211d15; --band-fg:#f5efe2; --band-line:#4a443a; --bar-h:56px;
+  --serif:Georgia,'Times New Roman',serif;
+  --sans:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+  --mono:'SF Mono',Menlo,Consolas,monospace;
+  --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px;--s7:48px;--s8:64px;--s9:96px;
 }
-/* bespoke: compact rule cards for drills mode */
-.rulecard{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:4px;padding:var(--s5) var(--s5);margin:var(--s5) 0}
-.rulecard .cite{font:600 12px var(--mono);color:var(--accent);letter-spacing:.04em;text-transform:uppercase;margin:0 0 var(--s2)}
-.rulecard h3{font:700 19px/1.3 var(--serif);margin:0 0 var(--s2)}
-.rulecard p{color:var(--fg2);font-size:15px;line-height:1.55;max-width:66ch;margin:0 0 var(--s2)}
-.rulecard ul{margin:var(--s2) 0 var(--s2) 20px;padding:0;color:var(--fg2);font-size:15px;line-height:1.6}
-.rulecard li{margin-bottom:var(--s1)}
-.rulecard .ex{border-top:1px dashed var(--line);padding-top:var(--s3);margin-top:var(--s3);font-size:14px;color:var(--fg2)}
-.rulecard .ex b{color:var(--fg)}
-.vmeta{font:13px var(--mono);color:var(--muted);margin-top:var(--s3)}
-/* options: vertical list, letters assigned in render order (options shuffle) */
-.ruling .opts{flex-direction:column;align-items:stretch}
-.ruling .opts,.fitem .opts{counter-reset:opt}
-.ruling .opts .opt,.fitem .opts .opt{text-align:left}
-.ruling .opts .opt::before,.fitem .opts .opt::before{counter-increment:opt;content:"(" counter(opt,lower-alpha) ")\00a0 ";font-weight:600;color:var(--muted)}
-/* drawer: inline emphasis must stay inline (shell makes .qref b a block label) */
-.qref span b,.qref i b{display:inline}
-/* voice declined for this build: no narration chrome */
+/* the three-question strip — the set's spine, printed once in the hero card */
+.qsteps{margin:var(--s4) 0 0;padding:0;list-style:none;counter-reset:q}
+.qsteps li{counter-increment:q;display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:var(--s3);
+  align-items:baseline;padding:var(--s3) 0;border-top:1px solid var(--line)}
+.qsteps li::before{content:counter(q);font-family:var(--sans);font-size:13px;font-weight:700;color:var(--danger)}
+.qsteps li b{font-family:var(--sans);font-size:14.5px}
+.qsteps li .n{font-family:var(--sans);font-size:12.5px;color:var(--muted);white-space:nowrap}
+.purposes{margin:var(--s4) 0 0;padding:0;list-style:none;max-width:72ch}
+.purposes li{display:grid;grid-template-columns:minmax(140px,200px) minmax(0,1fr);gap:var(--s3);
+  padding:var(--s3) 0;border-top:1px solid var(--line);font-size:16.5px}
+.purposes li b{font-family:var(--sans);font-size:13.5px}
+@media (max-width:560px){.purposes li{grid-template-columns:1fr;gap:4px}}
+/* silent build: no narration anywhere, so the voice/pause chrome comes off */
 #voicebtn,#pausebtn{display:none}
+/* option lettering at render order, and practice options stack like the final's */
+.ruling .opts{flex-direction:column;align-items:stretch;counter-reset:opt}
+.fitem .opts{counter-reset:opt}
+.opts .opt{counter-increment:opt}
+.opts .opt::before{content:"(" counter(opt,lower-alpha) ")";font-weight:700;color:var(--muted);margin-right:8px}
 </style>
 </head><body data-review-toggle>
 
 <div id="chromewrap">
 <header id="topbar">
-  <a class="chip" href="#hero" id="chipIntro">Intro</a>
+  <a class="chip" href="#hero" id="chipIntro">Start</a>
   <details id="lessonmenu">
-    <summary><span id="lessonchiptxt">Sections</span><span class="caret">▼</span></summary>
+    <summary><span id="lessonchiptxt">Batteries</span><span class="caret">▼</span></summary>
     <div class="menu">
-      <a href="#s1">§1 · The 801(d) exclusions<small>Opposing-party statements, and a witness&rsquo;s own prior statements</small></a>
-      <a href="#s2">§2 · The 803 exceptions<small>Excited utterances, state of mind, medical statements, records</small></a>
-      <a href="#s3">§3 · The 804 exceptions<small>Unavailability, former testimony, dying declarations, against interest</small></a>
+      <a href="#s1">§1 · Is there a statement?<small>Machines, animals, conduct — who counts as a declarant</small></a>
+      <a href="#s2">§2 · Is it offered for its truth?<small>Notice, verbal acts, impeachment, state of mind</small></a>
+      <a href="#s3">§3 · Does 801(d) pull it back out?<small>Party statements, prior statements — and what 802 really does</small></a>
       <a href="#mastery">Mastery checklist<small>What you can do now</small></a>
     </div>
   </details>
   <a class="chip" href="#final" id="chipFinal">Final</a>
   <div class="barright">
     <button class="iconbtn" id="qrbtn" aria-label="Quick Reference">
-      <svg viewBox="0 0 24 24"><path d="M4 4h11a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3V4z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 8h7M8 12h7M8 16h4" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h11a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3V4z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 8h7M8 12h7M8 16h4" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
       <span class="long">Quick Reference</span><span class="short">Reference</span>
     </button>
     <button class="iconbtn" id="pausebtn" aria-label="Pause narration" disabled>
-      <svg viewBox="0 0 24 24" id="pauseicon"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+      <svg viewBox="0 0 24 24" id="pauseicon" aria-hidden="true"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
       <span class="wl">Pause</span>
     </button>
     <button class="iconbtn" id="voicebtn" aria-pressed="true" aria-label="Toggle narration">
-      <svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       <span class="wl" id="voicelabel">Voice: on</span><span id="voicelabelshort" hidden></span>
     </button>
   </div>
@@ -442,9 +459,9 @@ body.finalon section.finalhost{opacity:1;pointer-events:auto}
   <p class="railtitle">This drill set</p>
   <ol>
     <li><a href="#hero" data-sec="hero">Start here</a></li>
-    <li><a href="#s1" data-sec="s1">§1 The 801(d) exclusions</a></li>
-    <li><a href="#s2" data-sec="s2">§2 The 803 exceptions</a></li>
-    <li><a href="#s3" data-sec="s3">§3 The 804 exceptions</a></li>
+    <li><a href="#s1" data-sec="s1">§1 Is there a statement?</a></li>
+    <li><a href="#s2" data-sec="s2">§2 Is it offered for its truth?</a></li>
+    <li><a href="#s3" data-sec="s3">§3 Does 801(d) pull it back out?</a></li>
     <li><a href="#final" data-sec="final">The final</a></li>
     <li><a href="#mastery" data-sec="mastery">What you can do now</a></li>
   </ol>
@@ -452,125 +469,142 @@ body.finalon section.finalhost{opacity:1;pointer-events:auto}
 
 <main>
 
-  <section id="hero">
-    <p class="eyebrow">Drills · Federal Rules of Evidence</p>
-    <h1>Hearsay exceptions and exclusions</h1>
-    <p class="lede">Three batteries, easy to hard: the 801(d) exclusions, the 803 exceptions that work with any declarant, and the 804 exceptions that need an unavailable one. Each section opens with a compact rule card, then its battery. The final at the end is closed book and mixes everything.</p>
-    <p class="lede">Wrong answers do the teaching here — every miss states the rule you needed. The Quick Reference drawer holds all the rule text.</p>
-    <p class="vmeta">FRE as amended through Dec 1, 2024 (current as of Aug 2026) · your results stay in this browser</p>
-  </section>
-
-  <!-- ============================== §1 ============================== -->
-  <section id="s1">
-    <p class="eyebrow">Section 1 · Not hearsay at all</p>
-    <h2>The 801(d) exclusions — statements that are not hearsay</h2>
-
-    <div class="rulecard">
-      <p class="cite">Rule 801(d)(2) — an opposing party&rsquo;s statement</p>
-      <h3>Offered against a party, made by their side</h3>
-      <p>A statement is <em>not hearsay</em> if it is offered <b>against</b> an opposing party and:</p>
-      <ul>
-        <li><b>(A)</b> the party made it (individual or representative capacity) — no oath, no personal-knowledge screen, and it did not have to hurt them when they said it;</li>
-        <li><b>(B)</b> the party manifested that it adopted or believed it — words, conduct, or a silence where a denial would be natural;</li>
-        <li><b>(C)</b> a person the party authorized to speak on the subject made it;</li>
-        <li><b>(D)</b> the party&rsquo;s agent or employee made it, on a matter within the scope of that relationship, <b>while it existed</b>;</li>
-        <li><b>(E)</b> a coconspirator made it, <b>during and in furtherance of</b> the conspiracy.</li>
-      </ul>
-      <p>Since Dec 2024 the rule adds: if a party&rsquo;s claim, defense, or potential liability is directly derived from a declarant or the declarant&rsquo;s principal, a statement admissible against the declarant or principal is admissible against the party.</p>
-      <p class="ex"><b>Worked example.</b> A store manager, still employed, tells a customer &ldquo;we mopped that aisle and forgot the sign.&rdquo; The slip-and-fall plaintiff offers it against the store: (D) — employee, matter within the scope, made during employment. Admissible.</p>
+<section id="hero">
+  <div class="herogrid">
+    <div>
+      <p class="eyebrow">Evidence · Drill set</p>
+      <h1>Hearsay drills: FRE&nbsp;801 &amp; 802</h1>
+      <p class="lede">Twenty practice drills and a twelve-ruling closed-book final on the definition of hearsay and its built-in exclusions.</p>
+      <p class="prose">Every drill is an objection at trial: read the facts, rule, and the feedback states the rule that decides it. The biggest batteries sit on machine outputs and on statements offered for something other than their truth.</p>
     </div>
-
-    <div class="rulecard">
-      <p class="cite">Rule 801(d)(1) — a testifying witness&rsquo;s prior statement</p>
-      <h3>The declarant is on the stand and can be crossed</h3>
-      <ul>
-        <li><b>(A)</b> a prior <b>inconsistent</b> statement counts for its truth only if it was given under penalty of perjury at a trial, hearing, other proceeding, or deposition;</li>
-        <li><b>(B)</b> a prior <b>consistent</b> statement comes in to rebut a charge of recent fabrication or improper motive — and to do that rebutting, it must have been made <b>before the motive arose</b> — or to rehabilitate credibility attacked on another ground;</li>
-        <li><b>(C)</b> a prior <b>identification</b> of a person the witness perceived earlier — no oath required.</li>
-      </ul>
-      <p class="ex"><b>Worked example.</b> A witness told police the robber wore a green jacket; on the stand she says gray. The unsworn police statement can impeach her, but it is not substantive evidence — (A)&rsquo;s oath requirement fails.</p>
+    <div class="contract">
+      <b style="font-family:var(--sans);font-size:14px">Three questions, asked in order</b>
+      <ol class="qsteps" style="counter-reset:q">
+        <li><b>Is there a statement — by a person?</b><span class="n">6 drills</span></li>
+        <li><b>Is it offered to prove what it says?</b><span class="n">8 drills</span></li>
+        <li><b>Does an 801(d) exclusion apply?</b><span class="n">6 drills</span></li>
+      </ol>
+      <p class="meta">Then a closed-book final: 12 rulings, scored by objective. Rule text current through the December&nbsp;1,&nbsp;2024 amendments. Your results stay in this browser.</p>
     </div>
+  </div>
+</section>
 
-    <div id="host-r1"></div>
-    <div id="host-r2"></div>
-    <div id="host-r3"></div>
-    <div id="host-r4"></div>
-    <div id="host-r5"></div>
-    <div id="host-r6"></div>
-    <div id="host-r7"></div>
-    <a class="next" href="#s2">Next · The 803 exceptions ↓</a>
-  </section>
+<!-- ================================ §1 ================================ -->
+<section id="s1">
+  <p class="eyebrow">Battery 1 · FRE 801(a)–(b)</p>
+  <h2>Is there a statement — and who made it?</h2>
 
-  <!-- ============================== §2 ============================== -->
-  <section id="s2">
-    <p class="eyebrow">Section 2 · Hearsay, but admissible anyway</p>
-    <h2>The 803 exceptions — declarant availability doesn&rsquo;t matter</h2>
-
-    <div class="rulecard">
-      <p class="cite">Rule 803 — the exceptions you can use with any declarant</p>
-      <h3>It doesn&rsquo;t matter where the declarant is, or whether they could testify</h3>
-      <ul>
-        <li><b>(1) Present sense impression</b> — describes an event or condition, made <b>while or immediately after</b> perceiving it.</li>
-        <li><b>(2) Excited utterance</b> — relates to a startling event, made <b>while still under the stress</b> of the excitement it caused. The clock here is the stress, not the minutes.</li>
-        <li><b>(3) Then-existing state of mind or condition</b> — &ldquo;I&rsquo;m scared,&rdquo; &ldquo;my leg hurts,&rdquo; &ldquo;I&rsquo;m going to Denver Friday.&rdquo; A stated <b>plan</b> can prove the person later acted on it. But <b>not</b> a statement of memory or belief offered to prove the fact remembered.</li>
-        <li><b>(4) Medical diagnosis or treatment</b> — made for diagnosis or treatment and <b>pertinent</b> to it: symptoms, history, cause. Who was at fault usually isn&rsquo;t pertinent.</li>
-        <li><b>(6) Business records</b> — made at or near the time by someone with knowledge, kept in the course of a regularly conducted activity, making the record a regular practice — <b>unless the opponent shows</b> the source or circumstances indicate a lack of trustworthiness.</li>
-        <li><b>(8) Public records</b> — a public office&rsquo;s activities and observations, but in a <b>criminal case</b> the prosecution cannot use matters observed by law enforcement, or investigative findings, against the defendant.</li>
-        <li><b>805 — hearsay within hearsay</b> — a statement quoted inside a record (or inside another statement) is its own layer, and every layer needs its own exclusion or exception.</li>
-      </ul>
-      <p class="ex"><b>Worked example.</b> &ldquo;That truck is drifting out of its lane&rdquo; — said while watching it happen — is a present sense impression. The same sentence in a calm phone call that evening is just a story about the afternoon.</p>
+  <div class="card">
+    <div class="cardhead">
+      <div>
+        <span class="id">Rule card · FRE 801(a)–(b)</span>
+        <h3>No person, no hearsay</h3>
+        <p class="gist">A hearsay problem needs a declarant, and a declarant is always a person.</p>
+      </div>
+      <a class="srclink" href="https://www.law.cornell.edu/rules/fre/rule_801" target="_blank" rel="noopener">FRE 801 ↗</a>
     </div>
-
-    <div id="host-r8"></div>
-    <div id="host-sort1"></div>
-    <div id="host-r9"></div>
-    <div id="host-r10"></div>
-    <div id="host-r11"></div>
-    <div id="host-r12"></div>
-    <a class="next" href="#s3">Next · The 804 exceptions ↓</a>
-  </section>
-
-  <!-- ============================== §3 ============================== -->
-  <section id="s3">
-    <p class="eyebrow">Section 3 · Only when the declarant is gone</p>
-    <h2>The 804 exceptions — you must show the declarant is unavailable first</h2>
-
-    <div class="rulecard">
-      <p class="cite">Rule 804(a) — what &ldquo;unavailable&rdquo; means</p>
-      <h3>Five ways in, one way that never counts</h3>
-      <ul>
-        <li>A privilege applies and the court so rules · the declarant refuses to testify despite a court order · the declarant testifies to not remembering the subject · death, or a then-existing infirmity or illness · absent from trial and beyond the reach of process or other reasonable means.</li>
-        <li><b>Never:</b> a declarant is not unavailable if the statement&rsquo;s <b>proponent</b> procured or wrongfully caused the absence to prevent the testimony.</li>
-      </ul>
+    <div class="cardbody">
+      <p class="ruletext">(a) “Statement” means <span class="op">a person’s</span> oral assertion, written assertion, or nonverbal conduct, <span class="op">if the person intended it as an assertion</span>.<br>
+      (b) “Declarant” means <span class="op">the person</span> who made the statement.</p>
+      <p class="prose" style="margin-top:var(--s4)">Three consequences carry this battery. A machine’s own output — a thermostat log, a hospital monitor’s trace — has no declarant, so the hearsay rule never reaches it; attack it through authentication and reliability. A device that merely <em>records</em> a person speaking is different: the speaker is still the declarant. And conduct is a statement only when the person meant it to communicate — a deaf witness signing an answer is asserting; a farmer fencing his field is just farming.</p>
+      <p class="prose"><b>On the record:</b> a cardiac monitor prints a heart rate of 41, and the strip is offered to prove the patient’s pulse. Not hearsay — no person asserted anything, so the remedy is a reliability attack, not an objection under 802. The nurse’s note “pulse weak since 6 a.m.” is different: a person’s written assertion, and the hearsay analysis begins.</p>
     </div>
-    <div class="rulecard">
-      <p class="cite">Rule 804(b) — the exceptions unavailability unlocks</p>
-      <h3>Former testimony, dying declarations, statements against interest, forfeiture</h3>
-      <ul>
-        <li><b>(1) Former testimony</b> — given at a trial, hearing, or deposition, offered against a party who had (or, in a civil case, whose predecessor in interest had) an <b>opportunity and similar motive</b> to develop it.</li>
-        <li><b>(2) Dying declaration</b> — only in a <b>homicide prosecution or a civil case</b>: a statement about the cause or circumstances of what the declarant believed to be imminent death. The declarant must be unavailable but need not have died.</li>
-        <li><b>(3) Statement against interest</b> — so contrary to the declarant&rsquo;s pecuniary, proprietary, or penal interest that a reasonable person would not have said it unless true. If it exposes the declarant to <b>criminal</b> liability and is offered in a <b>criminal case</b>, it also needs corroborating circumstances that clearly indicate trustworthiness — and since Dec 2024 the court must consider the totality of the circumstances under which it was made <b>and any evidence that supports or undermines it</b>.</li>
-        <li><b>(6) Forfeiture</b> — offered against a party who wrongfully caused the declarant&rsquo;s unavailability, intending exactly that.</li>
-      </ul>
-      <p class="ex"><b>Worked example.</b> A witness testifies that she has no memory of the night at all: unavailable, and 804(b) opens. A witness whose memory revives once she reads her old deposition: available, and it stays shut.</p>
+  </div>
+
+  <div class="divider">The battery — easiest first</div>
+  <div id="host-r4"></div>
+  <div id="host-r2"></div>
+  <div id="host-r3"></div>
+  <div id="host-r6"></div>
+  <div id="host-r7"></div>
+  <a class="next" href="#s2">Next battery · Is it offered for its truth? ↓</a>
+</section>
+
+<!-- ================================ §2 ================================ -->
+<section id="s2">
+  <p class="eyebrow">Battery 2 · FRE 801(c)</p>
+  <h2>Is it offered to prove what it says?</h2>
+
+  <div class="card">
+    <div class="cardhead">
+      <div>
+        <span class="id">Rule card · FRE 801(c)</span>
+        <h3>Hearsay is a use, not a kind of sentence</h3>
+        <p class="gist">The same words can be hearsay for one purpose and not for another.</p>
+      </div>
+      <a class="srclink" href="https://www.law.cornell.edu/rules/fre/rule_801" target="_blank" rel="noopener">FRE 801 ↗</a>
     </div>
+    <div class="cardbody">
+      <p class="ruletext">(c) “Hearsay” means a statement that:<br>
+      (1) the declarant does not make while testifying at the current trial or hearing; and<br>
+      (2) a party offers in evidence <span class="op">to prove the truth of the matter asserted</span> in the statement.</p>
+      <p class="prose" style="margin-top:var(--s4)">The test for prong (2): does the statement’s value depend on the jury believing the speaker? If the words matter just because they were said, the definition is never met. And a claimed non-truth purpose counts only when the case genuinely needs it — “background” is a label, not a purpose. The recurring non-truth purposes:</p>
+      <ul class="purposes">
+        <li><b>Effect on the listener</b><span>A warning heard is notice, true or not — notice, motive, fear, good faith.</span></li>
+        <li><b>Verbal acts</b><span>Words of acceptance, a threat, a defamatory sentence — the law attaches consequences to the utterance itself.</span></li>
+        <li><b>Impeachment only</b><span>An earlier, different account proves the witness is inconsistent, whichever telling is true.</span></li>
+        <li><b>Circumstantial state of mind</b><span>“I am Napoleon” is offered because it’s false — evidence of disorder, not of empire.</span></li>
+      </ul>
+      <p class="prose" style="margin-top:var(--s4)"><b>On the record:</b> “Marco knows what you did, and he’s coming” — offered to explain why the defendant fled town that night. Not hearsay: its work was done when the words reached his ears, whatever Marco knew. Offered to prove Marco was coming, the identical sentence is hearsay.</p>
+    </div>
+  </div>
 
-    <div id="host-r13"></div>
-    <div id="host-r14"></div>
-    <div id="host-r15"></div>
-    <div id="host-r16"></div>
-    <div id="host-t1"></div>
-    <a class="next" href="#final">Next · The closed-book final ↓</a>
-  </section>
+  <div class="divider">The battery — the offer decides</div>
+  <div id="host-s2r1"></div>
+  <div id="host-s2r2"></div>
+  <div id="host-s2r3"></div>
+  <div id="host-s2r4"></div>
+  <div id="host-s2r5"></div>
+  <div id="host-s2r6"></div>
+  <div id="host-t1"></div>
+  <a class="next" href="#s3">Next battery · Does 801(d) pull it back out? ↓</a>
+</section>
 
-  <!-- ============================= FINAL ============================= -->
-  <section id="final">
+<!-- ================================ §3 ================================ -->
+<section id="s3">
+  <p class="eyebrow">Battery 3 · FRE 801(d) &amp; 802</p>
+  <h2>Does 801(d) pull it back out — and what does 802 really block?</h2>
+
+  <div class="card">
+    <div class="cardhead">
+      <div>
+        <span class="id">Rule card · FRE 801(d), 802</span>
+        <h3>Defined out of hearsay — and the ban with three doors</h3>
+        <p class="gist">Some statements meet 801(c)’s definition and are declared “not hearsay” anyway.</p>
+      </div>
+      <a class="srclink" href="https://www.law.cornell.edu/rules/fre/rule_802" target="_blank" rel="noopener">FRE 802 ↗</a>
+    </div>
+    <div class="cardbody">
+      <p class="ruletext"><b>801(d)(1) — a declarant-witness’s prior statement.</b> The declarant testifies and is subject to cross-examination about it, and the statement:<br>
+      (A) is <span class="op">inconsistent</span> with their testimony and was given <span class="op">under penalty of perjury</span> at a trial, hearing, or other proceeding or in a deposition;<br>
+      (B) is <span class="op">consistent</span> and offered to rebut a charge of recent fabrication or improper influence, or to rehabilitate credibility attacked on another ground;<br>
+      (C) <span class="op">identifies a person</span> as someone the declarant perceived earlier.</p>
+      <p class="ruletext" style="margin-top:var(--s3)"><b>801(d)(2) — an opposing party’s statement</b>, offered against that party, which:<br>
+      (A) was made by <span class="op">the party</span>; (B) is one the party <span class="op">manifested that it adopted</span> or believed to be true; (C) was made by a person <span class="op">authorized</span> to speak on the subject; (D) was made by the party’s <span class="op">agent or employee</span> on a matter within, and during, that relationship; or (E) was made by a <span class="op">coconspirator during and in furtherance</span> of the conspiracy.<br>
+      The statement must be considered but does not by itself establish the authority under (C), the relationship under (D), or the conspiracy under (E). And — added effective December&nbsp;1,&nbsp;2024 — “if a party’s claim, defense, or potential liability is <span class="op">directly derived</span> from a declarant or the declarant’s principal, a statement that would be admissible against the declarant or the principal <span class="op">under this rule</span> is also admissible against the party.”</p>
+      <p class="ruletext" style="margin-top:var(--s3)"><b>802.</b> Hearsay is not admissible <span class="op">unless any of the following provides otherwise</span>: a federal statute; these rules; or other rules prescribed by the Supreme Court.</p>
+      <p class="prose" style="margin-top:var(--s4)"><b>On the record:</b> a defendant’s own text message — “my fault, I was on my phone” — offered against her by the other driver. Offered for its truth, out of court — yet not hearsay, because 801(d)(2)(A) defines a party’s own statement out of the category when offered against that party. No oath, no reliability showing required.</p>
+      <p class="srcnote">The 801(d)(1) and (d)(2)(A)–(E) lists above condense the rule’s wording; 801(a)–(c), 802, and the quoted 2024 sentence are verbatim — full text at the link. Ruling something hearsay starts the analysis rather than ending it: Rules 803, 804 and 807 hold the exceptions, and they are their own drill set.</p>
+    </div>
+  </div>
+
+  <div class="divider">The battery — run the elements</div>
+  <div id="host-s3r1"></div>
+  <div id="host-s3r2"></div>
+  <div id="host-s3r3"></div>
+  <div id="host-s3r4"></div>
+  <div id="host-s3r5"></div>
+  <a class="next" href="#final">The final · 12 rulings, closed book ↓</a>
+</section>
+
+<!-- ============================= FINAL ============================= -->
+<section id="final">
   <p class="eyebrow">Closed book</p>
   <h2>The final</h2>
-  <p class="prose">Reference locks while this is open. Nine questions across all three sections — answer everything, then submit. Nothing is scored until you do.</p>
+  <p class="prose">Reference locks while this is open. Twelve rulings — four per battery, in mixed order — plus one written ruling. Answer everything, then submit; nothing is scored until you do.</p>
   <button class="btn" id="startFinal">Start the final</button>
   <div id="finalstage" hidden>
-    <div class="stephead"><span id="fprog">Question 1 of 8</span><span id="fpaused">Paused</span></div>
+    <div class="stephead"><span id="fprog">Question 1 of 12</span><span id="fpaused">Paused</span></div>
     <div id="fitems"></div>
     <div class="stepnav">
       <button class="btn ghost" id="fback">← Back</button>
@@ -589,12 +623,12 @@ body.finalon section.finalhost{opacity:1;pointer-events:auto}
 <section id="mastery">
   <p class="eyebrow">Where you stand</p>
   <h2>What you can do now</h2>
-  <p class="prose">These fill in as you get things right on the first try, and reset when you close the page. The final's results are what's saved — in this browser only.</p>
+  <p class="prose">These fill in as you get things right on the first try. Your results stay in this browser.</p>
   <div id="ledger"></div>
   <div class="objchips">
-    <div class="objchip" id="obj1chip">Route statements through the 801(d) exclusions — party statements and a witness&rsquo;s own priors</div>
-    <div class="objchip" id="obj2chip">Apply the 803 exceptions and refuse them when an element fails</div>
-    <div class="objchip" id="obj3chip">Establish unavailability, then pick the right 804 exception</div>
+    <div class="objchip" id="obj1chip">Spot a statement and a declarant — machines, conduct, silence</div>
+    <div class="objchip" id="obj2chip">Run “offered to prove the truth of the matter asserted” on any offer</div>
+    <div class="objchip" id="obj3chip">Apply the 801(d) exclusions element by element, and state what 802 leaves open</div>
   </div>
 </section>
 
@@ -604,26 +638,21 @@ body.finalon section.finalhost{opacity:1;pointer-events:auto}
 <aside id="drawer" aria-label="Quick Reference">
   <div class="drhead"><h3>Quick Reference</h3><button class="btn ghost" id="drclose" style="min-height:36px;padding:6px 12px">Close</button></div>
   <div class="drbody">
-    <div class="qref"><b>801(d)(2) — opposing party&rsquo;s statement</b><span>Not hearsay when offered against a party and made by the party (A), adopted by them (B), by an authorized speaker (C), by an agent or employee on a matter within the scope and during the relationship (D), or by a coconspirator during and in furtherance of the conspiracy (E).</span><i>Only works offered <b>against</b> that party — a party can never offer their own statement through it. No oath, no personal knowledge, no against-interest showing needed.</i></div>
-    <div class="qref"><b>801(d)(2), derived liability (Dec 2024)</b><span>If a party&rsquo;s claim, defense, or potential liability directly derives from a declarant or the declarant&rsquo;s principal, a statement admissible against the declarant or principal is admissible against the party.</span><i>Think successors and derivative claims — the statement follows the liability.</i></div>
-    <div class="qref"><b>801(d)(1) — testifying witness&rsquo;s prior statement</b><span>Declarant testifies and is subject to cross about it. (A) prior inconsistent — for its truth only if given under penalty of perjury at a proceeding or deposition. (B) prior consistent — to rebut fabrication or improper-motive charges, only if made before the motive arose, or to rehabilitate. (C) prior identification — no oath needed.</span><i>An unsworn prior inconsistent statement still impeaches; it just isn&rsquo;t substantive evidence. Faded memory on the stand doesn&rsquo;t defeat &ldquo;subject to cross.&rdquo;</i></div>
-    <div class="qref"><b>803(1) — present sense impression</b><span>Describes an event or condition, made while perceiving it or immediately after.</span><i>&ldquo;Immediately&rdquo; means moments, not minutes of reflection.</i></div>
-    <div class="qref"><b>803(2) — excited utterance</b><span>Relates to a startling event, made while under the stress of the excitement it caused.</span><i>The test is the stress, not the stopwatch — but calm narration fails however soon it comes.</i></div>
-    <div class="qref"><b>803(3) — then-existing state of mind</b><span>Current feelings, pain, intent, plan. A stated plan can prove the declarant later acted on it.</span><i>Never a statement of memory or belief to prove the fact remembered — check every 803(3) offer against this carve-out first.</i></div>
-    <div class="qref"><b>803(4) — medical diagnosis or treatment</b><span>Made for — and pertinent to — diagnosis or treatment: symptoms, history, general cause.</span><i>&ldquo;A crate fell on my foot&rdquo; is pertinent. &ldquo;It was Dave&rsquo;s fault&rdquo; is not.</i></div>
-    <div class="qref"><b>803(6) — business records</b><span>Made at or near the time, by or from someone with knowledge, kept in the regular course, making the record a regular practice, shown by a custodian or certification.</span><i>The opponent bears the burden of showing untrustworthiness — but records built for litigation lose the presumption.</i></div>
-    <div class="qref"><b>803(8) — public records</b><span>A public office&rsquo;s activities, legally required observations, and (in civil cases and against the government) investigative findings.</span><i>In criminal cases, law-enforcement observations and investigative findings don&rsquo;t come in against the defendant — and 803(6) can&rsquo;t rescue them.</i></div>
-    <div class="qref"><b>805 — hearsay within hearsay</b><span>Each layer needs its own exclusion or exception.</span><i>A business record containing a customer&rsquo;s statement needs a rule for the record and a rule for the customer.</i></div>
-    <div class="qref"><b>804(a) — unavailability</b><span>Privilege · refusal despite court order · lack of memory · death or infirmity · absence beyond process or other reasonable means.</span><i>Never available to a proponent who procured the absence to prevent testimony.</i></div>
-    <div class="qref"><b>804(b)(1) — former testimony</b><span>Testimony from a trial, hearing, or deposition, offered against a party who had — or in a civil case whose predecessor in interest had — an opportunity and similar motive to develop it.</span><i>Grand jury testimony offered against a defendant fails: the defense had no opportunity at all.</i></div>
-    <div class="qref"><b>804(b)(2) — dying declaration</b><span>Homicide prosecution or civil case only. Cause or circumstances of what the declarant believed to be imminent death.</span><i>The declarant must be unavailable but need not have died. Wrong case type kills it entirely.</i></div>
-    <div class="qref"><b>804(b)(3) — statement against interest</b><span>So contrary to pecuniary, proprietary, or penal interest that a reasonable person would only say it if true. Penal-interest statements in criminal cases need corroborating circumstances clearly indicating trustworthiness; the court considers the totality of circumstances under which the statement was made and any evidence that supports or undermines it (Dec 2024).</span><i>Distinguish 801(d)(2)(A): a party&rsquo;s own statement needs no unavailability and no against-interest showing.</i></div>
-    <div class="qref"><b>804(b)(6) — forfeiture by wrongdoing</b><span>Offered against a party who wrongfully caused — or acquiesced in causing — the declarant&rsquo;s unavailability, intending that result.</span><i>Intent to silence is an element; ordinary wrongdoing that happens to silence isn&rsquo;t enough.</i></div>
+    <div class="qref"><b>Statement — 801(a)</b><span>A person’s oral assertion, written assertion, or nonverbal conduct, if the person intended it as an assertion.</span><i>Machine output has no declarant. A recording of a person speaking still does.</i></div>
+    <div class="qref"><b>Declarant — 801(b)</b><span>The person who made the statement.</span><i>Animals and instruments never qualify; their reliability is tested outside the hearsay rule.</i></div>
+    <div class="qref"><b>Hearsay — 801(c)</b><span>A statement the declarant does not make while testifying at the current trial or hearing, offered to prove the truth of the matter asserted.</span><i>Both prongs required. The offer’s purpose, not the sentence, decides prong two.</i></div>
+    <div class="qref"><b>Non-truth purposes</b><span>Effect on the listener (notice, fear, good faith) · verbal acts (“I accept,” threats, defamation) · impeachment by inconsistency · circumstantial evidence of state of mind.</span><i>The claimed purpose must be one the case genuinely needs — a label is not a purpose.</i></div>
+    <div class="qref"><b>Prior inconsistent — 801(d)(1)(A)</b><span>Declarant now testifies and is crossable about it; the prior statement is inconsistent and was given under penalty of perjury at a trial, hearing, other proceeding, or deposition.</span><i>Unsworn versions impeach only — they never come in for their truth under this rule.</i></div>
+    <div class="qref"><b>Prior consistent — 801(d)(1)(B)</b><span>Offered to rebut a charge of recent fabrication or improper motive, or to rehabilitate credibility attacked on another ground.</span><i>To rebut a motive charge, the statement must predate the alleged motive.</i></div>
+    <div class="qref"><b>Prior identification — 801(d)(1)(C)</b><span>Identifies a person as someone the declarant perceived earlier; declarant testifies and is subject to cross.</span><i>Anyone who witnessed the identification may recount it — the fresh ID beats the courtroom one.</i></div>
+    <div class="qref"><b>Opposing party — 801(d)(2)(A)–(B)</b><span>The party’s own statement, in any capacity — or one the party adopted or manifested belief in, including by silence where a denial would be natural.</span><i>No oath, no personal knowledge, no reliability showing required.</i></div>
+    <div class="qref"><b>Agents &amp; employees — 801(d)(2)(C)–(D)</b><span>(C) a person authorized to speak on the subject; (D) the party’s agent or employee, on a matter within the scope of the relationship, while it existed.</span><i>(D) has no formality requirement — scene-of-the-accident remarks count. Timing is measured at the statement.</i></div>
+    <div class="qref"><b>Coconspirators — 801(d)(2)(E)</b><span>Made by a coconspirator during and in furtherance of the conspiracy.</span><i>The statement counts toward proving the conspiracy but cannot establish it alone — independent evidence required.</i></div>
+    <div class="qref"><b>Derived claims — 801(d)(2), added Dec. 1, 2024</b><span>“If a party’s claim, defense, or potential liability is directly derived from a declarant or the declarant’s principal, a statement that would be admissible against the declarant or the principal under this rule is also admissible against the party.”</span><i>Successors, assignees, estates — the party stands in the declarant’s shoes.</i></div>
+    <div class="qref"><b>The rule against hearsay — 802</b><span>Hearsay is not admissible unless any of the following provides otherwise: a federal statute; these rules; or other rules prescribed by the Supreme Court.</span><i>“These rules” include the 803/804/807 exceptions — a hearsay ruling opens that question rather than closing it.</i></div>
     <p class="srcs"><b>Sources</b><br>
-      <a href="https://www.law.cornell.edu/rules/fre/rule_801" target="_blank" rel="noopener">FRE 801 — definitions and exclusions ↗</a><br>
-      <a href="https://www.law.cornell.edu/rules/fre/rule_803" target="_blank" rel="noopener">FRE 803 — exceptions, availability immaterial ↗</a><br>
-      <a href="https://www.law.cornell.edu/rules/fre/rule_804" target="_blank" rel="noopener">FRE 804 — unavailability and its exceptions ↗</a><br>
-      <a href="https://www.uscourts.gov/sites/default/files/2025-02/federal-rules-of-evidence-dec-1-2024_0.pdf" target="_blank" rel="noopener">Federal Rules of Evidence, official Dec 1, 2024 edition (uscourts.gov) ↗</a>
+      <a href="https://www.law.cornell.edu/rules/fre/rule_801" target="_blank" rel="noopener">FRE 801 — definitions and exclusions (as amended eff. Dec. 1, 2024) ↗</a><br>
+      <a href="https://www.law.cornell.edu/rules/fre/rule_802" target="_blank" rel="noopener">FRE 802 — the rule against hearsay ↗</a>
     </p>
   </div>
 </aside>
@@ -840,6 +869,25 @@ function orderOpts(opts){
 }
 function plain(t){return t.replace(/<[^>]+>/g,"");}
 
+/* ===================== screen reader and keyboard ===================== */
+/* The revealed feedback node is where the teaching lives, so it has to announce
+   itself — a silent reveal hands a screen reader nothing at the one moment that
+   matters. role=status + aria-live=polite waits for a pause instead of cutting in.
+   Options lock with aria-disabled, never the disabled property: a disabled button
+   leaves the tab order, so keyboard focus fell back to <body> after every answer
+   and the reader had to tab from the top of the page again. */
+function liveify(el){
+  if(el&&!el.getAttribute("aria-live")){el.setAttribute("role","status");el.setAttribute("aria-live","polite");}
+  return el;
+}
+function lockOpts(box){
+  Array.prototype.forEach.call(box.children,function(x){x.setAttribute("aria-disabled","true");});
+}
+function unlockOpts(box){
+  Array.prototype.forEach.call(box.children,function(x){x.removeAttribute("aria-disabled");});
+}
+function locked(b){return b.getAttribute("aria-disabled")==="true";}
+
 /* ===================== commit cards (ungraded) ===================== */
 function buildCommit(c){
   var host=document.getElementById(c.host);
@@ -849,7 +897,7 @@ function buildCommit(c){
     +'<p class="stem" id="'+stemId+'"></p><div class="opts"></div><p class="why"></p>';
   document.getElementById(stemId).textContent=c.stem;
   LINES["stem_"+c.id]=c.stem;
-  var opts=host.querySelector(".opts"),why=host.querySelector(".why");
+  var opts=host.querySelector(".opts"),why=liveify(host.querySelector(".why"));
   var order=orderOpts(c.opts);
   order.map(function(i){return c.opts[i];}).forEach(function(o,idx){
     var vid="fb_"+c.id+"_"+order[idx];
@@ -857,8 +905,10 @@ function buildCommit(c){
     LINES[vid]=pre+plain(o.resp);
     var b=document.createElement("button");b.className="opt";b.textContent=o.t;
     b.addEventListener("click",function(){
-      Array.prototype.forEach.call(opts.children,function(x){x.disabled=true;});
+      if(locked(b))return;
+      lockOpts(opts);
       b.classList.add(o.v==="ok"?"right":(o.v==="no"?"wrong":"sel"));
+      // Same closure as rulings and the final: a miss lights the designed answer too.
       if(o.v!=="ok")Array.prototype.forEach.call(opts.children,function(x,i2){
         if(c.opts[order[i2]].v==="ok")x.classList.add("right");
       });
@@ -888,12 +938,16 @@ function seedFeedbackLines(r){
 }
 function buildRuling(r,host){
   seedFeedbackLines(r);
+  /* Second-pass re-serves carry the same obj as the item they came from; registering
+     them would feed the retry back into itself. */
+  var rec=(r.obj&&r.id.slice(-3)!=="_p2")?{obj:r.obj,f:r,ok:null}:null;
+  if(rec)PRACTICE.push(rec);
   var d=document.createElement("div");d.className="ruling";
   d.innerHTML='<span class="tag">'+(r.kind||"Your call")+'</span><h4>'+r.title+"</h4>"
     +(r.tx?txHTML(r.tx):"")+(r.scen?'<p class="ff">'+r.scen+"</p>":"")
     +'<p class="q">'+r.q+"</p>";
   var opts=document.createElement("div");opts.className="opts";d.appendChild(opts);
-  var why=document.createElement("p");why.className="why";d.appendChild(why);
+  var why=liveify(document.createElement("p"));why.className="why";d.appendChild(why);
   var retry=document.createElement("button");retry.className="btn ghost retry";retry.textContent="Try again";d.appendChild(retry);
   var mut=document.createElement("div");d.appendChild(mut);
   var order=orderOpts(r.opts);
@@ -908,11 +962,12 @@ function buildRuling(r,host){
       if(!o.ok&&r.id.slice(-3)!=="_p2")LINES[vid]="Not quite. "+plain(o.why);
       var b=document.createElement("button");b.className="opt";b.textContent=o.t;
       b.addEventListener("click",function(){
-        Array.prototype.forEach.call(opts.children,function(x){x.disabled=true;});
+        if(locked(b))return;
+        lockOpts(opts);
         /* A wrong answer reveals the correct option immediately, so every retry is a
            retry with the answer showing. Only a first-attempt hit earns the ledger. */
         var wasFirst=!firstDone;
-        if(!firstDone){firstDone=true;if(r.onFirst)r.onFirst(!!o.ok);}
+        if(!firstDone){firstDone=true;if(rec)rec.ok=!!o.ok;if(r.onFirst)r.onFirst(!!o.ok);}
         if(o.ok){
           b.classList.add("right");
           why.className="why show good";
@@ -966,7 +1021,7 @@ function buildTyped(t,host){
     });
   });
   btn.addEventListener("click",function(){
-    ta.readOnly=true;model.classList.add("show");crits.classList.add("show");btn.disabled=true;
+    ta.readOnly=true;liveify(model);model.classList.add("show");crits.classList.add("show");btn.disabled=true;
   });
   host.appendChild(d);
 }
@@ -989,7 +1044,7 @@ function buildSorter(s){
     var row=document.createElement("div");row.className="sortrow";
     row.innerHTML='<p class="offer"><b>Offered</b> — '+rw.p+"</p>";
     var btns=document.createElement("div");btns.className="sortbtns";
-    var note=document.createElement("p");note.className="sortnote";
+    var note=liveify(document.createElement("p"));note.className="sortnote";
     var choices=[{t:s.labels[0],truth:true},{t:s.labels[1],truth:false}];
     var retry=document.createElement("button");retry.className="btn ghost retry";retry.textContent="Try again";
     var scored=false;
@@ -999,7 +1054,8 @@ function buildSorter(s){
         var c=choices[ci];
         var b=document.createElement("button");b.className="opt";b.textContent=c.t;
         b.addEventListener("click",function(){
-          Array.prototype.forEach.call(btns.children,function(x){x.disabled=true;});
+          if(locked(b))return;
+          lockOpts(btns);
           var right=(c.truth===rw.truth);
           b.classList.add(right?"right":"wrong");
           if(!right)Array.prototype.forEach.call(btns.children,function(x){if(x!==b)x.classList.add("right");});
@@ -1037,6 +1093,24 @@ function fwReset(){fwAll().forEach(function(e){e.classList.remove("pend","lit","
 var finalActive=false,finalPaused=false,finalSubmitted=false,fCur=0;
 var fOrder=[],fAns=[],fText=[];
 var TYPED_GATE=80;                                             // same real-attempt gate as practice
+/* Mastery is per objective, not overall: a 75% total can hide an objective the
+   learner went 0-for-2 on, which is the one thing the readout most needs to say.
+   Practice items register here only when the lesson tags them with an obj, so a
+   lesson built before that tag existed still works — it just retries finals only.
+   One miss is forgiven from three items up. A straight 80% on the small denominators
+   a short lesson can afford means no miss at all — you need five items before one
+   slip survives the percentage — so it would fail a learner for a single fumble and
+   read as broken. Below three, there is no room to tell a slip from a gap, so the
+   percentage stands alone. */
+var CRITERION=0.8,SLIP_FROM=3;
+/* The two halves of the bar, named so they can be tested directly rather than
+   through a rendered readout — the second exists because the first, on its own,
+   passes a learner who missed one on every objective. */
+/* Set TM_DRILLS = true in a drills build; it only changes how the readout speaks. */
+var DRILLS=!!window.TM_DRILLS;
+function objPass(got,tot){return !tot||got/tot>=CRITERION||(tot>=SLIP_FROM&&tot-got<=1);}
+function overallPass(score,total){return !total||score/total>=CRITERION;}
+var PRACTICE=[];
 /* A final item is either MCQ (f.opts) or written (f.typed:true + f.model + f.criteria).
    A written item shows NO model answer during the exam — that would hand over the
    answer mid-final. It banks the text; the model and the self-score criteria arrive
@@ -1217,14 +1291,26 @@ function submitFinal(){
         tot:results.filter(function(r){return r.f.obj===o.tag;}).length};
     }),
     missed:results.filter(function(r){return !r.ok;}).map(function(r){return r.f.title;}),
-    written:written.map(function(w){return w.f.title;})
+    written:written.map(function(w){return w.f.title;}),
+    /* First-attempt practice results, per objective. The final says whether they
+       know it now; this says where the trouble was on the way in, which is what a
+       later drills build wants when it decides what to serve. First attempt only —
+       practice reveals the answer on a miss, so a later retry proves nothing.
+       Untagged rulings never registered, so they are absent rather than wrong. */
+    practice:PRACTICE.filter(function(p){return p.ok!==null;})
+      .map(function(p){return {obj:p.obj,title:p.f.title,ok:p.ok};})
   };
   var prev=tmAttempts();
   tmSaveAttempt(attempt);
   renderReadout(results,null,written,prev,attempt);
   document.getElementById("finalstage").hidden=true;
-  document.getElementById("readout").classList.add("show");
-  document.getElementById("readout").scrollIntoView({behavior:"smooth",block:"start"});
+  var ro=document.getElementById("readout");
+  ro.classList.add("show");
+  ro.scrollIntoView({behavior:"smooth",block:"start"});
+  /* The score replaces the whole final, so this one moves focus rather than
+     announcing politely — a reader arriving here should land on the result, not
+     hear it read behind wherever focus happened to be. */
+  ro.setAttribute("tabindex","-1");ro.focus({preventScroll:true});
 }
 function renderReadout(results,second,written,prev,attempt){
   written=written||[];prev=prev||[];
@@ -1234,11 +1320,33 @@ function renderReadout(results,second,written,prev,attempt){
   var objCells=OBJS.map(function(o){                           // was hardcoded o1/o2
     var got=results.filter(function(r){return r.f.obj===o.tag&&r.ok;}).length;
     var tot=results.filter(function(r){return r.f.obj===o.tag;}).length;
-    return {label:o.label,got:got,tot:tot};
+    return {label:o.label,tag:o.tag,got:got,tot:tot,pass:objPass(got,tot)};
   });
+  /* The gate. An objective under criterion is the headline, not a pill the learner
+     has to decode — "not yet" and the names, before the number. Nothing can force a
+     retake in a static file, so this changes what finished looks like, not what is
+     possible: the score still stands and the page stays readable either way. */
+  var shortfall=objCells.filter(function(c){return c.tot&&!c.pass;});
+  /* The whole paper has to clear the bar too. Forgiving one miss per objective is
+     right for a single slip and wrong when they are all slips: on three-item
+     objectives a learner can miss one everywhere, clear every objective, and still
+     have got two thirds of the lesson — which is not a pass by any reading. */
+  var overallOk=overallPass(score,results.length);
+  var met=!shortfall.length&&overallOk;
   var h='<div class="scorehead"><p class="eyebrow">Your readout</p>'
+    +'<p class="verdict '+(met?"met":"notyet")+'">'
+      /* Drill mode says the same thing without the verdict. Grinding a battery and
+         missing a lot on the first round is the expected state there, not a failure,
+         and "Not yet" reads as a scolding for doing exactly what drills are for. */
+      +(shortfall.length
+        ?(DRILLS?"Still shaky on ":"Not yet — ")+shortfall.map(function(c){return c.label;}).join(" and ")
+          +(DRILLS?"":" "+(shortfall.length>1?"need":"needs")+" another pass")
+        :(overallOk
+          ?(DRILLS?"Clean round — every objective is holding":"You hit the mark on every objective")
+          :(DRILLS?"Every objective is holding on its own; the set as a whole still needs another lap"
+                  :"Not yet — you cleared each objective on its own, but missed too much across the lesson")))+"</p>"
     +'<p class="scorebig">'+score+"/"+results.length+"</p>"
-    +'<div class="objrow">'+objCells.map(function(c){return '<span class="objpill">'+c.label+" · "+c.got+"/"+c.tot+"</span>";}).join("")+"</div>"
+    +'<div class="objrow">'+objCells.map(function(c){return '<span class="objpill'+(c.tot&&!c.pass?" under":"")+'">'+c.label+" · "+c.got+"/"+c.tot+"</span>";}).join("")+"</div>"
     +(second?'<p class="secondline">Second pass over missed items: '+second.score+"/"+second.total+" (scored separately — your first score stands)</p>":"")
     +"</div>";
   /* Running tally across attempts: strongest and weakest objectives by cumulative
@@ -1286,7 +1394,18 @@ function renderReadout(results,second,written,prev,attempt){
       +"</div>";
   });
   if(missed.length&&!second){
-    h+='<div class="retryrow"><button class="btn" id="retryMissed">Retry the '+missed.length+" missed item"+(missed.length>1?"s":"")+" (scored separately)</button></div>";
+    /* Below criterion the retry is the thing to do next, so it reads as an instruction
+       and carries the reteach in front of it; at or above, it stays an offer. */
+    var extra=retryExtras(objCells);
+    var n=missed.length+extra.length;
+    h+='<div class="retryrow'+(met?"":" lead")+'">'
+      +(shortfall.length?'<p class="retrylead">Reread '+shortfall.map(function(c){
+          var m=results.filter(function(r){return r.f.obj===c.tag&&!r.ok;})[0];
+          return m?'<a class="reteach" href="'+m.f.back.split("|")[0]+'">'+m.f.back.split("|")[1]+"</a>":c.label;
+        }).join(", ")+", then take these again.</p>":"")
+      +'<button class="btn'+(met?" ghost":"")+'" id="retryMissed">'
+      +(met?"Retry the "+n+" missed item"+(n>1?"s":""):"Work the "+n+" item"+(n>1?"s":"")+" you missed")
+      +" (scored separately)</button></div>";
   }
   var objSummary=objCells.map(function(c){return c.label+" "+c.got+"/"+c.tot;}).join(" · ");
   var brief=BRIEF_TITLE+"\n"
@@ -1333,11 +1452,23 @@ function renderReadout(results,second,written,prev,attempt){
     hist.forEach(function(a){(a.objs||[]).forEach(function(o){
       if(!agg[o.label])agg[o.label]={got:0,tot:0};
       agg[o.label].got+=o.got;agg[o.label].tot+=o.tot;});});
+    /* Practice rolled up the same way, but kept on its own line rather than folded
+       into the objective totals — practice is open-book with the answer one click
+       away, so averaging it into a closed-book score would flatter every objective. */
+    var pAgg={};
+    hist.forEach(function(a){(a.practice||[]).forEach(function(p){
+      var o=(OBJS.filter(function(x){return x.tag===p.obj;})[0]||{}).label||("objective "+p.obj);
+      if(!pAgg[o])pAgg[o]={got:0,tot:0,missed:[]};
+      pAgg[o].tot++;if(p.ok)pAgg[o].got++;else pAgg[o].missed.push(p.title);});});
     var payload={lesson:document.title,slug:tmSlug(),exported:new Date().toISOString(),
       attempts:hist,
       perObjective:Object.keys(agg).map(function(k){
         return {label:k,got:agg[k].got,tot:agg[k].tot,
-          pct:agg[k].tot?Math.round(100*agg[k].got/agg[k].tot):null};})};
+          pct:agg[k].tot?Math.round(100*agg[k].got/agg[k].tot):null};}),
+      practicePerObjective:Object.keys(pAgg).map(function(k){
+        return {label:k,got:pAgg[k].got,tot:pAgg[k].tot,
+          pct:pAgg[k].tot?Math.round(100*pAgg[k].got/pAgg[k].tot):null,
+          missed:pAgg[k].missed};})};
     var blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
     var a=document.createElement("a");
     a.href=URL.createObjectURL(blob);
@@ -1346,13 +1477,22 @@ function renderReadout(results,second,written,prev,attempt){
     setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},500);
   });
   var rm=document.getElementById("retryMissed");
-  if(rm)rm.addEventListener("click",function(){runSecondPass(results);});
+  if(rm)rm.addEventListener("click",function(){runSecondPass(results,objCells);});
 }
-function runSecondPass(results){
-  var missed=results.filter(function(r){return !r.ok;});
+/* Practice items on an objective that fell short, missed on the first attempt.
+   Empty for any lesson whose practice items carry no obj tag — finals only, which
+   is exactly what the retry did before. */
+function retryExtras(objCells){
+  var under={};
+  objCells.forEach(function(c){if(c.tot&&!c.pass)under[c.tag]=true;});
+  return PRACTICE.filter(function(p){return under[p.obj]&&p.ok===false;});
+}
+function runSecondPass(results,objCells){
+  var missed=results.filter(function(r){return !r.ok;})
+    .concat(objCells?retryExtras(objCells):[]);
   var host=document.getElementById("readout");
   var wrap=document.createElement("div");
-  wrap.innerHTML='<h3 class="p2head">Second pass — missed items only</h3><p id="p2score" class="p2score">Scored separately — your first score stands. First answer on each item counts.</p>';
+  wrap.innerHTML='<h3 class="p2head">Second pass — what you missed</h3><p id="p2score" class="p2score">Scored separately — your first score stands. First answer on each item counts.</p>';
   host.appendChild(wrap);
   var got=0,doneN=0,total=missed.length;
   function tally(ok){
@@ -1362,8 +1502,10 @@ function runSecondPass(results){
   }
   missed.forEach(function(r){
     var f=r.f;
+    /* A final item carries one back: for the whole item; a practice item carries one
+       per wrong option. Take whichever this item has. */
     buildRuling({id:f.id+"_p2",mark:f.id,kind:"Second pass",title:f.title,tx:f.tx,q:f.q,onFirst:tally,
-      opts:f.opts.map(function(o){return {ok:o.ok,t:o.t,why:o.why,back:o.ok?undefined:f.back};})},wrap);
+      opts:f.opts.map(function(o){return {ok:o.ok,t:o.t,why:o.why,back:o.ok?undefined:(f.back||o.back)};})},wrap);
   });
   var rm=document.getElementById("retryMissed");
   if(rm)rm.disabled=true;
@@ -1434,482 +1576,503 @@ function wireVoiceChrome(){
 </script>
 <script>
 "use strict";
-/* ===================== data ===================== */
-var TM_SLUG="hearsay-exceptions-exclusions";
-var LINES={};
-var COMMITS=[];
-var LOCK_IDS=[];
-var BRIEF_TITLE="Hearsay exceptions and exclusions — drill results";
-var BRIEF_SCOPE="Scoped out of this set: Confrontation Clause limits on testimonial hearsay, the 807 residual exception, and 806 attacks on a hearsay declarant's credibility.";
+window.TM_SLUG = "hearsay-801-802";
+window.TM_DRILLS = true;
+window.FINAL_ITEM_LABEL = "Ruling";
 
-var M={r1:false,r1m:false,r2:false,r2m:false,r3:false,r4:false,r5:false,r6:false,r7:false,
-       r8:false,r8m:false,s1:false,r9:false,r10:false,r11:false,r12:false,
-       r13:false,r14:false,r15:false,r16:false,t1:false,
-       f1:false,f2:false,f3:false,f4:false,f5:false,f6:false,f7:false,f8:false,f8w:false};
+var LINES = {};
 
-var OBJS=[
-  {chip:"obj1chip",label:"801(d) exclusions",tag:1,keys:["r1","r2","r3","r4","r5","r6","r7","f1","f5","f7"]},
-  {chip:"obj2chip",label:"803 exceptions",tag:2,keys:["r8","s1","r9","r10","r11","r12","f2","f3","f6"]},
-  {chip:"obj3chip",label:"804 + unavailability",tag:3,keys:["r13","r14","r15","r16","t1","f4","f8","f8w"]}
+var M = {
+  r2:false,r3:false,r4:false,r4m:false,r6:false,r7:false,
+  s2r1:false,s2r2:false,s2r2m:false,s2r3:false,s2r4:false,s2r5:false,s2r6:false,t1:false,
+  s3r1:false,s3r2:false,s3r2m:false,s3r3:false,s3r4:false,s3r5:false,
+  f1:false,f2:false,f3:false,f4:false,f5:false,f6:false,f7:false,f8:false,
+  f9:false,f10:false,f11:false,f12:false
+};
+
+var OBJS = [
+  { chip:"obj1chip", label:"Statements & declarants", tag:1,
+    keys:["r2","r3","r4","r4m","r6","r7","f1","f2","f3","f4"] },
+  { chip:"obj2chip", label:"Offered for its truth", tag:2,
+    keys:["s2r1","s2r2","s2r2m","s2r3","s2r4","s2r5","s2r6","t1","f5","f6","f7","f8"] },
+  { chip:"obj3chip", label:"801(d) exclusions & 802", tag:3,
+    keys:["s3r1","s3r2","s3r2m","s3r3","s3r4","s3r5","f9","f10","f11","f12"] }
 ];
 
-var LEDGER_ROWS=[
-  ["r1","Route a party's own words through 801(d)(2) — and stop the party offering their own"],
-  ["r2","Apply the employee-statement elements: within the scope, while the relationship existed"],
-  ["r5","Tell an opposing-party statement from a statement against interest"],
-  ["r6","Say when a prior inconsistent statement counts for its truth"],
-  ["s1","Separate present sense impressions and excited utterances from calm narration"],
-  ["r9","Use 803(3) for plans — and refuse it for memories"],
-  ["r11","Keep law-enforcement reports out of a criminal case"],
-  ["r13","Name the ways a declarant is unavailable — and the one that never counts"],
-  ["r15","Confine dying declarations to homicide prosecutions and civil cases"],
-  ["t1","Write a ruling that names the best route and says why"]
+var LEDGER_ROWS = [
+  ["r4m","Tell a machine reading from a person’s account of one"],
+  ["r6","Hold the line on conduct: intended assertions in, everything else out"],
+  ["s2r2m","Flip a hearsay answer by changing only the purpose of the offer"],
+  ["t1","Rule on a “not for its truth” label instead of accepting it"],
+  ["s3r2m","Run an 801(d)(2) exclusion element by element on new facts"],
+  ["f12","Apply the December 2024 derived-claims addition"]
 ];
 
-/* ===================== §1 rulings ===================== */
-var RULINGS=[
-{id:"r1",mark:"r1",kind:"Your ruling",title:"The defendant's own words",
- scen:"A car-crash suit. The day after the collision, the defendant told a friend: “I never saw the light change — I was looking at my phone.” The plaintiff offers the friend's testimony about it.",
- q:"Admissible against the defendant?",
- opts:[
-  {ok:true,t:"Yes — a party's own statement, offered against him",
-   why:"801(d)(2)(A) asks exactly two things: the declarant is a party, and the statement is offered against that party. No oath, no personal-knowledge screen, and it didn't need to hurt him when he said it."},
-  {t:"No — it's an out-of-court statement offered for its truth",
-   why:"It is offered for its truth — but 801(d)(2) pulls an opposing party's statement out of the hearsay definition entirely, so the hearsay bar never applies.",back:"#s1|§1 The 801(d) exclusions"},
-  {t:"Only if the statement was against his interest when he made it",
-   why:"An against-interest showing belongs to 804(b)(3), a different rule with different elements. A party's own statement comes in under 801(d)(2)(A) however self-serving it seemed at the time.",back:"#s1|§1 The 801(d) exclusions"},
-  {t:"Only if the defendant is unavailable to testify",
-   why:"Unavailability is 804's gate, not 801's. The exclusion works with the defendant sitting at counsel table.",back:"#s1|§1 The 801(d) exclusions"}
- ],
- mutate:{id:"r1_m",mark:"r1m",kind:"One fact changed",title:"The defendant offers his own statement",
-  scen:"Same crash. This time the defendant himself offers a different thing he told the friend: “My light was green the whole way.”",
-  q:"Can the defendant get his own earlier statement in under 801(d)(2)?",
+var COMMITS = [];
+var LOCK_IDS = [];
+var BRIEF_TITLE = "Hearsay drills — FRE 801 & 802 (definition and exclusions)";
+var BRIEF_SCOPE = "Scoped out: the 803/804 exceptions, 807 residual, 805 hearsay-within-hearsay, 806, and the Confrontation Clause — the natural next set.";
+
+/* ============================ §1 battery ============================ */
+var RULINGS = [
+
+{ id:"r2", mark:"r2", obj:1, kind:"Objection — hearsay", title:"The recorded 911 call",
+  scen:"Arson trial. The prosecution offers a recording of a 911 call in which a neighbor says, “The man from apartment 3 is pouring something on the porch,” to prove that is what he was doing. The prosecutor argues: “A recording is a machine product — like a radar readout, no declarant, no hearsay issue.”",
+  q:"Is the prosecutor right that there is no statement here?",
   opts:[
-   {ok:true,t:"No — the exclusion only covers statements offered against the party who made them",
-    why:"The rule's first line is directional: “offered against an opposing party.” A party offering his own prior statement is outside it, and what's left is ordinary hearsay unless some exception fits."},
-   {t:"Yes — a party's statements are admissible from either side",
-    why:"Letting a party manufacture evidence by narrating to friends and then offering the narration would gut the hearsay rule — which is why the rule runs in one direction only.",back:"#s1|§1 The 801(d) exclusions"},
-   {t:"Yes — as a present sense impression",
-    why:"A day-after account to a friend describes nothing being perceived at that moment, so 803(1) has no grip either. Watch the timing element, not just the label.",back:"#s2|§2 The 803 exceptions"}
-  ]}
-},
-{id:"r2",mark:"r2",kind:"Your ruling",title:"The dispatcher's admission",
- scen:"A delivery van rear-ends a cyclist. A week later the company's route dispatcher — still employed, and the person who assigns vans to routes — tells a customer: “We knew that van's brakes were shot.” The cyclist offers it against the company.",
- q:"Admissible?",
- opts:[
-  {ok:true,t:"Yes — an employee's statement on a matter within the scope of the relationship, made while it existed",
-   why:"That is the full 801(d)(2)(D) checklist: agent or employee, subject matter within the scope of what they do, statement made during the employment. Vehicle condition sits squarely inside a dispatcher's job."},
-  {t:"No — the dispatcher wasn't authorized to speak about brakes",
-   why:"Authorization is (C)'s route. Subsection (D) deliberately drops it — scope of the relationship plus timing is enough, which is why it catches candid statements no company would ever authorize.",back:"#s1|§1 The 801(d) exclusions"},
-  {t:"No — the statement wasn't made to company management",
-   why:"Nothing in (D) cares who was listening. A statement to a customer, a stranger, or a diary works the same once the scope and timing elements are met.",back:"#s1|§1 The 801(d) exclusions"},
-  {t:"Yes — but only if the dispatcher takes the stand",
-   why:"The 801(d)(2) exclusions have no testimony requirement at all. The declarant's location matters under 804, never here.",back:"#s1|§1 The 801(d) exclusions"}
- ],
- mutate:{id:"r2_m",mark:"r2m",kind:"One fact changed",title:"Fired the day before",
-  scen:"Same statement, same dispatcher — but the company had fired him the day before he said it.",
-  q:"Still admissible under 801(d)(2)(D)?",
+    {ok:true, t:"There is a statement — the neighbor’s. Recording a person’s words doesn’t remove the declarant.",
+     why:"The machine question is about who asserted, not what medium carried it. The recorder preserved a person’s oral assertion, so the neighbor is the declarant and the hearsay analysis runs on her words. The radar gun differs because no person asserted anything at any point."},
+    {t:"The prosecutor is right — the exhibit is the recording, and a recording is machine output.",
+     why:"What the recording contains is a person’s oral assertion. A device that captures a person’s words leaves the declarant in place; only a device that generates its own reading has none.", back:"#s1|§1 statements & declarants"},
+    {t:"There is no statement — the neighbor isn’t in the courtroom, so there is no declarant.",
+     why:"801(b) makes the declarant the person who made the statement, wherever that person is now. Absence from court is what makes the statement out-of-court — it doesn’t erase the declarant.", back:"#s1|§1 statements & declarants"},
+    {t:"There is a statement only if the neighbor intended her call to be used in court.",
+     why:"801(a) asks whether the person intended an assertion — did she mean to communicate that fact — not whether she anticipated litigation. A caller reporting what she sees plainly intends to assert it.", back:"#s1|§1 statements & declarants"}
+  ]},
+
+{ id:"r3", mark:"r3", obj:1, kind:"Your call", title:"The silent lineup",
+  scen:"Robbery trial. At a police lineup, a bank teller was asked, “Do you see the man who robbed you?” — and silently pointed at one man. A detective offers to testify to the pointing, to prove that man was the robber.",
+  q:"Is the teller’s pointing a “statement” under 801(a)?",
   opts:[
-   {ok:true,t:"No — the statement must be made while the employment relationship exists",
-    why:"An ex-employee's statement fails (D) however squarely it lands on his old duties: the rule requires the statement during the employment relationship, and it ended the day before. The plaintiff would need another route."},
-   {t:"Yes — he learned the facts while employed, and that's what counts",
-    why:"The rule times the statement, not the knowledge. What he knew from the job doesn't carry the exclusion past his firing.",back:"#s1|§1 The 801(d) exclusions"},
-   {t:"Yes — firing someone to silence them forfeits the objection",
-    why:"Forfeiture, 804(b)(6), needs wrongful conduct intended to make a declarant unavailable to testify. An ordinary firing before an ordinary out-of-court remark is neither.",back:"#s3|§3 The 804 exceptions"}
-  ]}
-},
-{id:"r3",mark:"r3",kind:"Your ruling",title:"Silence at the job site",
- scen:"At a construction site, a foreman from another crew says to the general contractor's site manager, in front of workers: “Your crew stacked those pallets wrong — that's why they came down.” The manager looks at the pallets, says nothing, and walks off. An injured worker offers the accusation — and the silence — against the general contractor.",
- q:"Does the manager's silence make the accusation admissible?",
- opts:[
-  {ok:true,t:"Yes — silence can adopt a statement a person heard, understood, and would naturally have denied if false",
-   why:"801(d)(2)(B) covers adoption by conduct, including saying nothing. An accusation of fault delivered to your face at your own site is one a reasonable manager would dispute — staying quiet manifests belief."},
-  {t:"No — only spoken or written adoption counts",
-   why:"The rule asks whether the party “manifested that it adopted or believed” the statement, and conduct manifests as well as words do. Silence in circumstances calling for a denial qualifies.",back:"#s1|§1 The 801(d) exclusions"},
-  {t:"No — the foreman doesn't work for the general contractor",
-   why:"The foreman doesn't need to. The statement rides in on the manager's adoption of it, not on the foreman's employment — (B), not (D).",back:"#s1|§1 The 801(d) exclusions"},
-  {t:"Yes — as an excited utterance by the foreman",
-   why:"Nothing shows the foreman was under the stress of a startling event when he made an after-the-fact assessment of why pallets fell. The working route is adoption, and it doesn't need him excited.",back:"#s2|§2 The 803 exceptions"}
- ]
-},
-{id:"r4",mark:"r4",kind:"Your ruling",title:"After the arrests",
- scen:"A theft ring is broken up and its members arrested. In a holding cell, one member tells his cellmate: “Bianchi planned the whole thing.” The prosecution offers it against Bianchi under the coconspirator rule.",
- q:"Does 801(d)(2)(E) let it in?",
- opts:[
-  {ok:true,t:"No — the conspiracy had ended, and bragging to a cellmate furthers nothing",
-   why:"Subsection (E) has two timing teeth: during the conspiracy, and in furtherance of it. A post-arrest statement fails both — the joint venture is over and cell talk advances no criminal objective."},
-  {t:"Yes — coconspirators' statements are admissible against each other",
-   why:"Only statements made during and in furtherance of the conspiracy qualify — and this one came after the arrests ended it, to a listener who could do nothing for the scheme.",back:"#s1|§1 The 801(d) exclusions"},
-  {t:"Yes — as long as the court finds a conspiracy existed at some point",
-   why:"The court must find the conspiracy existed and that this statement was made during and in furtherance of it. Existence alone doesn't reach a statement made after the scheme collapsed.",back:"#s1|§1 The 801(d) exclusions"},
-  {t:"No — unless the declarant is unavailable to testify",
-   why:"Availability is the wrong axis: 801(d)(2) never requires unavailability. This statement fails on timing and purpose, not on where the declarant is.",back:"#s1|§1 The 801(d) exclusions"}
- ]
-},
-{id:"r5",mark:"r5",kind:"A classmate's theory",title:"“She'd never say it unless it were true”",
- scen:"A civil fraud suit against Marta, who will testify at trial. Before the suit, Marta told her accountant: “I backdated those invoices.” The plaintiff offers the accountant's testimony. Your classmate says: “It comes in as a statement against interest — nobody admits backdating unless it's true.”",
- q:"Is your classmate right?",
- opts:[
-  {ok:true,t:"Right result, wrong rule — it comes in as an opposing party's statement under 801(d)(2)(A)",
-   why:"Marta is a party and the statement is offered against her; that alone does it. The against-interest route your classmate reached for isn't open — 804(b)(3) requires an unavailable declarant, and Marta will be on the stand."},
-  {t:"Yes — it's a classic statement against interest under 804(b)(3)",
-   why:"The verdict is right but the route is closed: 804(b)(3) opens only for an unavailable declarant, and a declarant who will testify is the opposite of unavailable. The statement comes in anyway — as a party's own statement.",back:"#s3|§3 The 804 exceptions"},
-  {t:"No — it's hearsay, and statements to one's own accountant fit no exception",
-   why:"An exception turns out to be unnecessary: 801(d)(2)(A) excludes a party's own statement from the hearsay definition when offered against her, whoever she said it to.",back:"#s1|§1 The 801(d) exclusions"},
-  {t:"No — not unless the accountant is unavailable",
-   why:"Unavailability, where it matters at all, attaches to the declarant — Marta — not the in-court witness reporting the statement. And under the rule that actually governs here, 801(d)(2)(A), nobody has to be unavailable.",back:"#s1|§1 The 801(d) exclusions"}
- ]
-},
-{id:"r6",mark:"r6",kind:"Your ruling",title:"The color of the getaway car",
- scen:"During an unsworn stationhouse interview, a witness told a detective the getaway car was blue. At trial she testifies it was green. The prosecutor offers the interview statement to prove the car was in fact blue.",
- q:"What use can the jury make of the earlier statement?",
- opts:[
-  {ok:true,t:"Impeachment only — it wasn't given under penalty of perjury at a proceeding or deposition",
-   why:"801(d)(1)(A) admits a prior inconsistent statement for its truth only when it was made under penalty of perjury at a trial, hearing, other proceeding, or deposition. A police interview is none of those, so the statement can discredit her testimony but can't prove the color."},
-  {t:"Full substantive use — prior inconsistent statements of a testifying witness always come in for their truth",
-   why:"Substantive use is the exception, not the default: it needs the oath-at-a-proceeding pedigree that a stationhouse chat lacks. Without it, the statement's only job is impeachment.",back:"#s1|§1 The 801(d) exclusions"},
-  {t:"None — an unsworn prior statement is inadmissible for any purpose",
-   why:"Impeachment survives: an inconsistency offered to show the witness says different things at different times isn't offered for its truth, so the hearsay rule doesn't block it.",back:"#s1|§1 The 801(d) exclusions"},
-  {t:"Full substantive use — if the detective testifies to it accurately",
-   why:"The detective's accuracy fixes a reporting problem the rule doesn't care about. What's missing is the penalty-of-perjury setting for the witness's original statement, and no amount of accurate relaying supplies it.",back:"#s1|§1 The 801(d) exclusions"}
- ]
-},
-{id:"r7",mark:"r7",kind:"Your ruling",title:"The lineup, fourteen months later",
- scen:"A robbery witness picked the defendant out of a lineup a week after the crime. At trial fourteen months on, her memory has faded and she cannot identify him in the courtroom — but she testifies, and defense counsel cross-examines her about the lineup. The prosecution offers the lineup identification as proof it was the defendant.",
- q:"Admissible for its truth?",
- opts:[
-  {ok:true,t:"Yes — a prior identification by a testifying witness, and faded memory doesn't defeat cross-examination",
-   why:"801(d)(1)(C) has no oath requirement and no freshness requirement; it exists because early identifications beat courtroom ones. The Supreme Court held in Owens that a witness who takes the stand and answers questions is “subject to cross-examination” even when memory has failed."},
-  {t:"No — identifications must be made under oath to count",
-   why:"The oath requirement lives in (d)(1)(A), the prior-inconsistent-statement route. Identifications under (C) need only a perceiving declarant who now testifies and can be crossed.",back:"#s1|§1 The 801(d) exclusions"},
-  {t:"No — a witness who can't remember isn't subject to cross-examination",
-   why:"That argument lost in United States v. Owens: presence on the stand, under oath, answering questions is what the rule requires. Memory gaps become material for the cross, not a bar to admissibility.",back:"#s1|§1 The 801(d) exclusions"},
-  {t:"Yes — but only to impeach her failed courtroom identification",
-   why:"Subsection (C) is a truth route, not an impeachment device — its whole point is to substitute the reliable early identification for the degraded courtroom one.",back:"#s1|§1 The 801(d) exclusions"}
- ]
-},
-/* ===================== §2 rulings ===================== */
-{id:"r8",mark:"r8",kind:"Your ruling",title:"Two minutes after the hit-and-run",
- scen:"A pedestrian, shaking and in tears two minutes after watching a hit-and-run, tells a shop owner: “That gray SUV just blew the red light!” She is not a party and may never be found again.",
- q:"Admissible through the shop owner?",
- opts:[
-  {ok:true,t:"Yes — an excited utterance: startling event, statement relating to it, made under the stress",
-   why:"803(2)'s three elements are all here, and nothing else is required — not party status, not availability, not an oath. The stress of the event is doing the work the oath usually does."},
-  {t:"No — the pedestrian isn't a party to any case",
-   why:"Party status matters to 801(d)(2), the exclusion for opposing-party statements. The 803 exceptions take statements from anyone — bystanders most of all.",back:"#s2|§2 The 803 exceptions"},
-  {t:"No — not unless she's shown to be unavailable",
-   why:"Unavailability guards the 804 exceptions. Rule 803's headline is the opposite: these exceptions apply “regardless of whether the declarant is available as a witness.”",back:"#s2|§2 The 803 exceptions"},
-  {t:"Yes — but only if she testifies and confirms she said it",
-   why:"The 803 exceptions never put the declarant on the stand as a condition — the shop owner who heard it is a perfectly good vehicle.",back:"#s2|§2 The 803 exceptions"}
- ],
- mutate:{id:"r8_m",mark:"r8m",kind:"One fact changed",title:"The next morning, over coffee",
-  scen:"Same pedestrian, same sentence — but said calmly to a friend over coffee the next morning.",
-  q:"Still admissible?",
+    {ok:true, t:"Yes — nonverbal conduct the teller intended as an assertion.",
+     why:"Pointing in answer to a question is conduct doing the work of words: “that’s him.” 801(a) covers assertive conduct exactly as it covers speech, so the analysis proceeds as if the teller had spoken. Whether some other rule lets it in is a separate question — first it has to be a statement at all."},
+    {t:"No — the teller never said a word.",
+     why:"801(a) reaches nonverbal conduct if the person intended it as an assertion. Answering “do you see him?” with a pointed finger is an assertion in gesture form; the silence changes nothing.", back:"#s1|§1 statements & declarants"},
+    {t:"No — conduct can only ever be circumstantial evidence, not a statement.",
+     why:"That is the rule for conduct done for its own sake. Conduct meant to communicate — a nod, a point, a thumbs-up — is treated as the words it replaces, which is precisely what 801(a)’s intent clause is for.", back:"#s1|§1 statements & declarants"}
+  ]},
+
+{ id:"r4", mark:"r4", obj:1, kind:"Objection — hearsay", title:"The breathalyzer printout",
+  scen:"DUI trial. The prosecution offers the breathalyzer’s printed result — 0.09 — to prove the driver’s blood-alcohol level. Objection: hearsay.",
+  q:"Your ruling?",
   opts:[
-   {ok:true,t:"No — the stress is gone, and the moment of perception is long past",
-    why:"Calm narration the next day fails 803(2) because the excitement has lapsed, and fails 803(1) because “while or immediately after perceiving” means moments, not the following morning. Same words, no exception."},
-   {t:"Yes — excited utterances stay admissible however much time passes",
-    why:"Time isn't the element, but stress is — and a night's sleep and a calm coffee are how stress ends.",back:"#s2|§2 The 803 exceptions"},
-   {t:"Yes — as a present sense impression of the crash",
-    why:"803(1) requires the description while perceiving the event or immediately after. Eighteen hours of reflection is the exact danger the immediacy requirement exists to screen out.",back:"#s2|§2 The 803 exceptions"}
+    {ok:true, t:"Overruled — the printout is a machine reading with no declarant.",
+     why:"No person asserted 0.09; the instrument measured it. Without a person’s assertion there is no statement under 801(a), so 802 has nothing to block. Doubts about the machine go to authentication, calibration, and weight."},
+    {t:"Sustained — a printed number is a written assertion.",
+     why:"A written assertion under 801(a) must be a person’s. The machine printed its own measurement; nobody wrote “0.09” as a claim about the world. That is why the attack runs through calibration rather than the hearsay rule.", back:"#s1|§1 statements & declarants"},
+    {t:"Sustained — the officer who ran the test asserted the result through the machine.",
+     why:"The officer pressed a button; the number came from the instrument’s measurement, not from anything the officer claimed. If the officer testifies live about running the test, that testimony isn’t hearsay either — it’s made on the stand.", back:"#s1|§1 statements & declarants"}
+  ],
+  mutate:{ id:"r4m", mark:"r4m", kind:"Same scene, one change", title:"The analyst’s report",
+    scen:"Instead of the printout, the prosecution offers a lab analyst’s signed report stating: “I tested the sample; the result was 0.09.”",
+    q:"Your ruling now?",
+    opts:[
+      {ok:true, t:"Sustained, absent an exception — a person’s written assertion, offered for its truth.",
+       why:"The changed fact is who asserted. The analyst — a person — wrote a claim about the world, so 801(a) is met and this is hearsay unless an exception or exclusion applies. The number is identical; the declarant is what flipped the answer."},
+      {t:"Overruled — the report merely transmits the machine’s number.",
+       why:"The analyst didn’t staple a printout to a page; she wrote her own account of what the test showed. A person’s written report of a machine reading is that person’s assertion.", back:"#s1|§1 statements & declarants"},
+      {t:"Overruled — routine reports made in the ordinary course of testing aren’t assertions.",
+       why:"Routineness can matter to a hearsay exception, but it has nothing to do with 801(a): a person wrote a factual claim, so it is a statement. Whether some exception saves it is the next question, not this one.", back:"#s1|§1 statements & declarants"}
+    ]}
+},
+
+{ id:"r6", mark:"r6", obj:1, kind:"Your call", title:"The captain who sailed",
+  scen:"A cargo ship sank mid-voyage. To prove it was seaworthy when it left port, the owner offers evidence that the ship’s captain — after a full inspection — sailed on it with his own family aboard.",
+  q:"Is the captain’s conduct a “statement”?",
+  opts:[
+    {ok:true, t:"No — he wasn’t trying to tell anyone anything, so 801(a) doesn’t reach it.",
+     why:"The captain was sailing, not communicating. Conduct is a statement only if the person intended it as an assertion, and conduct done for its own sake — however revealing — asserts nothing. It comes in as circumstantial evidence of his belief, and the fight is over its weight."},
+    {t:"Yes — boarding with his family asserts “this ship is safe.”",
+     why:"That is the inference the evidence invites, not a message the captain meant to send. The teller at the lineup pointed in order to communicate; the captain just sailed. Intent to assert is the line 801(a) draws.", back:"#s1|§1 statements & declarants"},
+    {t:"Yes — any conduct that reflects a belief is an implied assertion.",
+     why:"The federal rule resolved that debate the other way: no intent to assert, no statement — and doubts about intent are resolved against finding one. The evidence may be strong or weak, but hearsay is not the objection.", back:"#s1|§1 statements & declarants"}
+  ]},
+
+{ id:"r7", mark:"r7", obj:1, kind:"Objection — hearsay", title:"Three years of silence",
+  scen:"Slip-and-fall against a grocery chain. To prove its entrance mat wasn’t dangerous, the store offers records showing that in three years of use, no customer ever reported a problem with it. Objection: hearsay — the customers’ silence “says” the mat was safe.",
+  q:"Your ruling?",
+  opts:[
+    {ok:true, t:"Overruled — nobody’s silence was intended as an assertion.",
+     why:"Customers who said nothing weren’t communicating; they were shopping. With no intended assertion there is no statement under 801(a). The live fight is relevance — whether an absence of complaints really means an absence of danger — and that goes to weight."},
+    {t:"Sustained — the silence is an implied statement that the mat was safe.",
+     why:"An implied assertion still needs someone who intended to assert. Thousands of customers going about their day intended nothing at all — 801(a)’s intent clause is exactly what keeps this outside the hearsay net.", back:"#s1|§1 statements & declarants"},
+    {t:"Sustained — records a store compiles about itself are self-serving.",
+     why:"Bias is attacked through weight and cross-examination, not the hearsay rule. The hearsay question stays where 801(a) puts it — did a person intend an assertion? — and here no one did.", back:"#s1|§1 statements & declarants"}
+  ]},
+
+/* ============================ §2 battery ============================ */
+
+{ id:"s2r1", mark:"s2r1", obj:2, kind:"Your call", title:"The threat",
+  scen:"Criminal-threats prosecution. A witness testifies she heard the defendant tell the victim: “If you testify next week, you won’t make it home.” Offered to prove the defendant made the threat.",
+  q:"Hearsay?",
+  opts:[
+    {ok:true, t:"No — the crime is saying it. The words are offered as an act, not for their truth.",
+     why:"The offense was complete when the words were spoken; whether the victim really “wouldn’t make it home” is beside the point. When the law attaches consequences to an utterance — a threat, an offer, a defamatory sentence — proving it was said is not proving it true."},
+    {t:"Yes — it’s an out-of-court statement about what would happen to the victim.",
+     why:"801(c)(2) makes a statement hearsay only when offered to prove the truth of what it asserts. Nobody asks the jury to believe the prediction — only to find that the threat was uttered.", back:"#s2|§2 offered for its truth"},
+    {t:"Yes — the witness is repeating someone else’s words.",
+     why:"Repetition is not the test; the offering purpose is. A witness with firsthand knowledge that words were spoken can always prove the speaking itself — that is her own live testimony about an event she perceived.", back:"#s2|§2 offered for its truth"}
+  ]},
+
+{ id:"s2r2", mark:"s2r2", obj:2, kind:"Your call", title:"The mechanic’s warning",
+  scen:"Negligence trial after a delivery-van crash. Three days before it, a mechanic told the van’s owner: “Your rear brake lines are nearly rusted through.” The plaintiff offers the words to prove the owner knew of the danger and kept driving anyway.",
+  q:"Hearsay, as offered?",
+  opts:[
+    {ok:true, t:"No — offered for its effect on the listener, not its truth.",
+     why:"For notice, what matters is that the warning reached the owner: a reasonable person who hears it slows down and gets the brakes checked, whether or not the lines were actually rusted. The brakes’ true condition gets proven another way — here, the wreck itself."},
+    {t:"Yes — the mechanic’s diagnosis is an out-of-court assertion about the brakes.",
+     why:"It is one, but this offer never asks the jury to believe it. Offered to show the owner was warned, the statement’s entire value lies in the fact that the words reached his ears.", back:"#s2|§2 offered for its truth"},
+    {t:"No, because the mechanic is a professional whose diagnosis is reliable.",
+     why:"Reliability and credentials have no place in 801(c) — an expert’s out-of-court diagnosis offered for its truth is hearsay like anyone else’s. What rescues this offer is its purpose, notice, not the speaker.", back:"#s2|§2 offered for its truth"}
+  ],
+  mutate:{ id:"s2r2m", mark:"s2r2m", kind:"Same scene, one change", title:"Same words, different job",
+    scen:"Same witness, same sentence — but now the plaintiff offers the mechanic’s warning to prove the brake lines actually were rusted through.",
+    q:"Hearsay now?",
+    opts:[
+      {ok:true, t:"Yes — this offer asks the jury to believe the mechanic.",
+       why:"The changed fact is the purpose. To prove the brakes’ condition, the statement’s value depends entirely on its truth, which is 801(c)(2)’s definition. Same sentence, same speaker — the offer is what flipped it."},
+      {t:"No — the same words can’t change character between offers.",
+       why:"They can, and that is the core of 801(c): hearsay is a use, not a kind of sentence. The identical warning is non-hearsay for notice and hearsay for the truth of the diagnosis.", back:"#s2|§2 offered for its truth"},
+      {t:"No — the wrecked van corroborates the mechanic, so the statement is safe to admit.",
+       why:"Corroboration can make an error harmless or support an exception, but it never changes the definition: this offer asks the jury to take an absent speaker’s word for the brakes’ condition.", back:"#s2|§2 offered for its truth"}
+    ]}
+},
+
+{ id:"s2r3", mark:"s2r3", obj:2, kind:"Objection — hearsay", title:"“I accept your terms”",
+  scen:"Contract dispute over whether a deal was ever closed. A witness testifies he heard the buyer say to the seller: “I accept your terms.” Objection: hearsay.",
+  q:"Your ruling?",
+  opts:[
+    {ok:true, t:"Overruled — words of acceptance are the legal event itself.",
+     why:"Saying “I accept” forms the contract; there is no factual claim inside it for a jury to believe or doubt. These are verbal acts — the law attaches consequences to the utterance, so proving the utterance is the whole point of the offer."},
+    {t:"Sustained — it’s offered to prove a contract existed, which is exactly its truth.",
+     why:"“I accept your terms” doesn’t report a fact that could be true or false — it performs the acceptance. The contract exists because the words were said, so the offer proves the saying, not any asserted matter.", back:"#s2|§2 offered for its truth"},
+    {t:"Sustained unless the buyer testifies and confirms he meant it.",
+     why:"Confirmation isn’t needed, because the buyer’s private intent isn’t the question: objective words of acceptance operate as acceptance. The witness heard the legal act happen and may say so.", back:"#s2|§2 offered for its truth"}
+  ]},
+
+{ id:"s2r4", mark:"s2r4", obj:2, kind:"A classmate’s theory", title:"The spill in aisle four",
+  scen:"Slip-and-fall against a supermarket. A witness will testify she heard another shopper tell the store manager, “There’s something spilled in aisle four,” twenty minutes before the plaintiff fell there. The plaintiff offers it to prove the manager knew. Your study partner says: “Hearsay. It’s a textbook out-of-court statement, and the plaintiff can’t use it.”",
+  q:"Is your study partner right?",
+  opts:[
+    {ok:true, t:"No — offered to show the manager was told, it isn’t hearsay at all.",
+     why:"The offer proves notice: the warning reached the manager in time to act. Its value doesn’t depend on the shopper being correct — even a mistaken warning puts a manager on alert. The spill itself gets proven by other evidence, like the fall and the cleanup records."},
+    {t:"No — it’s admissible because the witness heard the statement firsthand.",
+     why:"The verdict is right; the ground is wrong — and the ground is what gets tested. Firsthand hearing never cures hearsay: every witness to an out-of-court statement heard it firsthand. What defeats the objection is the purpose of the offer — notice, not truth.", back:"#s2|§2 offered for its truth"},
+    {t:"Yes — it’s an out-of-court statement offered in evidence, so 802 excludes it.",
+     why:"Out-of-court is only half the definition. 801(c)(2) also requires that the statement be offered to prove the truth of what it asserts, and this offer doesn’t — it proves the manager was warned.", back:"#s2|§2 offered for its truth"},
+    {t:"Yes — unless the plaintiff produces the shopper for cross-examination.",
+     why:"Producing the declarant matters to some hearsay routes, but there is no hearsay problem to route around: offered for notice, the statement never met the definition in the first place.", back:"#s2|§2 offered for its truth"}
+  ]},
+
+{ id:"s2r5", mark:"s2r5", obj:2, kind:"Your call", title:"Green on the stand, red at the diner",
+  scen:"Personal-injury trial. The defense’s key witness testifies the light was green. The plaintiff calls a friend of his who heard him say, the day after the crash, “the light was red.” Offered solely to show he tells the story differently at different times.",
+  q:"Hearsay, as offered?",
+  opts:[
+    {ok:true, t:"No — it attacks his consistency, not the light’s color.",
+     why:"Used only to impeach, the earlier sentence isn’t offered to prove the light was red — just that he has said both things, so neither telling deserves full confidence. The jury may not treat it as proof of red, and a limiting instruction says so."},
+    {t:"Yes — the earlier statement asserts the light was red, and red is what the plaintiff wants.",
+     why:"What the plaintiff wants overall isn’t the measure — the stated use is. Impeachment asks the jury to notice the contradiction itself; the value lies in the inconsistency, whichever version is true.", back:"#s2|§2 offered for its truth"},
+    {t:"No, because it qualifies as a prior inconsistent statement under 801(d)(1)(A).",
+     why:"That exclusion requires the earlier statement to have been made under penalty of perjury at a proceeding or deposition. A remark to a friend doesn’t qualify — so it works as impeachment only, never as substantive proof.", back:"#s3|§3 the 801(d) exclusions"}
+  ]},
+
+{ id:"s2r6", mark:"s2r6", obj:2, kind:"Objection — hearsay", title:"The King of Sweden",
+  scen:"Civil-commitment hearing. To show a man suffers delusions, counsel offers testimony from three neighbors that he repeatedly told them he is the rightful King of Sweden. Objection: hearsay.",
+  q:"Your ruling?",
+  opts:[
+    {ok:true, t:"Overruled — nobody is trying to prove he’s the King of Sweden.",
+     why:"The words are offered precisely because they are false — as circumstantial evidence of a disordered mind. The value lies in the fact that he says such things, and the further from the truth, the stronger the inference. That is the opposite of a truth-purpose offer."},
+    {t:"Sustained — it’s offered to prove his state of mind, and his state of mind is what it asserts.",
+     why:"The sentence asserts a royal title, not a mental state. His condition is inferred from the fact of the saying — an inference from behavior, not belief in an assertion — so prong (2) is never met.", back:"#s2|§2 offered for its truth"},
+    {t:"Sustained — every out-of-court statement offered for any purpose is hearsay under 802.",
+     why:"802 blocks only what 801(c) defines, and the definition has two prongs: out of court and offered for its truth. Drop the second prong and half of trial evidence would vanish with it.", back:"#s2|§2 offered for its truth"}
+  ]},
+
+/* ============================ §3 battery ============================ */
+
+{ id:"s3r1", mark:"s3r1", obj:3, kind:"Objection — hearsay", title:"“That’s on me”",
+  scen:"Intersection crash, civil suit. The plaintiff calls a bystander who heard the defendant say, minutes after impact: “That’s on me — I never even looked left.” Offered to prove the defendant didn’t look. Objection: hearsay.",
+  q:"Your ruling?",
+  opts:[
+    {ok:true, t:"Overruled — an opposing party’s own statement, offered against him, is defined out of hearsay.",
+     why:"801(d)(2)(A): made by the party, offered against the party — “not hearsay,” even though it is offered for its truth. No oath, no reliability showing, no personal-knowledge requirement. A party is stuck with what he said."},
+    {t:"Sustained — it’s an out-of-court statement offered for its truth.",
+     why:"It meets 801(c)’s definition, and then 801(d)(2) pulls it back out: a statement by an opposing party, offered against that party, is defined as not hearsay. The definition has a trapdoor, and party statements fall through it.", back:"#s3|§3 the 801(d) exclusions"},
+    {t:"Overruled, but only if the defendant takes the stand to be crossed about it.",
+     why:"The cross-examination condition belongs to 801(d)(1) — prior statements of a testifying witness. Opposing-party statements under (d)(2) carry no such condition; they come in whether or not the party ever testifies.", back:"#s3|§3 the 801(d) exclusions"}
+  ]},
+
+{ id:"s3r2", mark:"s3r2", obj:3, kind:"Objection — hearsay", title:"The courier’s complaint",
+  scen:"Suit against Redline Couriers after its van hit a cyclist. The cyclist calls a bystander who heard the Redline driver say at the scene: “Dispatch has been telling me to skip the brake checks all month.” Offered against Redline. Objection: hearsay.",
+  q:"Your ruling?",
+  opts:[
+    {ok:true, t:"Overruled — an employee’s statement on a matter within the scope of employment, made while employed.",
+     why:"801(d)(2)(D) reaches a statement by the party’s agent or employee on a matter within the scope of that relationship, made while it existed. Brake maintenance and dispatch orders sit inside a courier driver’s job, so Redline answers for the words."},
+    {t:"Sustained — only an officer or authorized spokesperson can speak for a corporation.",
+     why:"(D) dropped that requirement: an employee, a matter within the relationship’s scope, and words spoken while it existed are enough. Authorized spokespeople have their own route in (C).", back:"#s3|§3 the 801(d) exclusions"},
+    {t:"Sustained — the driver was venting at the scene, not making an official report.",
+     why:"(D) carries no formality requirement. Roadside grumbling qualifies exactly as well as a filed memo, provided the subject sits within the employment and the employment still existed when he spoke.", back:"#s3|§3 the 801(d) exclusions"}
+  ],
+  mutate:{ id:"s3r2m", mark:"s3r2m", kind:"Same scene, one change", title:"Two weeks after the firing",
+    scen:"One change: the driver made the same remark to the bystander two weeks after Redline had fired him.",
+    q:"Your ruling now?",
+    opts:[
+      {ok:true, t:"Sustained — the relationship had ended when he spoke.",
+       why:"The changed fact kills (D)’s timing element: the statement must be made while the relationship existed. An ex-employee’s account binds only himself; against Redline it is hearsay unless some exception applies."},
+      {t:"Overruled — he’s describing things he saw while he was still employed.",
+       why:"(D) times the statement, not the events it recounts. However accurate his memory of the job, he spoke as an outsider, and Redline no longer answers for his words.", back:"#s3|§3 the 801(d) exclusions"},
+      {t:"Overruled — firing him shows Redline knew the brakes were a problem.",
+       why:"Whatever the firing suggests, it cannot supply (D)’s missing element. The exclusion turns on the relationship existing at the moment of the statement, and it didn’t.", back:"#s3|§3 the 801(d) exclusions"}
+    ]}
+},
+
+{ id:"s3r3", mark:"s3r3", obj:3, kind:"Your call", title:"The grand-jury reversal",
+  scen:"Drug-conspiracy trial. A cooperating witness told the grand jury, under oath, that she watched the defendant weigh and bag the drugs. At trial she testifies she “never saw him touch anything.” She is on the stand and subject to cross about both accounts. The prosecution offers the grand-jury testimony to prove he handled the drugs.",
+  q:"Admissible for its truth?",
+  opts:[
+    {ok:true, t:"Yes — sworn, at a proceeding, inconsistent, and she’s crossable about it now.",
+     why:"801(d)(1)(A)’s checklist is met: the declarant testifies and is subject to cross about the prior statement; it contradicts her trial testimony; and it was given under penalty of perjury at a proceeding — a grand jury counts. The jury may believe the earlier version outright."},
+    {t:"No — prior inconsistent statements are impeachment-only, never substantive.",
+     why:"That is the rule for unsworn ones, like the diner remark two drills back. When the earlier account was sworn at a trial, hearing, other proceeding, or deposition, (d)(1)(A) admits it for its truth.", back:"#s3|§3 the 801(d) exclusions"},
+    {t:"No — she has recanted, so the grand-jury version is no longer reliable.",
+     why:"The recantation is what makes the pair inconsistent — the exclusion’s trigger, not its defeat. With the oath and proceeding boxes checked, the two sworn accounts compete on equal footing before the jury.", back:"#s3|§3 the 801(d) exclusions"}
+  ]},
+
+{ id:"s3r4", mark:"s3r4", obj:3, kind:"Your call", title:"The lineup, eight months later",
+  scen:"Mugging trial, eight months on. The victim, testifying and subject to cross, can say only that the robber “had a beard.” A detective then testifies that at a lineup one week after the mugging, the victim picked the defendant. Offered to prove the defendant was the robber.",
+  q:"Admissible for its truth?",
+  opts:[
+    {ok:true, t:"Yes — a prior identification by a declarant who now testifies and is crossable.",
+     why:"801(d)(1)(C) covers a statement identifying a person as someone the declarant perceived earlier, so long as the declarant testifies and is subject to cross. Faded courtroom memory is the exact problem it anticipates — the fresh identification is the better evidence, and the detective may recount it."},
+    {t:"No — the detective is repeating the victim’s out-of-court accusation.",
+     why:"It is the victim’s out-of-court statement, and (d)(1)(C) defines it out of hearsay because she now testifies and can be crossed about it. Anyone who witnessed the identification may describe it.", back:"#s3|§3 the 801(d) exclusions"},
+    {t:"Only if the victim repeats the identification from the witness stand.",
+     why:"(C) exists because trial-time identifications are the weak ones — eight months of fading and suggestion. The rule requires the declarant to testify and be crossable, not to re-perform the pick.", back:"#s3|§3 the 801(d) exclusions"}
+  ]},
+
+{ id:"s3r5", mark:"s3r5", obj:3, kind:"Counsel’s theory", title:"“Hearsay is inadmissible, period”",
+  scen:"You’ve ruled a nurse’s out-of-court statement hearsay: a person’s assertion, offered for its truth, no 801(d) exclusion fits. Opposing counsel shrugs: “Then it’s out. Hearsay is inadmissible, period.”",
+  q:"Is counsel right?",
+  opts:[
+    {ok:true, t:"No — 802 excludes hearsay unless a federal statute, these rules, or Supreme Court rules provide otherwise, and “these rules” provide plenty.",
+     why:"802 is a default with three doors out, and the widest is the Evidence Rules themselves: Rules 803 and 804 alone hold roughly thirty exceptions — excited utterances, medical statements, business records, and more. A hearsay ruling opens the admissibility question; it doesn’t close it. The exceptions are their own drill set."},
+    {t:"Yes — once a statement is hearsay, 802 makes exclusion automatic.",
+     why:"802’s own text carries the escape clause: “unless any of the following provides otherwise: a federal statute; these rules; or other rules prescribed by the Supreme Court.” Counsel is quoting half the rule.", back:"#s3|§3 what 802 really does"},
+    {t:"No — hearsay comes in whenever the judge finds it reliable.",
+     why:"There is no free-floating reliability test in 802; admission runs through the enumerated doors — a statute, the Rules’ exceptions, or Supreme Court rules. A reliability argument has to find a rule to live in.", back:"#s3|§3 what 802 really does"}
   ]}
-},
-{id:"r9",mark:"r9",kind:"Your ruling",title:"Plans and memories",
- tx:[["Statement one","The night before Walter disappeared: “I'm meeting Hugo at the depot tomorrow night.” Offered to prove Walter went to the depot."],
-     ["Statement two","A week earlier: “I remember Hugo threatening me last month.” Offered to prove Hugo made the threat."]],
- q:"What does 803(3) admit?",
- opts:[
-  {ok:true,t:"The plan, to prove he acted on it — but not the memory, to prove the threat happened",
-   why:"A statement of present intent can prove the declarant later did the intended act — the Hillmon doctrine, built into 803(3). The rule then slams the door the other direction: no statement of memory or belief to prove the fact remembered."},
-  {t:"Both — each reports what was in Walter's mind when he spoke",
-   why:"Both are genuinely about his mental state, which is exactly why the carve-out exists: every memory is “in the mind.” Letting memories prove the facts remembered would swallow the entire hearsay rule.",back:"#s2|§2 The 803 exceptions"},
-  {t:"Neither — state-of-mind statements prove the state of mind, never external facts",
-   why:"The forward half really does reach an external fact: intent to meet Hugo is evidence Walter went. Only the backward-looking half — memory offered to prove the thing remembered — is barred.",back:"#s2|§2 The 803 exceptions"},
-  {t:"The memory but not the plan — recollections are more reliable than predictions",
-   why:"The rule runs the other way precisely because remembering invites the narration and misrecollection risks hearsay law exists for, while a plan sincerely stated is decent evidence of what its maker did next.",back:"#s2|§2 The 803 exceptions"}
- ]
-},
-{id:"r10",mark:"r10",kind:"Your ruling",title:"What the ER doctor can repeat",
- scen:"An ER patient tells the treating physician: “A truck ran the stop sign and hit me — it was Ramirez Landscaping's truck.” The plaintiff offers the whole statement through the physician under 803(4).",
- q:"How much comes in?",
- opts:[
-  {ok:true,t:"“A truck hit me” — but not whose truck it was",
-   why:"803(4) reaches what is pertinent to diagnosis or treatment, and the mechanism of injury qualifies: being struck by a truck changes what a doctor looks for. The stop-sign detail and the owner's identity are fault facts that change nothing clinical, so both stay out."},
-  {t:"All of it — statements to treating physicians are broadly trusted",
-   why:"The trust rationale — patients want good care, so they tell doctors the truth — extends only as far as treatment relevance extends. Fault and identity details ride outside it.",back:"#s2|§2 The 803 exceptions"},
-  {t:"None of it — statements about how an injury happened aren't medical",
-   why:"Cause is expressly within the rule when pertinent: “hit by a truck” versus “fell down stairs” drives different examinations. The line falls inside the sentence, not in front of it.",back:"#s2|§2 The 803 exceptions"},
-  {t:"All of it — but only if the physician relied on every detail",
-   why:"The test is objective pertinence to diagnosis or treatment, not what this doctor subjectively used. Reliance evidence can inform that, but it isn't an element.",back:"#s2|§2 The 803 exceptions"}
- ]
-},
-{id:"r11",mark:"r11",kind:"Your ruling",title:"The incident report at the criminal trial",
- scen:"At a burglary trial, the prosecution offers the arresting officer's written incident report — his observations at the scene — as a public record, and, when that draws an objection, as a business record of the police department.",
- q:"Does either route work against the defendant?",
- opts:[
-  {ok:true,t:"No — law-enforcement observations are carved out of 803(8) in criminal cases, and 803(6) can't rescue what (8) excludes",
-   why:"803(8)(A)(ii) bars matters observed by law-enforcement personnel when offered against a criminal defendant, on adversarial-reliability grounds. Courts refuse the business-records detour for the same reason — otherwise the carve-out would be a dead letter. The officer must testify."},
-  {t:"Yes — the report is a routine record of a regularly conducted activity",
-   why:"Regularity is what 803(6) tests, and this report might pass it — but the specific criminal-case carve-out in 803(8) controls over the general rule, and it can't be evaded by relabeling.",back:"#s2|§2 The 803 exceptions"},
-  {t:"Yes — public records are presumed trustworthy",
-   why:"That presumption is exactly what the drafters suspended for police observations offered against defendants: records made in an adversarial posture, for prosecution, lack the neutral-bureaucrat reliability the rule banks on.",back:"#s2|§2 The 803 exceptions"},
-  {t:"No — police reports are inadmissible in all cases, civil or criminal",
-   why:"In a civil case the same report typically comes in under 803(8) without difficulty. The bar is specific to criminal cases and to use against the defendant.",back:"#s2|§2 The 803 exceptions"}
- ]
-},
-{id:"r12",mark:"r12",kind:"Your ruling",title:"One statement, two routes in",
- scen:"Back at the delivery company: the warehouse manager — still employed — watches a van's brakes fail on the loading ramp and yells to a coworker, “the brakes just went out completely on that one!” The cyclist's lawyer offers it against the company. The manager has since moved abroad.",
- q:"Which routes into evidence are open?",
- opts:[
-  {ok:true,t:"Either 801(d)(2)(D) or 803(1)-(2) — and neither route needs the manager to be unavailable",
-   why:"An employee's on-scope statement during employment satisfies (D); a description yelled while watching the failure satisfies 803(1) and likely (2). One qualifying route suffices, both are indifferent to the declarant's location, and the move abroad changes nothing."},
-  {t:"804(b)(3) — a statement against the company's interest by its employee",
-   why:"Against-interest looks at the declarant's own interest, not the employer's, and it demands an unavailable declarant plus a statement no reasonable person would make unless true. The far simpler routes — (D) and 803(1)-(2) — are already open.",back:"#s3|§3 The 804 exceptions"},
-  {t:"None — a statement can only be analyzed under one rule, and the routes conflict",
-   why:"Nothing limits a statement to a single theory of admissibility; proponents routinely argue exclusions and exceptions in the alternative, and the judge needs only one to hold.",back:"#s2|§2 The 803 exceptions"},
-  {t:"803(1)-(2) only — employee statements require the employee on the stand",
-   why:"That requirement appears nowhere in 801(d)(2)(D); the subsection works with the declarant abroad, missing, or dead. Both the 801(d) exclusions and the 803 exceptions operate without the declarant in the courtroom.",back:"#s1|§1 The 801(d) exclusions"}
- ]
-},
-/* ===================== §3 rulings ===================== */
-{id:"r13",mark:"r13",kind:"Your ruling",title:"Four missing witnesses",
- scen:"Four declarants, four reasons they aren't testifying. One invoked a privilege the court upheld. One refuses to answer despite a contempt order. One swears she remembers nothing of the events. And one was paid by the statement's proponent to stay outside the subpoena's reach.",
- q:"Which declarant is NOT unavailable under 804(a)?",
- opts:[
-  {ok:true,t:"The one the proponent paid to stay away",
-   why:"804(a)'s closing sentence strips unavailability from a proponent who procured or wrongfully caused the absence to prevent testimony. The other three are textbook entries on the list: privilege, refusal despite order, lack of memory."},
-  {t:"The one who invoked a privilege",
-   why:"A privilege the court actually upholds is the first entry on 804(a)'s list — the declarant is legally unreachable even while sitting in the courtroom.",back:"#s3|§3 The 804 exceptions"},
-  {t:"The one refusing despite a court order",
-   why:"Defiance of a court order to testify is 804(a)(2) exactly. The order matters: refusal without one hasn't yet exhausted the court's power to compel.",back:"#s3|§3 The 804 exceptions"},
-  {t:"The one who remembers nothing",
-   why:"Testifying to a failed memory of the subject matter is 804(a)(3). She is present but her testimony on the topic is gone — which is what unavailability measures.",back:"#s3|§3 The 804 exceptions"}
- ]
-},
-{id:"r14",mark:"r14",kind:"Your ruling",title:"The grand jury transcript",
- scen:"A key witness testified before the grand jury that indicted Vaughn, then died before trial. The prosecution offers the grand jury transcript against Vaughn as former testimony.",
- q:"Does 804(b)(1) admit it?",
- opts:[
-  {ok:true,t:"No — Vaughn had no opportunity to develop the testimony before the grand jury",
-   why:"804(b)(1) admits former testimony only against a party who had an opportunity and similar motive to develop it, and grand jury proceedings exclude the defense entirely — no presence, no cross. Oath and death don't repair an opportunity that never existed."},
-  {t:"Yes — it was sworn testimony at an official proceeding",
-   why:"The oath is necessary but nowhere near sufficient: the rule's engine is the prior opportunity to cross-examine, and that is precisely what a grand jury room denies the accused.",back:"#s3|§3 The 804 exceptions"},
-  {t:"Yes — death is the strongest form of unavailability",
-   why:"Unavailability is only the threshold showing for 804(b); each exception's own elements still must be met, and former testimony's opportunity-and-motive element fails here however unavailable the declarant.",back:"#s3|§3 The 804 exceptions"},
-  {t:"No — grand jury testimony can never be used for any purpose",
-   why:"The categorical version overshoots: grand jury testimony can impeach, can support perjury charges, and can sometimes enter through other exceptions. What it can't do is come in as former testimony against a defendant who couldn't cross.",back:"#s3|§3 The 804 exceptions"}
- ]
-},
-{id:"r15",mark:"r15",kind:"Your ruling",title:"The whispered accusation",
- scen:"Shot and bleeding out, Dominic whispers to a paramedic: “Keller did this — I'm not going to make it.” Surgeons save his life, but by trial he is in a coma. The charge is attempted murder. The prosecution offers the statement as a dying declaration.",
- q:"Does 804(b)(2) admit it?",
- opts:[
-  {ok:true,t:"No — dying declarations are limited to homicide prosecutions and civil cases, and this is neither",
-   why:"Every other element is satisfied — belief in imminent death, a statement about its cause, an unavailable declarant. The case type is the one element that fails: attempted murder is not a homicide prosecution, and the rule's list is closed."},
-  {t:"Yes — he believed death was imminent, and the coma makes him unavailable",
-   why:"Both of those elements are met, which is what makes this pattern a trap: the rule also restricts the kind of case, and that restriction does the excluding here.",back:"#s3|§3 The 804 exceptions"},
-  {t:"No — a dying declaration requires that the declarant actually died",
-   why:"Death is not an element; unavailability is, and a coma supplies it. Had this been a homicide or civil case, the statement would come in with Dominic alive.",back:"#s3|§3 The 804 exceptions"},
-  {t:"No — naming the shooter isn't about the cause or circumstances of death",
-   why:"Identifying who inflicted the fatal wound is the core case of “cause or circumstances” — it's what dying declarations have always been for. That element is comfortably met.",back:"#s3|§3 The 804 exceptions"}
- ]
-},
-{id:"r16",mark:"r16",kind:"Your ruling",title:"“Me and Troy did the warehouse job”",
- scen:"Before dying in an unrelated accident, Sal told his neighbor: “Me and Troy did the warehouse job.” The prosecution offers it against Troy as a statement against Sal's penal interest.",
- q:"Beyond unavailability and the against-interest character, what must the proponent establish?",
- opts:[
-  {ok:true,t:"Corroborating circumstances clearly indicating trustworthiness — considering the totality of circumstances and any evidence that supports or undermines the statement",
-   why:"804(b)(3)(B) attaches that screen whenever a penal-interest statement is offered in a criminal case, and the December 2024 amendment spells out the method: the totality of circumstances under which it was made, plus any evidence that supports or undermines it. Courts also parse the statement — the self-inculpatory parts carry it; blame-spreading parts get no free ride."},
-  {t:"Nothing further — unavailability plus against-interest completes the rule",
-   why:"In a civil case that would be the whole showing. Penal-interest statements in criminal cases carry the extra corroborating-circumstances requirement precisely because accomplice statements naming others are notoriously self-serving.",back:"#s3|§3 The 804 exceptions"},
-  {t:"That Sal believed death was imminent when he spoke",
-   why:"Imminent-death belief belongs to the dying-declaration exception, 804(b)(2). Against-interest has its own elements, and this isn't among them.",back:"#s3|§3 The 804 exceptions"},
-  {t:"That Troy had a prior opportunity to cross-examine Sal",
-   why:"Prior opportunity to cross is former testimony's element under 804(b)(1). Against-interest substitutes a different guarantee — the improbability of falsely confessing — plus the corroboration screen.",back:"#s3|§3 The 804 exceptions"}
- ]
-}
 ];
 
-/* ===================== sorter ===================== */
-var SORT={host:"host-sort1",mark:"s1",
- stim:"A kitchen fire tears through a restaurant one evening. Five people describe it. For each statement, decide: does it fit <b>803(1) present sense impression or 803(2) excited utterance</b> — or neither?",
- lead:"The elements to run each time: describing while (or immediately after) perceiving, for 803(1); relating to a startling event while under its stress, for 803(2).",
- labels:["803(1) or (2)","Neither"],
- doneMsg:"All five sorted — the timing and stress elements are doing all the work.",
- reteach:"#s2|§2 The 803 exceptions",
- rows:[
-  {p:"the line cook, on the phone as flames spread: “the fryer is on fire right now”",truth:true,
-   why:"A description of an event as it is being perceived — 803(1) at its purest, and the panic likely makes 803(2) available too."},
-  {p:"the dishwasher, sobbing in the parking lot minutes later: “it jumped to the ceiling so fast”",truth:true,
-   why:"Minutes have passed, but the sobbing shows the stress of the startling event still operating — the excited-utterance clock runs on stress, not minutes."},
-  {p:"the manager, in a calm email the next day: “the fryer caught fire at around 9 pm”",truth:false,
-   why:"A composed next-day account perceives nothing currently and carries no stress — it is a report about the fire, with time to reflect, which is what both exceptions screen out."},
-  {p:"a waiter, an hour later, calm, to a reporter: “I was standing right there when it started”",truth:false,
-   why:"An hour of calm defeats both routes: too late to be “immediately after” for 803(1), and composure means the stress that powers 803(2) has lapsed."},
-  {p:"the owner, voice flat, watching firefighters mop up: “the whole interior is gone”",truth:true,
-   why:"Flat delivery costs him 803(2), but he is describing a condition as he perceives it — 803(1) doesn't require excitement, only contemporaneity."}
- ]};
+/* ==================== typed practice item (§2) ==================== */
+var T1 = {
+  mark:"t1", kind:"Write the ruling", title:"“Not for its truth,” says the prosecutor",
+  prompt:"Armed-robbery trial; the robber’s identity is the only disputed issue. An officer testifies that an anonymous caller told him, “The man in the red jacket by the fountain just robbed the First National branch.” The prosecutor insists it isn’t offered for its truth — “only to explain why the officer approached the defendant.” The defense objects: hearsay. Write the ruling in two to four sentences, with the reasoning a judge would give.",
+  model:"Sustained. A non-truth purpose carries an offer only when the case actually needs that purpose, and why the officer approached the defendant is not in dispute — so the “background” use has almost no probative value. What the caller’s words do supply is an out-of-court accusation naming the robber, put before a jury that is deciding identity: a truth use under 801(c)(2). If background is genuinely needed, the officer may say he acted on information received, without the accusation itself.",
+  criteria:[
+    "Names the claimed non-truth purpose — explaining the officer’s conduct — and asks whether that purpose is genuinely in dispute",
+    "Spots the truth use: the jury deciding identity hears an accusation naming the defendant",
+    "Rules on the real offer — sustains, limits, or strips the accusation — instead of accepting the “background” label",
+    "Offers a workable alternative (“acted on information received”) or a limiting measure"
+  ]
+};
 
-/* ===================== typed practice ===================== */
-var T1={mark:"t1",kind:"Write the ruling",title:"The dead driver's statement",
- prompt:"A civil suit against Harlan Freight after one of its trucks crossed the median. A week after the crash — and while still employed — the driver told a friend: “I told dispatch the tires were bald and they sent me out anyway.” The driver has since died. Harlan Freight objects: hearsay, and the declarant is dead. Write the ruling in 3–5 sentences: admit or exclude, the best route in, and what the driver's death does or doesn't change.",
- model:"<p>Overruled; the statement is admitted. It is not hearsay: it is offered against Harlan Freight and was made by its employee, on a matter within the scope of his employment — the condition of the truck he drove and his reports to dispatch — while the employment relationship existed, satisfying Rule 801(d)(2)(D). The driver's death is irrelevant to this route; the 801(d)(2) exclusions have no unavailability requirement. The defense may argue weight — a statement to a friend, made after the crash — but those arguments go to the jury, not to admissibility.</p>",
- criteria:[
-  "Admits the statement (overrules the objection)",
-  "Routes it through 801(d)(2)(D) and touches all three elements: employee, matter within the scope of the relationship, statement made while it existed",
-  "Says the driver's death changes nothing because 801(d)(2) has no unavailability requirement",
-  "Keeps 804 out of the holding — no unavailability showing is needed, so against-interest analysis is unnecessary"
- ]};
+/* ============================ the final ============================ */
+var FINALS = [
 
-/* ===================== final ===================== */
-var FINALS=[
-{id:"f1",obj:1,title:"Two statements about the partner",
- tx:[["The case","A drug-conspiracy prosecution of Marchetti's partner."],
-     ["Statement one","While the ring was still moving product, Marchetti told a supplier: “my partner handles the cash side.”"],
-     ["Statement two","After the arrests, Marchetti told detectives: “the whole operation was my partner's idea.”"]],
- q:"Which statement, if either, comes in against the partner under 801(d)(2)(E)?",
- back:"#s1|§1 The 801(d) exclusions",
- opts:[
-  {ok:true,t:"The first only — made during the conspiracy and in furtherance of it; the post-arrest statement is neither",
-   why:"Telling a supplier who handles the money keeps the operation running — during and in furtherance. A post-arrest statement to detectives comes after the conspiracy has ended and furthers nothing except, perhaps, Marchetti's own bargaining position."},
-  {t:"Both — each is a coconspirator's statement about the conspiracy",
-   why:"Being about the conspiracy is not the test; being made during and in furtherance of it is. The second statement flunks both timing and purpose.",back:"#s1|§1 The 801(d) exclusions"},
-  {t:"The second only — statements to police are the most reliable",
-   why:"Reliability to police is backwards here: post-arrest statements shifting blame to a partner are the classic self-serving account, and the rule's timing elements exclude them regardless.",back:"#s1|§1 The 801(d) exclusions"},
-  {t:"Neither — coconspirator statements also require the declarant to be unavailable",
-   why:"Unavailability belongs to 804; the 801(d)(2) routes never require it, and the first statement satisfies every element the rule actually has.",back:"#s1|§1 The 801(d) exclusions"}
- ]},
-{id:"f2",obj:2,title:"“I know he tampered with the brakes”",
- tx:[["The scene","A calm, lucid patient tells a visiting friend: “I keep thinking about it — I know my business partner tampered with my brakes last week.”"],
-     ["Offered","By the prosecution, under 803(3), to prove the partner tampered with the brakes."]],
- q:"Does the state-of-mind exception admit it?",
- back:"#s2|§2 The 803 exceptions",
- opts:[
-  {ok:true,t:"No — a statement of memory or belief cannot be offered to prove the fact remembered or believed",
-   why:"803(3) carries its own carve-out for exactly this: “I know” and “I remember” statements offered to prove the external fact. Without the carve-out, every accusation could be repackaged as the accuser's mental state."},
-  {t:"Yes — her belief about the tampering is a then-existing state of mind",
-   why:"The belief is current, but the offered purpose is to prove what the belief is about — the tampering — and that purpose is what the rule's final clause forbids.",back:"#s2|§2 The 803 exceptions"},
-  {t:"Yes — as an excited utterance about a startling discovery",
-   why:"A calm, lucid recollection of last week carries none of the stress 803(2) requires; the startling event is long past and the speaker composed.",back:"#s2|§2 The 803 exceptions"},
-  {t:"No — because the partner is available to testify and deny it",
-   why:"The 803 exceptions are indifferent to availability in both directions — the accused party's ability to testify neither opens nor closes them. The carve-out for memory-and-belief statements is what does the excluding.",back:"#s2|§2 The 803 exceptions"}
- ]},
-{id:"f3",obj:2,title:"The statement inside the record",
- tx:[["The document","A hospital intake record, made and kept in the ordinary course, in which a nurse wrote: “Patient states a coworker dropped a crate on his foot.”"],
-     ["Offered","By the plaintiff against his employer, to prove the coworker dropped the crate."]],
- q:"How does the layered hearsay analysis come out?",
- back:"#s2|§2 The 803 exceptions",
- opts:[
-  {ok:true,t:"The record is a business record, and “a crate fell on my foot” passes 803(4) — but “a coworker dropped it” isn't pertinent to treatment, so that layer fails",
-   why:"Rule 805 makes each layer earn its own way in: 803(6) covers the nurse's act of recording, 803(4) covers the patient's treatment-pertinent cause — and stops at attribution, since who dropped the crate changes no diagnosis."},
-  {t:"The whole entry comes in — the business-records exception covers everything written in the record",
-   why:"803(6) vouches for the recorder, not for the outsider quoted inside the record. The patient's statement is its own hearsay layer needing its own exception.",back:"#s2|§2 The 803 exceptions"},
-  {t:"Nothing comes in — hearsay within hearsay is inadmissible",
-   why:"Rule 805 admits layered hearsay whenever every layer independently qualifies, which the record and the injury-mechanism portion of the statement do.",back:"#s2|§2 The 803 exceptions"},
-  {t:"The whole entry comes in under 803(4) — it was all said for treatment",
-   why:"Said during treatment, yes — but 803(4) requires pertinence to diagnosis or treatment, and the coworker's identity has none. The setting doesn't launder the fault detail.",back:"#s2|§2 The 803 exceptions"}
- ]},
-{id:"f4",obj:3,title:"The deposition from the first lawsuit",
- tx:[["The history","In an earlier suit by a different passenger injured in the same bus crash, witness W was deposed, and Metro Transit's counsel cross-examined her at length about the driver's speed. W has since died."],
-     ["Offered","A new plaintiff from the same crash offers W's deposition against Metro Transit."]],
- q:"Admissible as former testimony?",
- back:"#s3|§3 The 804 exceptions",
- opts:[
-  {ok:true,t:"Yes — Metro Transit itself had an opportunity and a similar motive to develop the testimony in the first suit",
-   why:"804(b)(1) is satisfied at its easiest: the party opposing the evidence now is the same party who cross-examined then, litigating the same crash with the same incentive to test W's account of the speed. The deposition qualifies as former testimony, and death supplies unavailability."},
-  {t:"No — the plaintiff is different, so the parties don't match",
-   why:"The rule polices the party the testimony is offered against, not the one offering it. Metro Transit had its opportunity; a new opponent on the other side changes nothing it could complain of.",back:"#s3|§3 The 804 exceptions"},
-  {t:"No — depositions aren't “testimony” within the rule",
-   why:"The rule's own text lists depositions alongside trials and hearings as qualifying settings — a lawful deposition is a full cross-examination opportunity.",back:"#s3|§3 The 804 exceptions"},
-  {t:"Yes — but only the portions Metro Transit's lawyer actually asked about",
-   why:"An opportunity and similar motive to develop the testimony is the element — how much counsel chose to use it goes to weight. The rule doesn't ration admission question by question.",back:"#s3|§3 The 804 exceptions"}
- ]},
-{id:"f5",obj:1,title:"The outside spokesperson",
- tx:[["The speaker","An outside public-relations firm, retained by Corvex Motors “to speak for the company on the recall,” tells reporters: “the recall came six months later than it should have.”"],
-     ["Offered","By plaintiffs, against Corvex Motors."]],
- q:"Best analysis under 801(d)(2)?",
- back:"#s1|§1 The 801(d) exclusions",
- opts:[
-  {ok:true,t:"Admissible under (C) — a person the party authorized to make a statement on the subject, employee or not",
-   why:"Subsection (C) turns on authorization to speak on the subject, and a PR firm retained to speak on the recall is the clean case. Nothing in (C) requires the speaker on the payroll."},
-  {t:"Inadmissible — the firm's people aren't Corvex employees, so (D) fails",
-   why:"(D) does fail on the employment element — but authorization under (C) is a separate route, and it is the one built for retained spokespeople.",back:"#s1|§1 The 801(d) exclusions"},
-  {t:"Inadmissible — a company can only speak through its own officers",
-   why:"801(d)(2) contains no officers-only principle; it reaches anyone the company authorized to speak, and agents and employees beyond that.",back:"#s1|§1 The 801(d) exclusions"},
-  {t:"Admissible — but only if the PR firm's speaker testifies at trial",
-   why:"The 801(d)(2) routes carry no testimony requirement; the statement to reporters comes in through anyone who heard it.",back:"#s1|§1 The 801(d) exclusions"}
- ]},
-{id:"f6",obj:2,title:"The railroad's own investigation",
- tx:[["The document","After a crossing accident, Pinelake Rail's claims department prepared an investigation report, as it always does “in anticipation of expected litigation.” The report favors the railroad."],
-     ["Offered","By Pinelake Rail itself, as a record of a regularly conducted activity."]],
- q:"Does 803(6) admit it?",
- back:"#s2|§2 The 803 exceptions",
- opts:[
-  {ok:true,t:"No — a record prepared for litigation lacks the trustworthiness the exception presumes, however regularly such reports are made",
-   why:"The business-records rationale is routine, disinterested record-keeping; a claims department writing with the lawsuit in view is the opposite posture. That is Palmer v. Hoffman's holding, now expressed through 803(6)(E) — and the litigation posture is precisely how the opponent carries its burden of showing untrustworthiness."},
-  {t:"Yes — accident investigation is one of the railroad's regularly conducted activities",
-   why:"Regularity is met and still loses: the untrustworthiness proviso exists for records whose regular purpose is adversarial. A report built for litigation fails the screen however routine its production.",back:"#s2|§2 The 803 exceptions"},
-  {t:"No — business records can never be offered by the business that made them",
-   why:"Businesses offer their own records constantly — invoices, logs, ledgers. The defect here is the litigation motive behind this record, not the identity of the proponent.",back:"#s2|§2 The 803 exceptions"},
-  {t:"Yes — if a custodian testifies to the elements",
-   why:"Foundation testimony establishes the routine elements but cannot cure the trustworthiness problem — the proviso operates after the elements are met.",back:"#s2|§2 The 803 exceptions"}
- ]},
-{id:"f7",obj:1,title:"The prior consistent statement",
- tx:[["The setup","A fraud trial. The government's cooperating witness signed his cooperation deal in March. On cross, the defense charges that the deal motivated him to invent his story."],
-     ["Offered","The government offers the witness's April statement to agents — identical to his trial testimony — under 801(d)(1)(B)(i) to rebut the charge."]],
- q:"Does it come in for its truth?",
- back:"#s1|§1 The 801(d) exclusions",
- opts:[
-  {ok:true,t:"No — to rebut a charge of improper motive, the consistent statement must predate the motive, and April follows March",
-   why:"A statement made after the cooperation deal was signed proves only that his story has been consistent since acquiring the motive — which rebuts nothing. Tome v. United States fixed the pre-motive timing requirement for (B)(i)."},
-  {t:"Yes — it's consistent with his testimony and rebuts the fabrication charge",
-   why:"Consistency alone can't rebut a motive that already existed when the statement was made; an invented story repeated in April is exactly what the defense alleges. Timing against the motive is the element with teeth.",back:"#s1|§1 The 801(d) exclusions"},
-  {t:"No — prior consistent statements are never admissible for their truth",
-   why:"Since the rule's design (and its 2014 expansion), qualifying prior consistent statements come in substantively — the failure here is this statement's timing, not the category.",back:"#s1|§1 The 801(d) exclusions"},
-  {t:"Yes — if the agents testify that he seemed truthful in April",
-   why:"An agent's impression of truthfulness adds an opinion problem without touching the timing problem: the statement still postdates the motive it is supposed to rebut.",back:"#s1|§1 The 801(d) exclusions"}
- ]},
-{id:"f8",obj:3,title:"The confession of the man who fled",
- tx:[["The case","A civil suit by a landlord against a tenant over a warehouse fire."],
-     ["The declarant","Voss, a nonparty, told a friend before fleeing the country: “The fire started because I left the burner going — the tenant had nothing to do with it.” He is now beyond the court's subpoena power and refuses all contact."],
-     ["Offered","By the tenant, as a statement against Voss's interest."]],
- q:"What must the tenant establish for 804(b)(3)?",
- back:"#s3|§3 The 804 exceptions",
- opts:[
-  {ok:true,t:"Unavailability — absence beyond the reach of process — plus the statement's against-interest character; the corroborating-circumstances screen doesn't apply here",
-   why:"804(b)(3)(B)'s corroboration requirement attaches only to statements against penal interest offered in a criminal case. In this civil suit the showing is Voss's absence beyond process, 804(a)(5), plus a statement so contrary to his interest — admitting he caused the fire — that a reasonable person wouldn't have made it unless true."},
-  {t:"Corroborating circumstances that clearly indicate the statement's trustworthiness",
-   why:"That extra screen guards penal-interest statements in criminal cases. A civil case needs only the unavailability showing and the against-interest character.",back:"#s3|§3 The 804 exceptions"},
-  {t:"That the statement also qualifies as an excited utterance",
-   why:"Against-interest stands on its own; no second exception is required — and if 803(2) did apply, it would carry the statement without any unavailability showing at all.",back:"#s2|§2 The 803 exceptions"},
-  {t:"That the landlord had a prior opportunity to cross-examine Voss",
-   why:"Prior opportunity to cross belongs to former testimony, 804(b)(1). Against-interest substitutes a different guarantee: the improbability of a false self-accusation.",back:"#s3|§3 The 804 exceptions"}
- ]},
-{id:"f8w",obj:3,typed:true,title:"Write the ruling: the second whisper",
- tx:[["The case","Now a murder prosecution: Dominic — the shooting victim from §3 — later died of his wounds. The prosecution re-offers the statement he whispered to the paramedic: “Keller did this — I'm not going to make it.”"],
-     ["The defense objection","Hearsay; and at the time he said it, Dominic survived."]],
- q:"Write the ruling in 3–6 sentences: admit or exclude, walk the elements of the controlling exception, and answer the defense's survival point. Note one backup route if you see one.",
- back:"#s3|§3 The 804 exceptions",
- placeholder:"Overruled/sustained, the controlling rule, its elements on these facts, and the answer to the survival argument…",
- model:"<p>Overruled; the statement is admitted as a dying declaration under Rule 804(b)(2). This is now a homicide prosecution, so the case type qualifies; Dominic is unavailable because he is dead; his words — “I'm not going to make it” — and his condition show he believed death was imminent when he spoke; and naming his shooter concerns the cause and circumstances of that death. The defense's survival point fails twice over: the rule requires belief in imminent death at the time of the statement, not death itself, and in any event Dominic has since died of these wounds. In the alternative, the statement qualifies as an excited utterance under 803(2) — a statement relating to the shooting, made minutes later while bleeding out, plainly under its stress.</p>",
- criteria:[
-  "Admits the statement and names 804(b)(2) as the controlling exception",
-  "Walks the elements: homicide prosecution · unavailable declarant · belief of imminent death when speaking · statement about the cause or circumstances",
-  "Answers the survival objection: the element is belief at the time of the statement, not actual death — and he has now died in any event",
-  "Names a backup route — 803(2) excited utterance (or 801(d) analysis showing why it doesn't apply)"
- ]}
+{ id:"f1", obj:1, title:"The ATM log", back:"#s1|§1 statements & declarants",
+  tx:[["Scene","Embezzlement trial. The bank offers its ATM’s automatically generated transaction log, showing a $9,000 withdrawal from the defendant’s card at 2:14 a.m."],
+      ["Offered to prove","the withdrawal happened, at that time"]],
+  q:"Hearsay?",
+  opts:[
+    {ok:true, t:"No — the log is machine-generated; no person made an assertion.",
+     why:"801(a)–(b) require a person’s assertion, and the log records the machine’s own operations. With no declarant the hearsay rule never engages; the exhibit is tested through authentication."},
+    {t:"Yes — a written assertion offered to prove exactly what it says.",
+     why:"A written assertion must be a person’s. Nobody wrote the log as a claim; the machine generated it. The hearsay analysis ends at 801(a)."},
+    {t:"Yes, unless the bank’s records custodian testifies to how the log is kept.",
+     why:"A custodian matters to the business-records exception — a door you need only when something is hearsay. This never was: no person asserted anything."},
+    {t:"No — business records are always admissible.",
+     why:"The verdict is right, but for the wrong reason. Business records are an exception to a hearsay bar — a door you would need only if the bar came down, and it never does here, because the log has no declarant."}
+  ]},
+
+{ id:"f2", obj:1, title:"The nod in the ER", back:"#s1|§1 statements & declarants",
+  tx:[["Scene","Assault trial. In the emergency room, an officer asked the victim, “Did your husband do this?” Too injured to speak, she nodded. A nurse who saw it will testify."],
+      ["Offered to prove","the husband did it"]],
+  q:"Is the nod a “statement” under 801(a)?",
+  opts:[
+    {ok:true, t:"Yes — nonverbal conduct she intended as an assertion.",
+     why:"A nod in answer to a direct question is “yes” in gesture form — conduct intended to communicate, which 801(a) treats exactly as speech. Offered to prove the husband did it, it is hearsay unless an exception or exclusion applies."},
+    {t:"No — she never spoke, and hearsay needs words.",
+     why:"801(a) expressly covers nonverbal conduct intended as an assertion. The rule’s concern is assertive intent, not the medium; a nod, a point, and a sentence are treated alike."},
+    {t:"No — conduct is circumstantial evidence only, never a statement.",
+     why:"Non-assertive conduct is circumstantial evidence — like a captain sailing his own ship. Conduct meant to answer a question asserts, and asserting is what 801(a) captures."},
+    {t:"Yes, but only because a police officer asked the question.",
+     why:"Who asked has no bearing on 801(a); her intent to communicate does. A nod answering her sister carries the same assertive intent as one answering an officer."}
+  ]},
+
+{ id:"f3", obj:1, title:"Out the back window", back:"#s1|§1 statements & declarants",
+  tx:[["Scene","Burglary trial. When officers knocked at the defendant’s door, he went out the back window. The prosecution offers testimony about the flight."],
+      ["Offered to prove","consciousness of guilt"]],
+  q:"Is the flight a “statement”?",
+  opts:[
+    {ok:true, t:"No — fleeing wasn’t intended as an assertion, so 801(a) doesn’t reach it.",
+     why:"He was escaping, not communicating. Non-assertive conduct sits outside the definition however incriminating the inference — the fight over flight evidence is relevance and prejudice, not hearsay."},
+    {t:"Yes — flight asserts “I am guilty.”",
+     why:"That is the inference the prosecution draws, not a message the defendant meant to send. Without intent to assert there is no statement — the same line that kept the ship captain’s sailing outside the rule."},
+    {t:"Yes — implied assertions are statements under the federal rules.",
+     why:"The federal rules resolved implied assertions through the intent clause: conduct not intended to communicate asserts nothing, and doubts are resolved against finding a statement."},
+    {t:"No — because the defendant is present in court and can explain it.",
+     why:"The defendant’s availability has no bearing on whether conduct is a statement; 801(a) turns on assertive intent at the time. Fleeing fails the definition on intent, not on availability."}
+  ]},
+
+{ id:"f4", obj:1, title:"Two things on one dashcam", back:"#s1|§1 statements & declarants",
+  tx:[["Scene","Reckless-driving trial. A patrol car’s dashcam video captures two things at once: the cruiser’s own speed-readout overlay (74 mph), and the defendant leaning out his window shouting at another driver, “You were doing ninety, you maniac!”"],
+      ["Offered to prove","in each case, the speed it mentions"]],
+  q:"Which of the two contains a declarant?",
+  opts:[
+    {ok:true, t:"Only the shout — the overlay is machine output; the shout is a person’s oral assertion the camera preserved.",
+     why:"The medium is identical; the asserters differ. The overlay reports the instrument’s own measurement — no person, no declarant. The shout is a person’s claim about the world, recorded: the defendant is its declarant, and hearsay analysis runs on his words."},
+    {t:"Neither — everything on a recording is machine output.",
+     why:"A recorder that captures a person speaking leaves the declarant in place. The machine question asks who asserted, never what device carried the assertion."},
+    {t:"Both — the camera asserts the 74, and the man asserts the ninety.",
+     why:"Cameras and speed sensors don’t assert; people do. The 74 has no declarant at all, so half of this pair never enters the hearsay analysis."},
+    {t:"Only the overlay — an angry shout is not an intended assertion.",
+     why:"Anger doesn’t strip assertive intent: he meant to claim the other driver was speeding, loudly. And the overlay cannot be the statement, because no person made it."}
+  ]},
+
+{ id:"f5", obj:2, title:"The wobbling ladder", back:"#s2|§2 offered for its truth",
+  tx:[["Scene","Negligence case against a hardware store. A week before the plaintiff’s fall, a customer emailed the store: “The display ladder on aisle 9 wobbles badly.”"],
+      ["Offered to prove","the store knew of the danger before the accident"]],
+  q:"Hearsay, as offered?",
+  opts:[
+    {ok:true, t:"No — offered for its effect on the recipient: it proves notice whether or not the ladder wobbled.",
+     why:"The email’s work was done when the store read it — a warned store must inspect or act. Its value doesn’t depend on the customer being right, so it isn’t offered for the truth of the matter asserted. The ladder’s actual condition needs other proof."},
+    {t:"Yes — a written assertion about the ladder, offered in evidence.",
+     why:"Offered in evidence isn’t enough; 801(c)(2) requires offered for its truth. This offer proves the store was told, which holds whether the email was accurate or mistaken."},
+    {t:"Yes, unless the customer who sent it testifies.",
+     why:"Producing the declarant matters only once something is hearsay. Offered for notice, the email never met the definition, so there is nothing to cure."},
+    {t:"No — emails are electronic records, and electronic records have no declarant.",
+     why:"A person’s typed words are that person’s written assertion; the medium never decides. This email escapes the definition on purpose — notice — not on format."}
+  ]},
+
+{ id:"f6", obj:2, title:"The crowded room", back:"#s2|§2 offered for its truth",
+  tx:[["Scene","Slander suit. The plaintiff’s witness heard the defendant announce to a crowded room that the plaintiff “cooks the books at every company she touches.”"],
+      ["Offered to prove","the defendant said it"]],
+  q:"Hearsay?",
+  opts:[
+    {ok:true, t:"No — the defamatory words are the legal wrong itself; the saying is what’s being proven.",
+     why:"In a slander suit the utterance is the tort. The plaintiff needs the jury to find the sentence was spoken — and will separately prove it false. Words with legal consequences of their own are verbal acts, outside the truth-purpose definition."},
+    {t:"Yes — it’s offered to prove she cooks the books.",
+     why:"That is the last thing the plaintiff wants to prove — her case depends on the sentence being false. The offer proves the speaking, which is the element of the tort."},
+    {t:"Yes — repeating out-of-court speech is always hearsay.",
+     why:"Repetition alone never triggers the rule; 801(c)(2)’s truth-purpose prong does. Proving that words were uttered is ordinary firsthand testimony about an event."},
+    {t:"No, but only after the plaintiff first proves the words false.",
+     why:"Order of proof is not a hearsay condition. Falsity is a separate element of the tort, proven with other evidence in whatever order the trial takes; the utterance itself is a verbal act throughout."}
+  ]},
+
+{ id:"f7", obj:2, title:"The report that got Dana fired", back:"#s2|§2 offered for its truth",
+  tx:[["Scene","Wrongful-termination suit. A coworker told HR, “I saw Dana falsify the safety logs.” Dana was fired the next day. The employer’s defense is that it acted on a good-faith belief in reported misconduct — a disputed issue — and it offers the coworker’s statement to show the basis for the firing."],
+      ["Dana’s counsel objects","hearsay"]],
+  q:"Your ruling?",
+  opts:[
+    {ok:true, t:"Overruled for that purpose — it shows the employer’s basis for acting, true or not, with a limiting instruction confining it.",
+     why:"Offered to prove why the employer fired Dana, the accusation’s value lies in its effect on the listener: a company that receives such a report and acts on it has a good-faith basis whether or not the report was accurate. Offered to prove Dana actually falsified logs, the same words would be hearsay."},
+    {t:"Sustained — in a case about whether Dana was rightly fired, the accusation’s truth is unavoidable.",
+     why:"Purposes are severable, and the employer’s state of mind is genuinely disputed here — it is the whole defense. The risk that the jury misuses the statement is handled by a limiting instruction, not by relabeling the offer hearsay."},
+    {t:"Sustained unless the coworker testifies to what she saw.",
+     why:"Her live testimony would prove the underlying misconduct — a different issue. For the employer’s good faith, what matters is the report it received, and that offer never depends on the report being true."},
+    {t:"Overruled — statements collected by HR are business records.",
+     why:"A tempting shortcut that answers the wrong question. Business records answer a hearsay bar this offer never triggers — offered for its effect on the employer, the accusation isn’t hearsay to begin with."}
+  ]},
+
+{ id:"f8", obj:2, typed:true, title:"Write the ruling — the tenant’s email", back:"#s2|§2 offered for its truth",
+  tx:[["Scene","Premises-liability suit. Ten days before the fall, a tenant emailed the landlord: “The third-floor stair rail is loose — someone is going to get hurt.” A visitor later fell when that rail gave way. The plaintiff offers the email; the landlord objects: hearsay."]],
+  q:"Write the ruling a judge should give — is the email hearsay, for which purposes, and with what handling? Two to four sentences.",
+  model:"Overruled for the purpose of notice. Offered to show the landlord was warned ten days before the fall, the email’s value does not depend on the tenant being right, so it is not offered to prove the truth of the matter asserted under 801(c)(2). It remains hearsay if offered to prove the rail actually was loose — that condition must be shown by other evidence, such as the failed rail itself. Admitted for notice only, with a limiting instruction confining it to that use.",
+  criteria:[
+    "Separates the two possible purposes — notice to the landlord versus the rail’s actual condition",
+    "States that the notice use is not offered for the truth of the matter asserted (801(c)(2))",
+    "Keeps the truth use out: the rail’s condition needs other proof",
+    "Handles the split — limiting instruction or equivalent confinement"
+  ]},
+
+{ id:"f9", obj:3, title:"The showup on Fifth Street", back:"#s3|§3 the 801(d) exclusions",
+  tx:[["Scene","Carjacking trial, a year on. The victim testifies but can no longer describe the driver’s face. A patrol officer testifies that twenty minutes after the theft, at a showup two blocks away, the victim pointed at the defendant and said, “That’s him.” The victim is on the stand and subject to cross about it."],
+      ["Offered","to prove the defendant was the driver"]],
+  q:"Admissible for its truth?",
+  opts:[
+    {ok:true, t:"Yes — under 801(d)(1)(C), because the victim now testifies and is subject to cross about the identification.",
+     why:"A statement identifying a person as someone the declarant perceived earlier, with the declarant now testifying and crossable, is defined out of hearsay. The twenty-minute-old identification is the strong evidence; the faded courtroom memory is the weak one."},
+    {t:"No — the officer is repeating the victim’s out-of-court accusation.",
+     why:"It is out of court, and (d)(1)(C) defines it out of hearsay because the declarant testifies and can be crossed about it. Any witness to the identification — including the officer — may recount it."},
+    {t:"No — an identification made a year before trial is too stale to come in substantively.",
+     why:"The timing cuts the other way: the identification was made twenty minutes after the crime, and (d)(1)(C) exists to prefer that fresh statement over a memory a year older."},
+    {t:"Yes, but only if the victim repeats the identification from the witness stand.",
+     why:"The rule requires the declarant to testify and be crossable, not to re-perform the pick. Courtroom identifications are the weak evidence the exclusion works around."}
+  ]},
+
+{ id:"f10", obj:3, title:"The station-house interview", back:"#s3|§3 the 801(d) exclusions",
+  tx:[["Scene","Assault trial. The state’s witness told a detective at the station — unsworn, no proceeding — that the defendant swung first. At trial he testifies the defendant “never touched anyone.” He is on the stand and subject to cross about both accounts."],
+      ["Offered","to prove the defendant swung first"]],
+  q:"Admissible for that purpose?",
+  opts:[
+    {ok:true, t:"No — inconsistent, but never sworn at a proceeding, so it impeaches without coming in for its truth.",
+     why:"801(d)(1)(A) requires the prior inconsistent statement to have been given under penalty of perjury at a trial, hearing, other proceeding, or deposition. A station-house interview is neither — so the jury may weigh the contradiction against his credibility, and nothing more."},
+    {t:"Yes — he testifies and is subject to cross, which is all 801(d)(1) requires.",
+     why:"(d)(1)(A) adds two more elements: penalty of perjury, and a trial, hearing, other proceeding, or deposition. The interview room supplies neither, so the substantive route is closed."},
+    {t:"Yes — a formal police interview counts as an “other proceeding.”",
+     why:"“Other proceeding” keeps the company of trials, hearings, grand juries and depositions — settings with an oath and a record. An unsworn interview is not among them."},
+    {t:"No — once a witness recants, the earlier version is inadmissible for every purpose.",
+     why:"The inconsistency keeps one use alive: impeachment. The earlier account may undercut his credibility; it just may not stand as proof that the defendant swung first."}
+  ]},
+
+{ id:"f11", obj:3, title:"“That ends it,” says counsel", back:"#s3|§3 what 802 really does",
+  tx:[["Scene","Medical-malpractice trial. You have ruled a paramedic’s out-of-court statement hearsay: a person’s assertion, offered for its truth, and no 801(d) exclusion fits. Defense counsel moves to close the question: “Hearsay is inadmissible. That ends it.”"],
+      ["Asked","does it?"]],
+  q:"Your ruling on counsel’s proposition?",
+  opts:[
+    {ok:true, t:"No — 802 excludes hearsay unless a federal statute, these rules, or Supreme Court rules provide otherwise, and the rules’ own exceptions are still to be checked.",
+     why:"802 is a default with three doors out, and the widest is the Evidence Rules themselves — Rules 803, 804 and 807 hold the exceptions. A hearsay ruling opens the admissibility question rather than closing it. The exceptions are their own drill set."},
+    {t:"Yes — once the definition is met and no exclusion applies, exclusion is automatic.",
+     why:"802’s own text carries the escape clause — “unless any of the following provides otherwise: a federal statute; these rules; or other rules prescribed by the Supreme Court.” Counsel is quoting half the rule."},
+    {t:"Yes, unless the paramedic is unavailable to testify.",
+     why:"Unavailability matters inside particular Rule 804 exceptions, never to 802 itself. The ban’s doors are a statute, these rules, or Supreme Court rules — the next step is checking them, not counting witnesses."},
+    {t:"No — the judge may admit any hearsay that seems trustworthy.",
+     why:"There is no free-floating reliability override; admission must come through one of 802’s enumerated doors. A trustworthiness argument has to find a rule to live in."}
+  ]},
+
+{ id:"f12", obj:3, title:"The plant that changed hands", back:"#s3|§3 the 801(d) exclusions",
+  tx:[["Scene","Contamination suit. In 2023, Norr Corp.’s plant manager told a contractor: “We’ve known the tank was leaking since spring.” In 2024, Norr sold the plant to Pell LLC, which assumed all related liabilities. Neighbors now sue Pell, whose liability derives directly from Norr’s."],
+      ["Offered","against Pell"]],
+  q:"Hearsay?",
+  opts:[
+    {ok:true, t:"No — under the 2024 addition to 801(d)(2), a statement admissible against the declarant’s principal is admissible against a party whose liability directly derives from it.",
+     why:"The manager’s statement bound Norr under (d)(2)(D) — an employee speaking on a matter within his job, while employed. Pell stands in Norr’s shoes: since December 1, 2024, the rule carries the statement across to the party whose liability directly derives from the principal."},
+    {t:"Yes — the manager never worked for Pell, so no agency route reaches it.",
+     why:"That was the gap before the amendment. The clause added effective December 1, 2024 closes it: derivation of the claim or liability, not employment by the new party, is what carries the statement across."},
+    {t:"Yes — (d)(2)(D) requires the relationship to exist when the statement was made, and Pell didn’t even exist in the deal yet.",
+     why:"The relationship element is tested against Norr, and it holds — manager, on the job, during employment. The derivation clause then extends the already-admissible statement to Pell; (D)’s timing was never the obstacle."},
+    {t:"No, but only if Pell adopted the manager’s statement after the purchase.",
+     why:"Adoption is (B)’s separate route and isn’t needed. The derivation clause operates on the structure of the claim — Pell’s liability directly derives from Norr — with no act of adoption required."}
+  ]}
 ];
 
-/* ===================== init ===================== */
+/* the final serves its rulings in mixed order — one from each battery in rotation */
+var FINAL_ORDER = ["f1","f5","f9","f2","f6","f10","f3","f7","f11","f4","f8","f12"];
+FINALS = FINAL_ORDER.map(function(id){ return FINALS.filter(function(f){ return f.id===id; })[0]; });
+
+/* ============================ init ============================ */
 function init(){
-  RULINGS.forEach(function(r){buildRuling(r,document.getElementById("host-"+r.id));});
-  buildSorter(SORT);
-  buildTyped(T1,document.getElementById("host-t1"));
-  document.querySelector("#host-t1 textarea").placeholder="Write your ruling here — admit or exclude, the route, and what the death changes";
-  renderLedger();TM_initFinal();
-  wireChrome();wireFinalNav();wireVoiceChrome();
-  setVoiceOn(false); // voice declined at the interview: no narration, chrome hidden via CSS
+  COMMITS.forEach(buildCommit);
+  RULINGS.forEach(function(r){ buildRuling(r, document.getElementById("host-"+r.id)); });
+  buildTyped(T1, document.getElementById("host-t1"));
+  renderLedger(); TM_initFinal();
+  wireChrome(); wireFinalNav(); wireVoiceChrome();
+
+  /* scrollspy: light the rail + top chips as sections pass */
+  var secs=["hero","s1","s2","s3","final","mastery"];
+  var links={};
+  document.querySelectorAll("#rail a").forEach(function(a){links[a.getAttribute("data-sec")]=a;});
+  var cur=null;
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting){
+        cur=e.target.id;
+        secs.forEach(function(s){ if(links[s]) links[s].classList.toggle("on", s===cur); });
+      }
+    });
+  },{rootMargin:"-30% 0px -60% 0px"});
+  secs.forEach(function(s){ var el=document.getElementById(s); if(el) io.observe(el); });
 }
-document.addEventListener("DOMContentLoaded",init);
+document.addEventListener("DOMContentLoaded", init);
 </script>
 </body></html>
