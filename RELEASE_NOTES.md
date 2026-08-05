@@ -11,7 +11,7 @@
 - **Drill mode**: ask for drills (or pass `--drills`) and get 20–60 questions as rule cards and batteries instead of a full lesson
 - **Results you keep**: each lesson keeps your attempt history in your browser, shows your strongest and weakest areas, and offers a downloadable results file — feed it to your next drills request and it targets your weak spots
 - **Voice and chat**: optional narration at build time, plus a dock in the finished page where a reader adds their own key (OpenAI, Anthropic, or ElevenLabs) for narration and an in-page tutor 
-- **Runs in**: Claude, Claude Code, Claude Cowork and Codex. Works best in Claude Code.
+- **Runs in**: Claude and Codex. Best in Claude Code. NOTE: QA does not work on claude.ai.
 - **QA gates**: quality checks for content, citations, layout, and pedagogy
 
 ## Installation
