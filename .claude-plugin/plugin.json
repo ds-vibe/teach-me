@@ -1,6 +1,6 @@
 {
   "name": "teach-me",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Builds a polished, interactive HTML lesson on a topic you choose \u2014 clear teaching, drills with feedback, optional voice and images, and a closed-book final \u2014 delivered as one self-contained file that runs in your browser. Drill mode generates question batteries that read your last session's results.",
   "author": {
     "name": "Derek"
