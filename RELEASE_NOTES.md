@@ -18,7 +18,7 @@
 
 Pick one:
 
-- **claude.ai and the Claude apps (skill upload)**: download `teach-me-skill.zip` from the [release assets](https://github.com/ds-vibe/teach-me/releases), then upload it as a skill in **Settings → Capabilities → Skills**
+- **claude.ai and the Claude apps (skill upload)**: download `teach-me-skill.zip` from the [release assets](https://github.com/ds-vibe/teach-me/releases/latest/download/teach-me-skill.zip), then upload it as a skill in **Settings → Capabilities → Skills**
 - **Claude Code (plugin)**: `/plugin marketplace add ds-vibe/teach-me`, then `/plugin install teach-me@teach-me`
 - **Codex or manual (skill folder)**: download `teach-me-skill.zip` (or clone the repo) and put the `teach-me` folder in your skills directory — for example `~/.claude/skills/teach-me`
 
