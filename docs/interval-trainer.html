@@ -589,6 +589,10 @@ function buildMorph(){
   svg.innerHTML=el;
 }
 function morph(){
+  /* Blacks must paint over whites once keys overlap. The build loop emits rects in
+     chromatic order, so each following white would cover its neighbour black's right
+     half. Re-append blacks first (no overlap yet, so nothing visibly jumps). */
+  document.querySelectorAll('#morph .mstep[data-b="1"]').forEach(function(r){r.parentNode.appendChild(r);});
   var W=760, whites=0;
   for(var i=0;i<25;i++){var pc=(LOW+i)%12; if(!(pc===1||pc===3||pc===6||pc===8||pc===10))whites++;}
   var ww=(W-40)/whites, wi=0, wIndex={};
