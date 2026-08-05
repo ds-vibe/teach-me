@@ -47,7 +47,7 @@ Boards, sliders, step-throughs, counting grids — the topic's own interactive c
 Shuffled chips clicked into sequence; wrong click says earlier/later; slots fill green; reset rebuilds. `order.sort(function(){return Math.random()-0.5;})` — browser-side randomness is fine. (Bespoke — the runtime has no ordering builder.)
 
 ### Animated decision diagram
-Grammar in SKILL.md IX.8: drawn edges, coded terminals, one exit geometry, real splits, trace lights the ending node. The proven markup (the Erie framework build) — copy this shape, don't improvise a grid:
+The grammar: drawn edges, coded terminals, one exit geometry, real splits, trace lights the ending node. The proven markup (the Erie framework build) — copy this shape, don't improvise a grid:
 
 ```html
 <div class="fw">                                     <!-- spine: nodes stacked, edges DRAWN between -->
@@ -71,7 +71,7 @@ Grammar in SKILL.md IX.8: drawn edges, coded terminals, one exit geometry, real 
 
 - **Question nodes** are light outlined boxes with an eyebrow label; **terminals** are filled pills; **outcome color is semantic and consistent** across the whole diagram (every federal-law outcome one color, every state-law outcome the other — never one green for two different endpoints).
 - **Straight spine with exits** (no fork): exits keep ONE side and one visual identity, with a drawn stem per exit — never leaf-left / label-right siblings around a center column, and never "if yes ↓" floating in an empty column. If continue-polarity flips mid-path, the geometry must show it.
-- **Default = complete diagram visible.** Watch dims (`.pend{opacity:.18}` is fine *for the Watch animation*, driven by the runtime's `fw*` toolkit), then reveals step-by-step voice-synced, then traces a worked example — the trace lights the node where the analysis **ends**, rings that terminal, and stops. (For a rebuild-from-memory drill the diagram is hidden outright, not dimmed — SKILL.md VII.3.)
+- **Default = complete diagram visible.** Watch dims (`.pend{opacity:.18}` is fine *for the Watch animation*, driven by the runtime's `fw*` toolkit), then reveals step-by-step voice-synced, then traces a worked example — the trace lights the node where the analysis **ends**, rings that terminal, and stops. (For a rebuild-from-memory drill the diagram is hidden outright, not dimmed.)
 - Every edge label and branch is domain-checked in QA — a wrong arrow is the worst shippable bug.
 - Wrap in `.treescroll{overflow-x:auto}` with a min-width so phones scroll the diagram, not the page.
 

@@ -188,9 +188,13 @@ if (!log.marks.length || log.marks.length === 1) {
    Pass --len short|full at "build start"; it persists in build-log.json, so later
    marks inherit it. Override per build with TM_BUDGET="draft=12,lint clean=22".
    ============================================================== */
+/* Rebased for what the floors now demand: four finals per objective, a mutation pair
+   per objective, voice and images in the draft. The old short draft budget of 12 was
+   set before those existed — a compliant voiced build blew it and was told to cut an
+   objective, which is backwards. */
 const BUDGETS = {
-  short: { 'draft': 12, 'lint clean': 25, 'review done': 35 },
-  full:  { 'draft': 20, 'lint clean': 40, 'review done': 55 },
+  short: { 'draft': 18, 'lint clean': 32, 'review done': 45 },
+  full:  { 'draft': 28, 'lint clean': 52, 'review done': 70 },
 };
 const lenArg = (() => {
   const i = process.argv.indexOf('--len');
@@ -220,7 +224,8 @@ if (hit) {
   } else {
     console.log(
       `  ✗ checkpoint "${hit}": ${mins.toFixed(0)} min, budget ${cap}.\n` +
-      `    CUT SCOPE NOW, before the next pass. Drop one objective and its section whole.\n` +
+      `    CUT SCOPE NOW, before the next pass. First cut visuals and devices above the floor;\n` +
+      `    if still behind, drop one objective and its section whole.\n` +
       `    Do NOT thin the final, drop typed items, or skip wrong-answer narration to catch up —\n` +
       `    those are floors and scripts/lint.mjs will fail the build anyway.`
     );

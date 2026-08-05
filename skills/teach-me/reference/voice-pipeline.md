@@ -1,10 +1,10 @@
 # The voice pipeline (technical)
 
-Mechanics only. What voice is for and where it goes: SKILL.md V.5 and Part X. Component code: `js-patterns.md`.
+Mechanics only. What voice is for and where it goes: SKILL.md § Multimedia (*Voice*). Component code: `js-patterns.md`.
 
 ## Getting the key to the build
 
-**A key never arrives through the conversation** (SKILL.md II.1 #7) — never read a key file yourself, never echo a value, never write one into the lesson.
+**A key never arrives through the conversation** (SKILL.md § AI keys) — never read a key file yourself, never echo a value, never write one into the lesson.
 
 `tts.mjs` finds a key from the environment or a `.env` in the project folder (it searches up to the repo root, so one `.env` there serves every run directory). `--key-file <path>` is an escape hatch for surfaces where a dotfile is awkward — `node scripts/tts.mjs lesson.raw.html --key-file key.txt`, holding `OPENAI_API_KEY=…`, `ELEVENLABS_API_KEY=…`, or the bare key; tell the user to delete it afterward.
 
@@ -17,7 +17,7 @@ Mechanics only. What voice is for and where it goes: SKILL.md V.5 and Part X. Co
 - **Engines.** OpenAI `gpt-4o-mini-tts` (default `ash`) or ElevenLabs `eleven_multilingual_v2` (default voice Rachel; `TTS_VOICE_ID` for any other). Detection: `OPENAI_API_KEY` → OpenAI, else `ELEVENLABS_API_KEY` → ElevenLabs, else exit 0 with a note and build the silent lesson. Override with `TTS_ENGINE=openai|elevenlabs`. Any engine emitting one file per line slots in unchanged — the contract is only that.
 - **Env:** `TTS_ENGINE` · `TTS_VOICE` · `TTS_VOICE_ID` · `TTS_MODEL` · `TTS_SPEED` (default 1.25, applied via ffmpeg `atempo`) · `TTS_INSTRUCTIONS` (OpenAI only).
 - **Cache is keyed by content**, not id — `(engine|voice|speed|instructions|text)` — so editing a line regenerates only that line and a pure CSS change costs nothing. Cache lives in `audio/.cache.json`.
-- Encode mono 64 kbps MP3, embedded as base64. Full feedback voice runs ~2–3 MB; budget in XI.1.
+- Encode mono 64 kbps MP3, embedded as base64. Full feedback voice runs ~2–3 MB; the whole file budgets ≈15 MB (SKILL.md § Deliver).
 - **Transcript-verify** sampled takes with Whisper before shipping. Spell domain tokens for the engine: `"801 d"`, `"e4"`.
 
 ## BYOK runtime tier (`scripts/assistant-dock.js`)
@@ -46,11 +46,11 @@ With an empty `VOICE` map and `window.speechSynthesis` present, `say()` speaks t
 - **Always race a timeout** (`estMs + margin`) against `onend`; a platform that never fires the event must not hang a sequence.
 - Whisper verification applies to generated MP3s only — the fallback speaks the on-screen text by construction.
 
-Toggle labels are set in X.1, not here.
+Toggle labels are set in the page shell, not here.
 
 ## Testing the ladder
 
-Load with the stub `/*__VOICE__*/{}` unreplaced and confirm the toggle reads "Voice: browser", sequences still gate, and read-along highlights still track. No rung may hang, including voice switched off mid-sequence. Required gate: XII.6.
+Load with the stub `/*__VOICE__*/{}` unreplaced and confirm the toggle reads "Voice: browser", sequences still gate, and read-along highlights still track. No rung may hang, including voice switched off mid-sequence. Required gate before delivery.
 
 ## Self-containment
 

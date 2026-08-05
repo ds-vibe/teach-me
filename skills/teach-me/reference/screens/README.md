@@ -17,6 +17,13 @@ Study the images, not the filenames. Each anchors a specific dimension of the qu
 - `lesson-final-readout.png` — Readout anatomy: score by objective, every question reviewed with verdict + reasoning + reteach link, copyable "take this to the next lesson" brief.
 - `lesson-mobile-final.png` — Mobile: one-row topbar with phase chips at phone width, phase marker card stating what changes at the final, readable item card.
 
+## Style anchors (whole-page registers that landed)
+
+- `lesson-style-liqpref-gold.png` — the professional register at its best: dark navy ground, gold accent, serif display — a finance topic that looks like a term sheet, not an app. Offer something with this much identity at the checkpoint, not two near-identical light frames.
+- `lesson-style-ftc-hero.png` — the light register done right: cream ground, serif body, green/red as working accents rather than branding.
+- `lesson-scenario-queue-ftc.png` — running-frame discipline: every practice item is the next post in the reviewer's queue; the rule card quotes the verbatim text, highlights the operative phrases, links the source.
+- `lesson-style-emoji-thread.png` — a bold register derived from the artifact itself: the lesson lives inside the message thread it is about.
+
 ## Explainer anchors (html-explainer heritage)
 
 - `gutenberg-theme.png` — art direction: a look derived from the subject rather than applied to it.
