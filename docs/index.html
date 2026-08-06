@@ -11,7 +11,8 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"H
 .wrap{max-width:880px;margin:0 auto;padding:48px 20px 80px}
 .eyebrow{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--rust)}
 h1{font-size:clamp(40px,7vw,72px);font-weight:900;letter-spacing:-.02em;line-height:.95;text-transform:uppercase;margin:.15em 0 .3em}
-.sub{color:var(--muted);max-width:58ch;margin-bottom:36px}
+.sub{color:var(--muted);max-width:none;margin-bottom:12px}
+.sub:last-of-type{margin-bottom:36px}
 .sub a{color:inherit}
 .card{display:block;border:2px solid var(--ink);background:var(--white);border-radius:4px;padding:18px 20px;margin:0 0 12px;text-decoration:none;color:inherit}
 .card:hover{background:#f2e9d4}
@@ -27,7 +28,8 @@ h2{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;
 <div class="wrap">
   <p class="eyebrow">Example lessons · built by the skill</p>
   <h1>Teach Me</h1>
-  <p class="sub">Interactive lessons built by the <a href="https://github.com/ds-vibe/teach-me">Teach Me</a> skill — each one a single HTML file. Open one and take it: teaching, drills, and a closed-book final. Lessons with voice start narrating on your first click; there's a mute in the top bar.</p>
+  <p class="sub">Interactive lessons built with <a href="https://github.com/ds-vibe/teach-me">Teach Me</a>. Try one out — there&rsquo;s teaching, drills, and a closed-book final.</p>
+  <p class="sub">The music app is custom and took extra elbow grease. The others show you what the standard skill produced.</p>
 
   <h2>Business</h2>
   <a class="card" href="liquidation-preferences.html"><b>How Liquidation Preferences Work</b>
@@ -55,7 +57,7 @@ h2{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;
     <div class="what">A custom music app. Teach yourself relative pitch, using songs you already know.</div>
     <div class="meta">Standalone app</div></a>
 
-  <p class="note">All built with <a href="https://github.com/ds-vibe/teach-me">Teach Me</a> (the music app had extra steps). Lessons are study materials that may contain errors and not legal, financial or artistic advice. Lesson content is provided under the MIT license; embedded media keeps its own license.</p>
+  <p class="note">Lessons are study materials that may contain errors and not legal, financial or artistic advice. Lesson content is provided under the MIT license; embedded media keeps its own license.</p>
 </div>
 </body>
 </html>
