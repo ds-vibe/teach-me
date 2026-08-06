@@ -86,7 +86,7 @@ Lessons keep your quiz results in your browser only (localStorage on your machin
 This skill can use **third-party services** to produce parts of a lesson:
 
 - **OpenAI**, **Anthropic**, or **ElevenLabs** — For voice generation, rich images and in-page chat, you need to provide your own API key (OpenAI does all three, Anthropic is chat, ElevenLabs is voice). For voice and images, the key is read from your environment or a `.env` file during build - or you can add your API key to the page's dock once it's done. Do NOT paste your API key into Claude or Codex. 
-    *Estimated Cost*: Voice is pennies per lesson using gpt-4o-mini-tts. Adding medium-quality images lands at ~US$0.25-0.50 per lesson. API usage is billed to your own account with the LLM provider.  
+  *Estimated cost*: Voice is pennies per lesson using gpt-4o-mini-tts. Adding medium-quality images lands at ~US$0.25–0.50 per lesson. API usage is billed to your own account with the LLM provider.
 - **Wikimedia Commons** — where a lesson needs a picture of a real person, company or event, it may fetch and embed an existing file. The build restricts itself to Public Domain, CC0 and CC BY files, refuses CC BY-SA, and requires the credit line a CC BY file owes to appear on the page. Verify anything you publish. Automated license checks are a help, not a guarantee.
 
 **You are responsible for your own compliance with third-party terms** — for how you use these tools, for their output, and for the lessons you produce with them. That includes provider terms of service, license conditions on any content the lesson embeds, and any rules that apply where you share the result.
