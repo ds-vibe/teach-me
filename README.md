@@ -12,7 +12,7 @@ Teach Me is also an experiment in using LLMs to orchestrate a high-quality, mult
 - **Questions**: multiple choice, typed answers, confusable-concept drills, interactive devices, and a closed-book final
 - **Drill mode**: ask for drills (or add `--drills`) and get 20–60 questions as rule cards and batteries instead of a full lesson
 - **Results you keep**: each lesson keeps your attempt history in your browser, shows your strongest and weakest areas, and offers a downloadable results file — feed it to your next drills request and it targets your weak spots
-- **Voice and chat**: add voice narration at build time, or add your API key to a dock in the finished page (details below)
+- **Voice and AI chat**: Want voice narration? Or an in-page chatbot? You can add both (details below)
 - **Runs in**: Claude and Codex. Best in Claude Code. NOTE: QA does not work on claude.ai.
 - **QA gates**: quality checks for content, citations, layout, and pedagogy
 - **"Review & edit"**: Need changes? A review copy lets you edit the html directly.
